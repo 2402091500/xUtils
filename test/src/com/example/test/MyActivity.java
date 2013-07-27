@@ -49,7 +49,8 @@ public class MyActivity extends Activity {
 
         BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
 
-        testDownload();
+        // testDownload();
+        testUpload();
     }
 
     private void testDownload() {
@@ -83,16 +84,16 @@ public class MyActivity extends Activity {
 
     private void testUpload() {
         RequestParams params = new RequestParams();
-        params.addHeader("name", "value");
-        params.addQueryStringParameter("name", "value");
-        params.addBodyParameter("name", "value");
-        params.addBodyParameter("file", new File("path"));
+        params.addQueryStringParameter("method", "upload");
+        params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
+        params.addQueryStringParameter("access_token", "3.1042851f652496c9362b1cd77d4f849b.2592000.1377530363.3590808424-248414");
+        params.addBodyParameter("file", new File("/sdcard/test.zip"));
 
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.POST,
-                "updloadurl....",
+                "https://pcs.baidu.com/rest/2.0/pcs/file",
                 params,
-                new RequestCallBack<File>() {
+                new RequestCallBack<String>() {
 
                     @Override
                     public void onStart() {
@@ -105,8 +106,8 @@ public class MyActivity extends Activity {
                     }
 
                     @Override
-                    public void onSuccess(File result) {
-                        testTextView.setText("downloaded:" + result.getPath());
+                    public void onSuccess(String result) {
+                        testTextView.setText("uploaded:" + result);
                     }
 
 

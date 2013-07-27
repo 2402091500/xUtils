@@ -15,6 +15,7 @@
 package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -72,8 +73,13 @@ public class RetryHandler implements HttpRequestRetryHandler {
         }
 
         if (retry) {
-            HttpRequestBase currentReq = (HttpRequestBase) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-            retry = currentReq != null && !"POST".equals(currentReq.getMethod());
+            try {
+                HttpRequestBase currentReq = (HttpRequestBase) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+                retry = currentReq != null && !"POST".equals(currentReq.getMethod());
+            } catch (Exception e) {
+                retry = false;
+                LogUtils.e("retry error", e);
+            }
         }
 
         if (retry) {

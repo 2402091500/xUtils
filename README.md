@@ -103,7 +103,7 @@ HttpUtils http = new HttpUtils();
 http.send(HttpRequest.HttpMethod.POST,
     "updloadurl....",
     params,
-    new RequestCallBack<File>() {
+    new RequestCallBack<String>() {
 
         @Override
         public void onStart() {
@@ -116,7 +116,7 @@ http.send(HttpRequest.HttpMethod.POST,
         }
 
         @Override
-        public void onSuccess(File result) {
+        public void onSuccess(String result) {
             testTextView.setText("downloaded:" + result.getPath());
         }
 
