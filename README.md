@@ -30,16 +30,16 @@
 ```java
 DbUtils db = DbUtils.create(this);
 User user = new User(); //这里需要注意的是User对象必须有id属性，或者有通过@ID注解的属性
-user.setEmail("mail@tsz.net");
-user.setName("michael yang");
+user.setEmail("wyouflf@qq.com");
+user.setName("wyouflf");
 db.save(user); // 使用saveBindingId保存实体时会为实体的id赋值
 ```
 
 ----
 ## ViewUtils使用方法
-* 修改自原来的FinalActivity
-* 完全注解方式就可以进行UI绑定和事件绑定
-* 无需findViewById和setClickListener等
+* 修改自原来的FinalActivity, 但没有实用继承式的实用方式。
+* 完全注解方式就可以进行UI绑定和事件绑定。
+* 无需findViewById和setClickListener等。
 
 ```java
 @ViewInject(id=R.id.button,click="btnClick") Button button;
