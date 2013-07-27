@@ -37,7 +37,7 @@ db.save(user); // 使用saveBindingId保存实体时会为实体的id赋值
 
 ----
 ## ViewUtils使用方法
-* 修改自原来的FinalActivity, 但没有实用继承式的实用方式。
+* 修改自原来的FinalActivity, 但没有使用继承式的实用方式。
 * 完全注解方式就可以进行UI绑定和事件绑定。
 * 无需findViewById和setClickListener等。
 
