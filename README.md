@@ -3,6 +3,7 @@
 * xUtils 源于Afinal框架，对Afinal进行了适当的精简，和一些适度的扩展和重构。
 * xUtils 具有Afinal的一些特性如：无需考虑bitmap在android中加载的时候oom的问题和快速滑动的时候图片加载位置错位等问题；
 简洁，约定大于配置...
+* xUtils 与 afinal 目前的主要区别： afinal 的View注解要继承FinalActivity, 如果要使用FragmentActivity或其他View自定义视图就要对已有代码进行较大的改造，耦合太强，非常不方便。 afinal 的http模块不支持上传大文件，会OOM。xUtils进行了较大的重构，支持7种http谓词，mutipart支持设置subType，下载支持302重定向...
 
 
 ## 目前xUtils主要有四大模块：

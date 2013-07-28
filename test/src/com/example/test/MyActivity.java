@@ -49,8 +49,8 @@ public class MyActivity extends Activity {
 
         BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
 
-        // testDownload();
-        testUpload();
+        testDownload();
+        //testUpload();
     }
 
     private void testDownload() {
