@@ -107,7 +107,7 @@ public class MyActivity extends Activity {
 
                     @Override
                     public void onSuccess(String result) {
-                        testTextView.setText("uploaded:" + result);
+                        testTextView.setText("upload response:" + result);
                     }
 
 

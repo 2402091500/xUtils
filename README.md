@@ -102,7 +102,7 @@ params.addBodyParameter("file", new File("path"));
 
 HttpUtils http = new HttpUtils();
 http.send(HttpRequest.HttpMethod.POST,
-    "updloadurl....",
+    "uploadUrl....",
     params,
     new RequestCallBack<String>() {
 
@@ -118,7 +118,7 @@ http.send(HttpRequest.HttpMethod.POST,
 
         @Override
         public void onSuccess(String result) {
-            testTextView.setText("downloaded:" + result.getPath());
+            testTextView.setText("upload response:" + result.getPath());
         }
 
         @Override
