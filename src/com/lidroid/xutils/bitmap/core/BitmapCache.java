@@ -113,7 +113,7 @@ public class BitmapCache {
                             mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, mCacheParams.diskCacheSize);
                         } catch (final IOException e) {
                             mCacheParams.diskCacheDir = null;
-                            LogUtils.e(e.getMessage());
+                            LogUtils.e(e.getMessage(), e);
                         }
                     }
                 }
@@ -163,9 +163,9 @@ public class BitmapCache {
                         snapshot.getInputStream(DISK_CACHE_INDEX).close();
                     }
                 } catch (final IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 } catch (Exception e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 } finally {
                     try {
                         if (out != null) {
@@ -222,7 +222,7 @@ public class BitmapCache {
                         }
                     }
                 } catch (final IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 } finally {
                     try {
                         if (inputStream != null) {
@@ -252,7 +252,7 @@ public class BitmapCache {
                 try {
                     mDiskLruCache.delete();
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
                 mDiskLruCache = null;
                 initDiskCache();
@@ -278,7 +278,7 @@ public class BitmapCache {
                 try {
                     mDiskLruCache.remove(key);
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }
@@ -300,7 +300,7 @@ public class BitmapCache {
                 try {
                     mDiskLruCache.flush();
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }
@@ -319,7 +319,7 @@ public class BitmapCache {
                         mDiskLruCache = null;
                     }
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }

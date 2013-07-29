@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AbsListView;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.Select;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.event.ViewCommonEventListener;
@@ -49,7 +50,7 @@ public class ViewUtils {
                         field.setAccessible(true);
                         field.set(activity, activity.findViewById(viewId));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtils.e(e.getMessage(), e);
                     }
 
                     String clickMethod = viewInject.click();
@@ -88,7 +89,7 @@ public class ViewUtils {
                         field.setAccessible(true);
                         field.set(view, view.findViewById(viewId));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtils.e(e.getMessage(), e);
                     }
 
                     String clickMethod = viewInject.click();
@@ -124,7 +125,7 @@ public class ViewUtils {
                 ((View) obj).setOnClickListener(new ViewCommonEventListener(target).click(clickMethod));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -135,7 +136,7 @@ public class ViewUtils {
                 ((View) obj).setOnLongClickListener(new ViewCommonEventListener(target).longClick(clickMethod));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -146,7 +147,7 @@ public class ViewUtils {
                 ((AbsListView) obj).setOnItemClickListener(new ViewCommonEventListener(target).itemClick(itemClickMethod));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -157,7 +158,7 @@ public class ViewUtils {
                 ((AbsListView) obj).setOnItemLongClickListener(new ViewCommonEventListener(target).itemLongClick(itemClickMethod));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -168,7 +169,7 @@ public class ViewUtils {
                 ((AbsListView) obj).setOnItemSelectedListener(new ViewCommonEventListener(target).select(select).noSelect(noSelect));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
     }
 

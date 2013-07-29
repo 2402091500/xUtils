@@ -16,11 +16,7 @@ package com.lidroid.xutils.http;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
-import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
-import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
-import com.lidroid.xutils.http.client.callback.FileDownloadHandler;
-import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
+import com.lidroid.xutils.http.client.callback.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;

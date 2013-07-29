@@ -16,14 +16,17 @@
 package com.lidroid.xutils.db.sqlite;
 
 import android.database.Cursor;
+import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.table.Column;
 import com.lidroid.xutils.db.table.DbModel;
+import com.lidroid.xutils.db.table.Foreign;
 import com.lidroid.xutils.db.table.Table;
+import com.lidroid.xutils.util.LogUtils;
 
 public class CursorUtils {
 
     @SuppressWarnings("unchecked")
-    public static <T> T getEntity(Cursor cursor, Class<T> entityType) {
+    public static <T> T getEntity(DbUtils db, Cursor cursor, Class<T> entityType) {
         try {
             if (cursor != null) {
                 int columnCount = cursor.getColumnCount();
@@ -33,15 +36,18 @@ public class CursorUtils {
                     String columnName = cursor.getColumnName(i);
                     Column column = table.columnMap.get(columnName);
                     if (column != null) {
-                        column.setValue(entity, cursor.getString(i));
+                        if (column instanceof Foreign) {
+                            ((Foreign) column).db = db;
+                        }
+                        column.setValue2Entity(entity, cursor.getString(i));
                     } else if (columnName.equals(table.getId().getColumnName())) {
-                        table.getId().setValue(entity, cursor.getString(i));
+                        table.getId().setValue2Entity(entity, cursor.getString(i));
                     }
                 }
                 return entity;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return null;

@@ -19,17 +19,16 @@ import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
 
 public class Column {
 
-    private String columnName;
+    protected String columnName;
     private String defaultValue;
 
-    private Method getMethod;
-    private Method setMethod;
+    protected Method getMethod;
+    protected Method setMethod;
 
-    private Field columnField;
+    protected Field columnField;
 
     public Column(Class entityType, Field field) {
         this.columnField = field;
@@ -40,71 +39,50 @@ public class Column {
     }
 
     @SuppressWarnings("unchecked")
-    public void setValue(Object entity, String valueStr) {
+    public void setValue2Entity(Object entity, String valueStr) {
+
         Object value = null;
         if (valueStr != null) {
             Class columnType = columnField.getType();
-            if (columnType.equals(String.class) || columnType.equals(CharSequence.class)) {
-                value = valueStr;
-            } else if (columnType.equals(int.class) || columnType.equals(Integer.class)) {
-                value = Integer.valueOf(valueStr);
-            } else if (columnType.equals(long.class) || columnType.equals(Long.class)) {
-                value = Long.valueOf(valueStr);
-            } else if (columnType.equals(java.sql.Date.class)) {
-                value = new java.sql.Date(Long.valueOf(valueStr));
-            } else if (columnType.equals(Date.class)) {
-                value = new Date(Long.valueOf(valueStr));
-            } else if (columnType.equals(boolean.class) || columnType.equals(Boolean.class)) {
-                value = ColumnUtils.convert2Boolean(valueStr);
-            } else if (columnType.equals(float.class) || columnType.equals(Float.class)) {
-                value = Float.valueOf(valueStr);
-            } else if (columnType.equals(double.class) || columnType.equals(Double.class)) {
-                value = Double.valueOf(valueStr);
-            } else if (columnType.equals(byte.class) || columnType.equals(Byte.class)) {
-                value = Byte.valueOf(valueStr);
-            } else if (columnType.equals(short.class) || columnType.equals(Short.class)) {
-                value = Short.valueOf(valueStr);
-            } else if (columnType.equals(char.class) || columnType.equals(Character.class)) {
-                value = valueStr.charAt(0);
-            }
+            value = ColumnUtils.valueStr2SimpleColumnValue(columnType, valueStr);
         }
 
         if (setMethod != null) {
             try {
                 setMethod.invoke(entity, value == null ? defaultValue : value);
             } catch (Exception e) {
-                LogUtils.e(e.getMessage());
+                LogUtils.e(e.getMessage(), e);
             }
         } else {
             try {
                 this.columnField.setAccessible(true);
                 this.columnField.set(entity, value == null ? defaultValue : value);
             } catch (Exception e) {
-                LogUtils.e(e.getMessage());
+                LogUtils.e(e.getMessage(), e);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getValue(Object entity) {
+    public Object getColumnValue(Object entity) {
         Object resultObj = null;
         if (entity != null) {
             if (getMethod != null) {
                 try {
                     resultObj = getMethod.invoke(entity);
                 } catch (Exception e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
                     resultObj = this.columnField.get(entity);
                 } catch (Exception e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }
-        return (T) resultObj;
+        return ColumnUtils.convertIfNeeded(resultObj);
     }
 
     public String getColumnName() {

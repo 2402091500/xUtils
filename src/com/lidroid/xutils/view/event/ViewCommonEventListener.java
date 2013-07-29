@@ -23,6 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import com.lidroid.xutils.exception.ViewException;
+import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Method;
 
@@ -110,7 +111,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return null;
@@ -129,7 +130,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return false;
@@ -147,7 +148,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return null;
@@ -166,7 +167,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return false;
@@ -184,7 +185,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return null;
@@ -202,7 +203,7 @@ public class ViewCommonEventListener implements OnClickListener, OnLongClickList
                 throw new ViewException("no such method:" + methodName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return null;

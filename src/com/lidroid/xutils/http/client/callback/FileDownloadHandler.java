@@ -15,7 +15,6 @@
 package com.lidroid.xutils.http.client.callback;
 
 import android.text.TextUtils;
-import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import org.apache.http.HttpEntity;
 
 import java.io.File;

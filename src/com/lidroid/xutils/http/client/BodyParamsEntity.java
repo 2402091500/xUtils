@@ -1,5 +1,6 @@
 package com.lidroid.xutils.http.client;
 
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicNameValuePair;
@@ -67,7 +68,7 @@ public class BodyParamsEntity extends AbstractHttpEntity implements Cloneable {
             try {
                 this.content = URLEncodedUtils.format(params, charset).getBytes(charset);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                LogUtils.e(e.getMessage(), e);
             }
         }
     }

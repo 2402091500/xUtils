@@ -17,6 +17,7 @@ package com.lidroid.xutils.http;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -154,7 +155,7 @@ public class PreferencesCookieStore implements CookieStore {
             ObjectInputStream ois = new ObjectInputStream(is);
             cookie = ((SerializableCookie) ois.readObject()).getCookie();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
 
         return cookie;

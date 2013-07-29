@@ -84,9 +84,9 @@ public class BitmapDownloadProcess {
                         fileDescriptor = fileInputStream.getFD();
                     }
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 } catch (IllegalStateException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 } finally {
                     if (fileDescriptor == null && fileInputStream != null) {
                         try {
@@ -137,7 +137,7 @@ public class BitmapDownloadProcess {
                 try {
                     mOriginalDiskCache.delete();
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
                 mOriginalDiskCache = null;
                 mHttpDiskCacheStarting = true;
@@ -152,7 +152,7 @@ public class BitmapDownloadProcess {
                 try {
                     mOriginalDiskCache.flush();
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }
@@ -167,7 +167,7 @@ public class BitmapDownloadProcess {
                         mOriginalDiskCache = null;
                     }
                 } catch (IOException e) {
-                    LogUtils.e(e.getMessage());
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
         }

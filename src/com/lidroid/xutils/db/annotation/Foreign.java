@@ -12,23 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.lidroid.xutils.db.annotation;
 
-package com.lidroid.xutils.db.table;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class KeyValue {
-    private String key;
-    private Object value;
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Foreign {
+    public String column() default "";
 
-    public KeyValue(String key, Object value) {
-        this.key = key;
-        this.value = ColumnUtils.convertIfNeeded(value);
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public Object getValue() {
-        return value;
-    }
+    public String foreign();
 }

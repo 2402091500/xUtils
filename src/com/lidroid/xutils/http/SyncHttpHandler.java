@@ -15,6 +15,7 @@
 package com.lidroid.xutils.http;
 
 import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -74,7 +75,7 @@ public class SyncHttpHandler {
         try {
             return makeRequestWithRetries(params[0]);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
         }
         return null;
     }

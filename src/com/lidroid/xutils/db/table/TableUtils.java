@@ -21,6 +21,7 @@ import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TableUtils {
 
@@ -37,30 +38,46 @@ public class TableUtils {
     }
 
     /**
+     * key: entityType.className
+     */
+    private static ConcurrentHashMap<String, HashMap<String, Column>> entityColumnsMap = new ConcurrentHashMap<String, HashMap<String, Column>>();
+
+    /**
      * @param entityType
      * @return key: columnName
      */
     public static HashMap<String, Column> getColumnMap(Class<?> entityType) {
 
+        if (entityColumnsMap.containsKey(entityType.getCanonicalName())) {
+            return entityColumnsMap.get(entityType.getCanonicalName());
+        }
         HashMap<String, Column> columnMap = new HashMap<String, Column>();
         try {
             Field[] fields = entityType.getDeclaredFields();
             String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
             for (Field field : fields) {
-                if (ColumnUtils.isSupportColumnType(field) &&
-                        !ColumnUtils.isTransient(field) &&
-                        !field.getName().equals(primaryKeyFieldName)) {
-
-                    Column column = new Column(entityType, field);
+                if (ColumnUtils.isTransient(field)) {
+                    continue;
+                }
+                if (ColumnUtils.isSimpleColumnType(field)) {
+                    if (!field.getName().equals(primaryKeyFieldName)) {
+                        Column column = new Column(entityType, field);
+                        columnMap.put(column.getColumnName(), column);
+                    }
+                } else if (ColumnUtils.isForeign(field)) {
+                    Foreign column = new Foreign(entityType, field);
                     columnMap.put(column.getColumnName(), column);
                 }
             }
         } catch (Exception e) {
-            LogUtils.e(e.getMessage());
+            LogUtils.e(e.getMessage(), e);
+        }
+
+        if (columnMap != null && entityColumnsMap.containsKey(entityType.getCanonicalName())) {
+            entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
         }
         return columnMap;
     }
-
 
     public static Field getPrimaryKeyField(Class<?> entityType) {
         Field primaryKeyField = null;
@@ -92,5 +109,41 @@ public class TableUtils {
     public static String getPrimaryKeyFieldName(Class<?> entityType) {
         Field idField = getPrimaryKeyField(entityType);
         return idField == null ? null : idField.getName();
+    }
+
+    public static boolean hasPrimaryKeyValue(Object entity) {
+        if (entity == null) {
+            return false;
+        }
+        Class entityType = entity.getClass();
+        Field primaryKeyField = null;
+        Field[] fields = entityType.getDeclaredFields();
+        if (fields != null) {
+
+            for (Field field : fields) {
+                if (field.getAnnotation(Id.class) != null) {
+                    primaryKeyField = field;
+                    break;
+                }
+            }
+
+            if (primaryKeyField == null) {
+                for (Field field : fields) {
+                    if ("id".equals(field.getName()) || "_id".equals(field.getName())) {
+                        primaryKeyField = field;
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            throw new RuntimeException("this model[" + entityType + "] has no any field");
+        }
+
+        if (primaryKeyField != null) {
+            com.lidroid.xutils.db.table.Id id = new com.lidroid.xutils.db.table.Id(entityType, primaryKeyField);
+            return id.getColumnValue(entity) == null;
+        }
+        return false;
     }
 }

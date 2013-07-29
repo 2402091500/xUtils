@@ -2,6 +2,7 @@ package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.callback.UploadEntity;
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -96,7 +97,7 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
         try {
             return uriBuilder.build();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
             return null;
         }
     }

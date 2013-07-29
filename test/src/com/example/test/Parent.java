@@ -7,7 +7,7 @@ import java.util.Date;
  * Date: 13-7-25
  * Time: 下午7:06
  */
-public class TestEntity {
+public class Parent {
     private int id;
 
     public String name;
@@ -64,7 +64,7 @@ public class TestEntity {
 
     @Override
     public String toString() {
-        return "TestEntity{" +
+        return "Parent{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +

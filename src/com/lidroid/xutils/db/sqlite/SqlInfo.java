@@ -71,9 +71,7 @@ public class SqlInfo {
             bindingArgs = new LinkedList<Object>();
         }
 
-        value = ColumnUtils.convert2LongIfDateObj(value);
-
-        bindingArgs.add(value);
+        bindingArgs.add(ColumnUtils.convertIfNeeded(value));
     }
 
 }

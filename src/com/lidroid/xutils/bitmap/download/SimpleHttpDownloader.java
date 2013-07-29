@@ -50,7 +50,7 @@ public class SimpleHttpDownloader implements Downloader {
             }
             return true;
         } catch (Exception e) {
-            LogUtils.e(urlString + " : " + e);
+            LogUtils.e(e.getMessage(), e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

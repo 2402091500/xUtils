@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Transient;
 import com.lidroid.xutils.util.LogUtils;
@@ -66,7 +67,7 @@ public class ColumnUtils {
 
     public static String getColumnNameByField(Field field) {
         Column column = field.getAnnotation(Column.class);
-        if (column != null && column.column().trim().length() != 0) {
+        if (column != null && column.column().trim().length() > 0) {
             return column.column();
         }
 
@@ -75,37 +76,89 @@ public class ColumnUtils {
             return id.column();
         }
 
+        Foreign foreign = field.getAnnotation(Foreign.class);
+        if (foreign != null && foreign.column().trim().length() > 0) {
+            return foreign.column();
+        }
+
+        return field.getName();
+    }
+
+    public static String getForeignColumnNameByField(Field field) {
+
+        Foreign foreign = field.getAnnotation(Foreign.class);
+        if (foreign != null && foreign.column().trim().length() > 0) {
+            return foreign.foreign();
+        }
+
         return field.getName();
     }
 
     public static String getColumnDefaultValue(Field field) {
         Column column = field.getAnnotation(Column.class);
-        if (column != null && column.defaultValue() != null && column.defaultValue().trim().length() != 0) {
+        if (column != null && column.defaultValue() != null && column.defaultValue().trim().length() > 0) {
             return column.defaultValue();
         }
         return null;
     }
 
-
     public static boolean isTransient(Field field) {
         return field.getAnnotation(Transient.class) != null;
     }
 
-    public static boolean isSupportColumnType(Field field) {
+    public static boolean isForeign(Field field) {
+        return field.getAnnotation(Foreign.class) != null;
+    }
+
+    public static boolean isSimpleColumnType(Field field) {
         Class<?> clazz = field.getType();
-        return clazz.isPrimitive() ||
-                clazz.equals(String.class) ||
-                clazz.equals(Integer.class) ||
-                clazz.equals(Long.class) ||
-                clazz.equals(Date.class) ||
-                clazz.equals(java.sql.Date.class) ||
-                clazz.equals(Boolean.class) ||
-                clazz.equals(Float.class) ||
-                clazz.equals(Double.class) ||
-                clazz.equals(Byte.class) ||
-                clazz.equals(Short.class) ||
-                clazz.equals(CharSequence.class) ||
-                clazz.equals(Character.class);
+        return isSimpleColumnType(clazz);
+    }
+
+    public static boolean isSimpleColumnType(Class columnType) {
+        return columnType.isPrimitive() ||
+                columnType.equals(String.class) ||
+                columnType.equals(Integer.class) ||
+                columnType.equals(Long.class) ||
+                columnType.equals(Date.class) ||
+                columnType.equals(java.sql.Date.class) ||
+                columnType.equals(Boolean.class) ||
+                columnType.equals(Float.class) ||
+                columnType.equals(Double.class) ||
+                columnType.equals(Byte.class) ||
+                columnType.equals(Short.class) ||
+                columnType.equals(CharSequence.class) ||
+                columnType.equals(Character.class);
+    }
+
+    public static Object valueStr2SimpleColumnValue(Class columnType, String valueStr) {
+        Object value = null;
+        if (isSimpleColumnType(columnType) && valueStr != null) {
+            if (columnType.equals(String.class) || columnType.equals(CharSequence.class)) {
+                value = valueStr;
+            } else if (columnType.equals(int.class) || columnType.equals(Integer.class)) {
+                value = Integer.valueOf(valueStr);
+            } else if (columnType.equals(long.class) || columnType.equals(Long.class)) {
+                value = Long.valueOf(valueStr);
+            } else if (columnType.equals(java.sql.Date.class)) {
+                value = new java.sql.Date(Long.valueOf(valueStr));
+            } else if (columnType.equals(Date.class)) {
+                value = new Date(Long.valueOf(valueStr));
+            } else if (columnType.equals(boolean.class) || columnType.equals(Boolean.class)) {
+                value = ColumnUtils.convert2Boolean(valueStr);
+            } else if (columnType.equals(float.class) || columnType.equals(Float.class)) {
+                value = Float.valueOf(valueStr);
+            } else if (columnType.equals(double.class) || columnType.equals(Double.class)) {
+                value = Double.valueOf(valueStr);
+            } else if (columnType.equals(byte.class) || columnType.equals(Byte.class)) {
+                value = Byte.valueOf(valueStr);
+            } else if (columnType.equals(short.class) || columnType.equals(Short.class)) {
+                value = Short.valueOf(valueStr);
+            } else if (columnType.equals(char.class) || columnType.equals(Character.class)) {
+                value = valueStr.charAt(0);
+            }
+        }
+        return value;
     }
 
     public static Boolean convert2Boolean(final Object value) {
@@ -116,9 +169,11 @@ public class ColumnUtils {
         return false;
     }
 
-    public static Object convert2LongIfDateObj(final Object value) {
+    public static Object convertIfNeeded(final Object value) {
         if (value != null) {
-            if (value instanceof java.sql.Date) {
+            if (value instanceof Boolean) {
+                return ((Boolean) value) ? 1 : 0;
+            } else if (value instanceof java.sql.Date) {
                 return ((java.sql.Date) value).getTime();
             } else if (value instanceof Date) {
                 return ((Date) value).getTime();

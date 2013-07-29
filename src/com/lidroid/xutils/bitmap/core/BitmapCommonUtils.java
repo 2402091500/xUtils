@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.StatFs;
+import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
 
@@ -72,7 +73,7 @@ public class BitmapCommonUtils {
             final StatFs stats = new StatFs(path.getPath());
             return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(e.getMessage(), e);
             return -1;
         }
 

@@ -38,7 +38,7 @@ public class BitmapDecoder {
         try {
             return BitmapFactory.decodeResource(res, resId, options);
         } catch (OutOfMemoryError e) {
-            LogUtils.e(e.getMessage());
+            LogUtils.e(e.getMessage(), e);
             return null;
         }
     }
@@ -53,7 +53,7 @@ public class BitmapDecoder {
         try {
             return BitmapFactory.decodeFile(filename, options);
         } catch (OutOfMemoryError e) {
-            LogUtils.e(e.getMessage());
+            LogUtils.e(e.getMessage(), e);
             return null;
         }
     }
@@ -69,7 +69,7 @@ public class BitmapDecoder {
         try {
             return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
         } catch (OutOfMemoryError e) {
-            LogUtils.e(e.getMessage());
+            LogUtils.e(e.getMessage(), e);
             return null;
         }
     }
