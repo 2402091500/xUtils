@@ -52,7 +52,7 @@ public class WhereBuilder {
         }
         StringBuffer sb = new StringBuffer();
         for (String item : whereItems) {
-            sb.append(" ");
+            sb.append(" AND ");
             sb.append(item);
         }
         return sb.toString();
