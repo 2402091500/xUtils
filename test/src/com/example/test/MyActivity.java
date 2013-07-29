@@ -10,6 +10,8 @@ import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.db.table.KeyValue;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
@@ -131,11 +133,13 @@ public class MyActivity extends Activity {
             DbUtils db = DbUtils.create(this);
             db.saveBindingId(testEntity);
 
-            List<TestEntity> list = db.findAll(TestEntity.class);
+            WhereBuilder wb = new WhereBuilder();
+            wb.append(new KeyValue("name", "hahaha123"), "=");
+            List<TestEntity> list = db.findAllByWhere(TestEntity.class, wb);
             LogUtils.d("wyouflf size:" + list.size());
             LogUtils.d("wyouflf testEntity:" + list.get(list.size() - 1).toString());
 
-            testEntity.name = "hahaha";
+            testEntity.name = "hahaha123";
             db.update(testEntity);
 
             TestEntity entity = db.findById(TestEntity.class, testEntity.getId());

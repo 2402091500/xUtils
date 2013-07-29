@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.lidroid.xutils.db.sqlite.CursorUtils;
 import com.lidroid.xutils.db.sqlite.SqlBuilder;
 import com.lidroid.xutils.db.sqlite.SqlInfo;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
 import com.lidroid.xutils.db.table.KeyValue;
 import com.lidroid.xutils.db.table.Table;
@@ -151,9 +152,9 @@ public class DbUtils {
         execNonQuery(SqlBuilder.buildDeleteSqlInfo(entityType, id));
     }
 
-    public void deleteByWhere(Class<?> entityType, String whereStr) throws DbException {
+    public void deleteByWhere(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
         createTableIfNotExist(entityType);
-        SqlInfo sql = SqlBuilder.buildDeleteSql(entityType, whereStr);
+        SqlInfo sql = SqlBuilder.buildDeleteSql(entityType, whereBuilder);
         execNonQuery(sql);
     }
 
@@ -182,9 +183,9 @@ public class DbUtils {
         execNonQuery(SqlBuilder.buildUpdateSqlInfo(entity));
     }
 
-    public void update(Object entity, String whereStr) throws DbException {
+    public void update(Object entity, WhereBuilder whereBuilder) throws DbException {
         createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlBuilder.buildUpdateSqlInfo(entity, whereStr));
+        execNonQuery(SqlBuilder.buildUpdateSqlInfo(entity, whereBuilder));
     }
 
 
@@ -214,21 +215,21 @@ public class DbUtils {
         return findAllBySql(entityType, SqlBuilder.buildSelectSql(entityType));
     }
 
-    public <T> List<T> findAll(Class<T> entityType, String orderBy, boolean desc) throws DbException {
+    public <T> List<T> findAll(Class<T> entityType, String orderByColumnName, boolean desc) throws DbException {
         createTableIfNotExist(entityType);
         return findAllBySql(entityType,
-                SqlBuilder.buildSelectSql(entityType).append2Sql(" ORDER BY " + orderBy + (desc ? " DESC" : " ASC")));
+                SqlBuilder.buildSelectSql(entityType).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
     }
 
-    public <T> List<T> findAllByWhere(Class<T> entityType, String whereStr) throws DbException {
+    public <T> List<T> findAllByWhere(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
         createTableIfNotExist(entityType);
-        return findAllBySql(entityType, SqlBuilder.buildSelectSqlByWhere(entityType, whereStr));
+        return findAllBySql(entityType, SqlBuilder.buildSelectSqlByWhere(entityType, whereBuilder));
     }
 
-    public <T> List<T> findAllByWhere(Class<T> entityType, String whereStr, String orderBy, boolean desc) throws DbException {
+    public <T> List<T> findAllByWhere(Class<T> entityType, WhereBuilder whereBuilder, String orderByColumnName, boolean desc) throws DbException {
         createTableIfNotExist(entityType);
         return findAllBySql(entityType,
-                SqlBuilder.buildSelectSqlByWhere(entityType, whereStr).append2Sql(" ORDER BY " + orderBy + (desc ? " DESC" : " ASC")));
+                SqlBuilder.buildSelectSqlByWhere(entityType, whereBuilder).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
     }
 
     private <T> List<T> findAllBySql(Class<T> entityType, SqlInfo sqlInfo) throws DbException {

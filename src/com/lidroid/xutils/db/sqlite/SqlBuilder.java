@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils.db.sqlite;
 
-import android.text.TextUtils;
 import com.lidroid.xutils.db.table.Column;
 import com.lidroid.xutils.db.table.Id;
 import com.lidroid.xutils.db.table.KeyValue;
@@ -108,13 +107,12 @@ public class SqlBuilder {
         return sqlInfo;
     }
 
-    public static SqlInfo buildDeleteSql(Class<?> entityType, String strWhere) throws DbException {
+    public static SqlInfo buildDeleteSql(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
         Table table = Table.get(entityType);
         StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
 
-        if (!TextUtils.isEmpty(strWhere)) {
-            sqlSb.append(" WHERE ");
-            sqlSb.append(strWhere);
+        if (whereBuilder != null) {
+            sqlSb.append(" WHERE ").append(whereBuilder.toString());
         }
 
         return new SqlInfo(sqlSb.toString());
@@ -157,7 +155,7 @@ public class SqlBuilder {
         return sqlInfo;
     }
 
-    public static SqlInfo buildUpdateSqlInfo(Object entity, String whereStr) throws DbException {
+    public static SqlInfo buildUpdateSqlInfo(Object entity, WhereBuilder whereBuilder) throws DbException {
 
         Table table = Table.get(entity.getClass());
 
@@ -183,8 +181,8 @@ public class SqlBuilder {
             sqlInfo.addValue(kv.getValue());
         }
         sqlSb.deleteCharAt(sqlSb.length() - 1);
-        if (!TextUtils.isEmpty(whereStr)) {
-            sqlSb.append(" WHERE ").append(whereStr);
+        if (whereBuilder != null) {
+            sqlSb.append(" WHERE ").append(whereBuilder.toString());
         }
         sqlInfo.setSql(sqlSb.toString());
         return sqlInfo;
@@ -213,13 +211,13 @@ public class SqlBuilder {
         return new SqlInfo(buildSelectSqlByTableName(Table.get(clazz).getTableName()));
     }
 
-    public static SqlInfo buildSelectSqlByWhere(Class<?> clazz, String strWhere) throws DbException {
+    public static SqlInfo buildSelectSqlByWhere(Class<?> clazz, WhereBuilder whereBuilder) throws DbException {
         Table table = Table.get(clazz);
 
         StringBuffer sqlSb = new StringBuffer(buildSelectSqlByTableName(table.getTableName()));
 
-        if (!TextUtils.isEmpty(strWhere)) {
-            sqlSb.append(" WHERE ").append(strWhere);
+        if (whereBuilder != null) {
+            sqlSb.append(" WHERE ").append(whereBuilder.toString());
         }
 
         return new SqlInfo(sqlSb.toString());
@@ -252,12 +250,6 @@ public class SqlBuilder {
         sqlSb.deleteCharAt(sqlSb.length() - 1);
         sqlSb.append(" )");
         return new SqlInfo(sqlSb.toString());
-    }
-
-    private static String buildWhereStr(KeyValue keyValue, String op) {
-        StringBuffer sqlSb = new StringBuffer(keyValue.getKey()).append(op);
-        sqlSb.append(keyValue.getValue());
-        return sqlSb.toString();
     }
 
     private static KeyValue column2KeyValue(Object entity, Column column) {
