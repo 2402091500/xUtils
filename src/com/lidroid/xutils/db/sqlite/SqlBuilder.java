@@ -78,7 +78,7 @@ public class SqlBuilder {
         Object idValue = id.getValue(entity);
 
         if (idValue == null) {
-            throw new DbException("getDeleteSQL:" + entity.getClass() + " id value is null");
+            throw new DbException(entity.getClass() + " id value is null");
         }
         StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
         sqlSb.append(" WHERE ").append(id.getColumnName()).append("=?");
@@ -95,7 +95,7 @@ public class SqlBuilder {
         Id id = table.getId();
 
         if (null == idValue) {
-            throw new DbException("getDeleteSQL: idValue is null");
+            throw new DbException("idValue is null");
         }
 
         StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
