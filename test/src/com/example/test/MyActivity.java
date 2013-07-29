@@ -21,6 +21,8 @@ import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -121,6 +123,9 @@ public class MyActivity extends Activity {
     }
 
     private void testDb() {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         TestEntity testEntity = new TestEntity();
         testEntity.name = "测试";
         testEntity.isVIP = true;
@@ -135,9 +140,12 @@ public class MyActivity extends Activity {
 
             WhereBuilder wb = new WhereBuilder();
             wb.append(new KeyValue("name", "hahaha123"), "=");
+            wb.append(new KeyValue("time", format.parse("2013-07-30 00:00:00")), ">");
             List<TestEntity> list = db.findAllByWhere(TestEntity.class, wb);
             LogUtils.d("wyouflf size:" + list.size());
-            LogUtils.d("wyouflf testEntity:" + list.get(list.size() - 1).toString());
+            if (list.size() > 0) {
+                LogUtils.d("wyouflf testEntity:" + list.get(list.size() - 1).toString());
+            }
 
             testEntity.name = "hahaha123";
             db.update(testEntity);
@@ -146,6 +154,8 @@ public class MyActivity extends Activity {
             LogUtils.d("wyouflf testEntity:" + entity.toString());
 
         } catch (DbException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }

@@ -40,6 +40,8 @@ public class WhereBuilder {
             sqlSb.append("NULL");
         } else if (value instanceof String) {
             sqlSb.append("'" + value + "'");
+        } else {
+            sqlSb.append(value);
         }
         whereItems.add(sqlSb.toString());
         return this;
@@ -51,9 +53,13 @@ public class WhereBuilder {
             return "";
         }
         StringBuffer sb = new StringBuffer();
+        boolean first = true;
         for (String item : whereItems) {
-            sb.append(" AND ");
+            if (!first) {
+                sb.append(" AND ");
+            }
             sb.append(item);
+            first = false;
         }
         return sb.toString();
     }
