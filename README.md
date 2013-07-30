@@ -171,6 +171,7 @@ handler.stop();
 
 ```java
 BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
+//BitmapUtils.create(this).display(testImageView, "/sdcard/test.jpg");默认支持加载本地图片
 ```
 
 ----
