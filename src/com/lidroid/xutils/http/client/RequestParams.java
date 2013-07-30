@@ -190,7 +190,7 @@ public class RequestParams {
             }
 
             result = multipartEntity;
-        } else {
+        } else if (bodyParams != null) {
             result = new BodyParamsEntity(bodyParams, URL_ENCODING);
         }
 
