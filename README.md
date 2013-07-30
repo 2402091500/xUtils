@@ -185,7 +185,7 @@ LogUtils.d("wyouflf"); // 自动添加TAG，格式： className[methodName, line
 ----
 # 关于作者
 * Email： <wyouflf@qq.com>, <wyouflf@gmail.com>
-* 有任何建议都可以给我发邮件
+* 有任何建议都可以给我发邮件, 你也可以加入这个QQ群：330445659, 技术交流，idea分享 *_*
 
 # 关于Afinal
 * <https://github.com/yangfuhai/afinal>
