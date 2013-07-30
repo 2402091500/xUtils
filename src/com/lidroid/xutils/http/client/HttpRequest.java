@@ -85,8 +85,10 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
             this.addHeaders(param.getHeaders());
             this.addQueryStringParams(param.getQueryStringParams());
             HttpEntity entity = param.getEntity();
-            if (entity != null && entity instanceof UploadEntity) {
-                ((UploadEntity) entity).setCallBack(callBack);
+            if (entity != null) {
+                if (entity instanceof UploadEntity) {
+                    ((UploadEntity) entity).setCallBack(callBack);
+                }
                 this.setEntity(entity);
             }
         }
