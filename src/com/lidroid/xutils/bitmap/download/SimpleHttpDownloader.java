@@ -20,6 +20,7 @@ import com.lidroid.xutils.util.LogUtils;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 
 public class SimpleHttpDownloader implements Downloader {
@@ -27,21 +28,26 @@ public class SimpleHttpDownloader implements Downloader {
     private static final int IO_BUFFER_SIZE = 8 * 1024; //8k
 
     /**
-     * 把网络图片转下载到文件的 outputStream
+     * 把网络或本地图片下载到文件的 outputStream
      *
      * @param urlString
      * @param outputStream
      * @return
      */
     public boolean downloadToLocalStreamByUrl(String urlString, OutputStream outputStream) {
-        HttpURLConnection urlConnection = null;
+        URLConnection urlConnection = null;
         BufferedOutputStream out = null;
         FlushedInputStream in = null;
 
         try {
-            final URL url = new URL(urlString);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            in = new FlushedInputStream(new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE));
+            if (urlString.startsWith("/")) {
+                FileInputStream fileInputStream = new FileInputStream(urlString);
+                in = new FlushedInputStream(new BufferedInputStream(fileInputStream, IO_BUFFER_SIZE));
+            } else {
+                final URL url = new URL(urlString);
+                urlConnection = url.openConnection();
+                in = new FlushedInputStream(new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE));
+            }
             out = new BufferedOutputStream(outputStream, IO_BUFFER_SIZE);
 
             int b;
@@ -52,17 +58,24 @@ public class SimpleHttpDownloader implements Downloader {
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            try {
-                if (out != null) {
+            if (out != null) {
+                try {
                     out.close();
+                } catch (IOException e) {
+                    LogUtils.e(e.getMessage(), e);
                 }
-                if (in != null) {
+            }
+            if (in != null) {
+                try {
                     in.close();
+                } catch (IOException e) {
+                    LogUtils.e(e.getMessage(), e);
                 }
-            } catch (final IOException e) {
+            }
+            if (urlConnection != null) {
+                if (urlConnection instanceof HttpURLConnection) {
+                    ((HttpURLConnection) urlConnection).disconnect();
+                }
             }
         }
         return false;

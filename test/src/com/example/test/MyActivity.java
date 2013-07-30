@@ -52,7 +52,7 @@ public class MyActivity extends Activity {
         //DbUtils.create(this).dropDb();
 
 
-        BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
+        BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
 
         testDownload();
         //testUpload();
