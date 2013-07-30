@@ -154,7 +154,7 @@ public class MyActivity extends Activity {
             }
 
             WhereBuilder wb = new WhereBuilder();
-            wb.append(new KeyValue("id", "54"), "<");
+            wb.append(new KeyValue("id", 54), "<");
             List<Parent> list = db.findAll(Parent.class, wb);
             LogUtils.d("wyouflf size:" + list.size());
             if (list.size() > 0) {

@@ -8,7 +8,7 @@
 
 ## 目前xUtils主要有四大模块：
 
-* DbUtils模块：android中的orm框架，一行代码就可以进行增删改查。
+* DbUtils模块：android中的orm框架，一行代码就可以进行增删改查, 支持绑定外键, 保存实体时外键自动保存，自动加载外键关联实体，支持延时加载。
 
 * ViewUtils模块：android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定。
 
@@ -174,17 +174,17 @@ BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/i
 ```
 
 ----
-## 其他
+## 其他（更多示例代码见test中的代码）
 ### 输出日志 LogUtils
 
 ```java
-LogUtils.d("wyouflf"); // 自动添加TAG，格式： className[methodName, lineNumber]
+LogUtils.d("wyouflf"); // 自动添加TAG，格式： className[methodName, lineNumber]，可设置全局的allowD，allowE...
 ```
 
 ----
 # 关于作者
-* Email： <wyouflf@gmail.com>
-* 有问题可以给我发邮件
+* Email： <wyouflf@qq.com>, <wyouflf@gmail.com>
+* 有任何建议都可以给我发邮件
 
 # 关于Afinal
 * <https://github.com/yangfuhai/afinal>
