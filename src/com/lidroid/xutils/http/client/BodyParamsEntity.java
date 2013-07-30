@@ -19,7 +19,7 @@ public class BodyParamsEntity extends AbstractHttpEntity implements Cloneable {
 
     protected byte[] content;
 
-    private boolean dirty = false;
+    private boolean dirty = true;
 
     private String charset = HTTP.UTF_8;
 
@@ -34,7 +34,7 @@ public class BodyParamsEntity extends AbstractHttpEntity implements Cloneable {
         if (charset != null) {
             this.charset = charset;
         }
-        setContentType(HTTP.PLAIN_TEXT_TYPE + HTTP.CHARSET_PARAM + charset);
+        setContentType(URLEncodedUtils.CONTENT_TYPE);
         params = new ArrayList<NameValuePair>();
     }
 
@@ -47,8 +47,9 @@ public class BodyParamsEntity extends AbstractHttpEntity implements Cloneable {
         if (charset != null) {
             this.charset = charset;
         }
-        setContentType(HTTP.PLAIN_TEXT_TYPE + HTTP.CHARSET_PARAM + charset);
+        setContentType(URLEncodedUtils.CONTENT_TYPE);
         this.params = params;
+        refreshContent();
     }
 
     public BodyParamsEntity addParameter(String name, String value) {
@@ -70,6 +71,7 @@ public class BodyParamsEntity extends AbstractHttpEntity implements Cloneable {
             } catch (UnsupportedEncodingException e) {
                 LogUtils.e(e.getMessage(), e);
             }
+            dirty = false;
         }
     }
 

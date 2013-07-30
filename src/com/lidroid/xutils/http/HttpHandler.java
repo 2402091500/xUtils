@@ -91,10 +91,10 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
                 ioException = e;
                 retry = retryHandler.retryRequest(ioException, ++executionCount, context);
             } catch (NullPointerException e) {
-                ioException = new IOException("NPE in HttpClient" + e.getMessage());
+                ioException = new IOException("NPE in HttpClient " + e.getMessage());
                 retry = retryHandler.retryRequest(ioException, ++executionCount, context);
             } catch (Exception e) {
-                ioException = new IOException("Exception" + e.getMessage());
+                ioException = new IOException("Exception " + e.getMessage());
                 retry = retryHandler.retryRequest(ioException, ++executionCount, context);
             }
         }
