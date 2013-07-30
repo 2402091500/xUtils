@@ -56,6 +56,7 @@ public class MyActivity extends Activity {
 
         testDownload();
         //testUpload();
+        //testPost();
     }
 
     private void testDownload() {
@@ -93,6 +94,41 @@ public class MyActivity extends Activity {
         params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
         params.addQueryStringParameter("access_token", "3.1042851f652496c9362b1cd77d4f849b.2592000.1377530363.3590808424-248414");
         params.addBodyParameter("file", new File("/sdcard/test.zip"));
+
+        HttpUtils http = new HttpUtils();
+        http.send(HttpRequest.HttpMethod.POST,
+                "https://pcs.baidu.com/rest/2.0/pcs/file",
+                params,
+                new RequestCallBack<String>() {
+
+                    @Override
+                    public void onStart() {
+                        testTextView.setText("conn...");
+                    }
+
+                    @Override
+                    public void onLoading(long total, long current) {
+                        testTextView.setText(current + "/" + total);
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        testTextView.setText("upload response:" + result);
+                    }
+
+
+                    @Override
+                    public void onFailure(Throwable error, String msg) {
+                        testTextView.setText(msg);
+                    }
+                });
+    }
+
+    private void testPost() {
+        RequestParams params = new RequestParams();
+        params.addQueryStringParameter("method", "mkdir");
+        params.addQueryStringParameter("access_token", "3.1042851f652496c9362b1cd77d4f849b.2592000.1377530363.3590808424-248414");
+        params.addBodyParameter("path", "/apps/测试应用/test文件夹");
 
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.POST,
