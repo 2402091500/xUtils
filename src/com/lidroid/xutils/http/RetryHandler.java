@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class RetryHandler implements HttpRequestRetryHandler {
-    private static final int RETRY_SLEEP_TIME_MILLIS = 1000;
+    private static final int RETRY_SLEEP_INTERVAL = 1000;
 
     //网络异常，继续
     private static HashSet<Class<?>> exceptionWhiteList = new HashSet<Class<?>>();
@@ -54,13 +54,13 @@ public class RetryHandler implements HttpRequestRetryHandler {
     }
 
     @Override
-    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+    public boolean retryRequest(IOException exception, int retriedTimes, HttpContext context) {
         boolean retry = true;
 
         Boolean b = (Boolean) context.getAttribute(ExecutionContext.HTTP_REQ_SENT);
         boolean sent = (b != null && b.booleanValue());
 
-        if (executionCount > maxRetries) {
+        if (retriedTimes > maxRetries) {
             // 尝试次数超过用户定义的测试，默认5次
             retry = false;
         } else if (exceptionBlackList.contains(exception.getClass())) {
@@ -74,8 +74,8 @@ public class RetryHandler implements HttpRequestRetryHandler {
 
         if (retry) {
             try {
-                HttpRequestBase currentReq = (HttpRequestBase) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-                retry = currentReq != null && !"POST".equals(currentReq.getMethod());
+                HttpRequestBase currRequest = (HttpRequestBase) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+                retry = currRequest != null && "GET".equals(currRequest.getMethod());
             } catch (Exception e) {
                 retry = false;
                 LogUtils.e("retry error", e);
@@ -84,7 +84,7 @@ public class RetryHandler implements HttpRequestRetryHandler {
 
         if (retry) {
             //休眠1秒钟后再继续尝试
-            SystemClock.sleep(RETRY_SLEEP_TIME_MILLIS);
+            SystemClock.sleep(RETRY_SLEEP_INTERVAL);
         } else {
             LogUtils.e(exception.getMessage(), exception);
         }

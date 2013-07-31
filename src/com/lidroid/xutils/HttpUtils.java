@@ -22,6 +22,7 @@ import com.lidroid.xutils.http.RetryHandler;
 import com.lidroid.xutils.http.SyncHttpHandler;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
+import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -126,15 +127,15 @@ public class HttpUtils {
         return sendRequest(request, params, contentType, callBack);
     }
 
-    public Object sendSync(HttpRequest.HttpMethod method, String url) throws HttpException {
+    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url) throws HttpException {
         return sendSync(method, url, null);
     }
 
-    public Object sendSync(HttpRequest.HttpMethod method, String url, RequestParams params) throws HttpException {
+    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params) throws HttpException {
         return sendSync(method, url, params, null);
     }
 
-    public Object sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
+    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
         HttpRequest request = new HttpRequest(method, url);
         return sendSyncRequest(request, params, contentType);
     }
@@ -201,7 +202,7 @@ public class HttpUtils {
         return handler;
     }
 
-    private Object sendSyncRequest(HttpRequest request, RequestParams params, String contentType) throws HttpException {
+    private ResponseStream sendSyncRequest(HttpRequest request, RequestParams params, String contentType) throws HttpException {
         if (contentType != null) {
             request.addHeader("Content-Type", contentType);
         }

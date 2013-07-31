@@ -48,10 +48,10 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
 
     private final RequestCallBack callback;
 
-    private int executionCount = 0;
-    private String targetUrl = null; //下载的路径
-    private boolean isDownloadingFile;
-    private boolean isResume = false; //是否断点续传
+    private int retriedTimes = 0;
+    private String fileSavePath = null; // 下载的路径
+    private boolean isDownloadingFile; // fileSavePath != null;
+    private boolean isResume = false; // 是否断点续传
     private String charset;
 
     public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack callback) {
@@ -62,15 +62,16 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
     }
 
     // 执行请求
-    private void execRequestWithRetries(HttpRequestBase request) throws HttpException {
-        if (isResume && targetUrl != null) {
-            File downloadFile = new File(targetUrl);
+    private void doSendRequest(HttpRequestBase request) throws HttpException {
+        if (isResume && isDownloadingFile) {
+            File downloadFile = new File(fileSavePath);
             long fileLen = 0;
             if (downloadFile.isFile() && downloadFile.exists()) {
                 fileLen = downloadFile.length();
             }
-            if (fileLen > 0)
+            if (fileLen > 0) {
                 request.setHeader("RANGE", "bytes=" + fileLen + "-");
+            }
         }
 
         boolean retry = true;
@@ -90,13 +91,13 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
                 return;
             } catch (IOException e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(e, ++executionCount, context);
+                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (NullPointerException e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
+                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             } catch (Exception e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
+                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             }
         }
         if (httpException != null) {
@@ -109,13 +110,13 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
     @Override
     protected Object doInBackground(Object... params) {
         if (params != null && params.length == 3) {
-            targetUrl = String.valueOf(params[1]);
-            isDownloadingFile = targetUrl != null;
+            fileSavePath = String.valueOf(params[1]);
+            isDownloadingFile = fileSavePath != null;
             isResume = (Boolean) params[2];
         }
         try {
             publishProgress(UPDATE_START);
-            execRequestWithRetries((HttpRequestBase) params[0]);
+            doSendRequest((HttpRequestBase) params[0]);
         } catch (HttpException e) {
             publishProgress(UPDATE_FAILURE, e, e.getMessage());
         }
@@ -170,7 +171,7 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
                 if (entity != null) {
                     lastUpdateTime = SystemClock.uptimeMillis();
                     if (isDownloadingFile) {
-                        responseBody = mFileDownloadHandler.handleEntity(entity, this, targetUrl, isResume);
+                        responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
                     } else {
                         responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
                     }

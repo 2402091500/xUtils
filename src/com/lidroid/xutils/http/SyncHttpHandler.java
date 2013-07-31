@@ -15,7 +15,7 @@
 package com.lidroid.xutils.http;
 
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
+import com.lidroid.xutils.http.client.ResponseStream;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -29,9 +29,9 @@ public class SyncHttpHandler {
 
     private final AbstractHttpClient client;
     private final HttpContext context;
-    private final StringDownloadHandler mStringDownloadHandler = new StringDownloadHandler();
 
-    private int executionCount = 0;
+    private int retriedTimes = 0;
+
     private String charset;
 
     public SyncHttpHandler(AbstractHttpClient client, HttpContext context, String charset) {
@@ -40,7 +40,7 @@ public class SyncHttpHandler {
         this.charset = charset;
     }
 
-    private Object makeRequestWithRetries(HttpRequestBase request) throws HttpException {
+    private ResponseStream doSendRequest(HttpRequestBase request) throws HttpException {
 
         boolean retry = true;
         HttpException httpException = null;
@@ -48,19 +48,19 @@ public class SyncHttpHandler {
         while (retry) {
             try {
                 HttpResponse response = client.execute(request, context);
-                return mStringDownloadHandler.handleEntity(response.getEntity(), null, charset);
+                return new ResponseStream(response, charset);
             } catch (UnknownHostException e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(e, ++executionCount, context);
+                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (IOException e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(e, ++executionCount, context);
+                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (NullPointerException e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
+                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             } catch (Exception e) {
                 httpException = new HttpException(e);
-                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
+                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             }
         }
         if (httpException != null) {
@@ -71,8 +71,7 @@ public class SyncHttpHandler {
 
     }
 
-    public Object sendRequest(HttpRequestBase... params) throws HttpException {
-        return makeRequestWithRetries(params[0]);
+    public ResponseStream sendRequest(HttpRequestBase... params) throws HttpException {
+        return doSendRequest(params[0]);
     }
-
 }

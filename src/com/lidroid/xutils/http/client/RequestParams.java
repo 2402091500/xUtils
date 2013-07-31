@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestParams {
 
-    private static String URL_ENCODING = HTTP.UTF_8;
+    private String charset = HTTP.UTF_8;
 
     private List<Header> headers;
     private List<NameValuePair> queryStringParams;
@@ -47,6 +47,10 @@ public class RequestParams {
     private HashMap<String, ContentBody> fileParams;
 
     public RequestParams() {
+    }
+
+    public RequestParams(String charset) {
+        this.charset = charset;
     }
 
     public void addHeader(Header header) {
@@ -191,7 +195,7 @@ public class RequestParams {
 
             result = multipartEntity;
         } else if (bodyParams != null) {
-            result = new BodyParamsEntity(bodyParams, URL_ENCODING);
+            result = new BodyParamsEntity(bodyParams, charset);
         }
 
         return result;
