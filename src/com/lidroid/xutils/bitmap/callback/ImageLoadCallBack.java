@@ -17,7 +17,7 @@ package com.lidroid.xutils.bitmap.callback;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
-import com.lidroid.xutils.bitmap.core.BitmapDisplayConfig;
+import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 public interface ImageLoadCallBack {
 
@@ -28,7 +28,7 @@ public interface ImageLoadCallBack {
      * @param bitmap
      * @param config
      */
-    public void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config);
+    void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config);
 
     /**
      * 图片加载失败回调的函数
@@ -36,6 +36,6 @@ public interface ImageLoadCallBack {
      * @param imageView
      * @param bitmap
      */
-    public void loadFailed(ImageView imageView, Bitmap bitmap);
+    void loadFailed(ImageView imageView, Bitmap bitmap);
 
 }

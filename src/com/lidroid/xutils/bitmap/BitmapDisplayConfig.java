@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.bitmap.core;
+package com.lidroid.xutils.bitmap;
 
 import android.graphics.Bitmap;
 import android.view.animation.Animation;

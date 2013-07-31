@@ -15,65 +15,57 @@
 
 package com.lidroid.xutils.bitmap.core;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.LruDiskCache;
+import com.lidroid.xutils.util.LruMemoryCache;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class BitmapCache {
 
-    //默认的内存缓存大小
-    private static final int DEFAULT_MEM_CACHE_SIZE = 1024 * 1024 * 8; // 8MB
-
-    //默认的磁盘缓存大小
-    private static final int DEFAULT_DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20MB
-
-    // Compression settings when writing images to disk cache
-    private static final CompressFormat DEFAULT_COMPRESS_FORMAT = CompressFormat.JPEG;
-    private static final int DEFAULT_COMPRESS_QUALITY = 70;
     private static final int DISK_CACHE_INDEX = 0;
-
-    // Constants to easily toggle various caches
-    private static final boolean DEFAULT_MEM_CACHE_ENABLED = true;
-    private static final boolean DEFAULT_DISK_CACHE_ENABLED = true;
-    private static final boolean DEFAULT_CLEAR_DISK_CACHE_ON_START = false;
-    private static final boolean DEFAULT_INIT_DISK_CACHE_ON_CREATE = false;
 
     private LruDiskCache mDiskLruCache;
     private LruMemoryCache<String, Bitmap> mMemoryCache;
-    private ImageCacheParams mCacheParams;
+
     private final Object mDiskCacheLock = new Object();
-    private boolean mDiskCacheStarting = true;
+    private boolean mDiskCacheNotReady = true;
+
+    private BitmapGlobalConfig mConfig;
 
     /**
      * Creating a new ImageCache object using the specified parameters.
      *
-     * @param cacheParams The cache parameters to use to initialize the cache
+     * @param config The cache parameters to use to initialize the cache
      */
-    public BitmapCache(ImageCacheParams cacheParams) {
-        init(cacheParams);
+    public BitmapCache(BitmapGlobalConfig config) {
+        this.mConfig = config;
     }
 
 
     /**
-     * Initialize the cache, providing all parameters.
-     *
-     * @param cacheParams The cache parameters to initialize the cache
+     * Initialize the memory cache
      */
-    private void init(ImageCacheParams cacheParams) {
-        mCacheParams = cacheParams;
-
+    public void initMemoryCache() {
         // Set up memory cache
-        if (mCacheParams.memoryCacheEnabled) {
-            mMemoryCache = new LruMemoryCache<String, Bitmap>(mCacheParams.memCacheSize) {
+        if (mConfig.isMemoryCacheEnabled()) {
+            if (mMemoryCache != null) {
+                try {
+                    clearMemoryCache();
+                } catch (Exception e) {
+                }
+            }
+            mMemoryCache = new LruMemoryCache<String, Bitmap>(mConfig.getMemCacheSize()) {
                 /**
                  * Measure item size in bytes rather than units which is more practical
                  * for a bitmap cache
@@ -83,13 +75,6 @@ public class BitmapCache {
                     return BitmapCommonUtils.getBitmapSize(bitmap);
                 }
             };
-        }
-
-        // By default the disk cache is not initialized here as it should be initialized
-        // on a separate thread due to disk access.
-        if (cacheParams.initDiskCacheOnCreate) {
-            // Set up disk cache
-            initDiskCache();
         }
     }
 
@@ -103,22 +88,21 @@ public class BitmapCache {
         // Set up disk cache
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
-                File diskCacheDir = mCacheParams.diskCacheDir;
-                if (mCacheParams.diskCacheEnabled && diskCacheDir != null) {
+                File diskCacheDir = new File(mConfig.getDiskCachePath());
+                if (mConfig.isDiskCacheEnabled() && diskCacheDir != null) {
                     if (!diskCacheDir.exists()) {
                         diskCacheDir.mkdirs();
                     }
-                    if (BitmapCommonUtils.getAvailableSpace(diskCacheDir) > mCacheParams.diskCacheSize) {
+                    if (BitmapCommonUtils.getAvailableSpace(diskCacheDir) > mConfig.getDiskCacheSize()) {
                         try {
-                            mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, mCacheParams.diskCacheSize);
+                            mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, mConfig.getDiskCacheSize());
                         } catch (final IOException e) {
-                            mCacheParams.diskCacheDir = null;
                             LogUtils.e(e.getMessage(), e);
                         }
                     }
                 }
             }
-            mDiskCacheStarting = false;
+            mDiskCacheNotReady = false;
             mDiskCacheLock.notifyAll();
         }
     }
@@ -129,7 +113,7 @@ public class BitmapCache {
      * @param key    Unique identifier for the bitmap to store
      * @param bitmap The bitmap to store
      */
-    public void addBitmapToCache(String key, Bitmap bitmap) {
+    public void addBitmapToCache(String key, Bitmap bitmap, CompressFormat compressFormat) {
         if (key == null || bitmap == null) {
             return;
         }
@@ -147,7 +131,7 @@ public class BitmapCache {
                     mDiskLruCache.getDirectory().mkdirs();
                 }
 
-                final String diskKey = FileNameGenerator.generator(key);
+                final String diskKey = DiskCacheKeyGenerator.generate(key);
                 OutputStream out = null;
                 try {
                     LruDiskCache.Snapshot snapshot = mDiskLruCache.get(diskKey);
@@ -155,7 +139,8 @@ public class BitmapCache {
                         final LruDiskCache.Editor editor = mDiskLruCache.edit(diskKey);
                         if (editor != null) {
                             out = editor.newOutputStream(DISK_CACHE_INDEX);
-                            bitmap.compress(mCacheParams.compressFormat, mCacheParams.compressQuality, out);
+                            CompressFormat format = compressFormat == null ? mConfig.getDefaultCompressFormat() : compressFormat;
+                            bitmap.compress(format, mConfig.getDefaultCompressQuality(), out);
                             editor.commit();
                             out.close();
                         }
@@ -202,9 +187,9 @@ public class BitmapCache {
      * @return
      */
     public Bitmap getBitmapFromDiskCache(String key) {
-        final String diskKey = FileNameGenerator.generator(key);
+        final String diskKey = DiskCacheKeyGenerator.generate(key);
         synchronized (mDiskCacheLock) {
-            while (mDiskCacheStarting) {
+            while (mDiskCacheNotReady) {
                 try {
                     mDiskCacheLock.wait();
                 } catch (InterruptedException e) {
@@ -247,7 +232,7 @@ public class BitmapCache {
 
     public void clearDiskCache() {
         synchronized (mDiskCacheLock) {
-            mDiskCacheStarting = true;
+            mDiskCacheNotReady = true;
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
@@ -273,10 +258,11 @@ public class BitmapCache {
     }
 
     public void clearDiskCache(String key) {
+        final String diskKey = DiskCacheKeyGenerator.generate(key);
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
-                    mDiskLruCache.remove(key);
+                    mDiskLruCache.remove(diskKey);
                 } catch (IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -325,66 +311,33 @@ public class BitmapCache {
         }
     }
 
-
-    public void setCompressFormat(CompressFormat format) {
-        this.mCacheParams.setCompressFormat(format);
-    }
-
-    /**
-     * A holder class that contains cache parameters.
-     */
-    public static class ImageCacheParams {
-        public int memCacheSize = DEFAULT_MEM_CACHE_SIZE;
-        public int diskCacheSize = DEFAULT_DISK_CACHE_SIZE;
-        public File diskCacheDir;
-        public CompressFormat compressFormat = DEFAULT_COMPRESS_FORMAT;
-        public int compressQuality = DEFAULT_COMPRESS_QUALITY;
-        public boolean memoryCacheEnabled = DEFAULT_MEM_CACHE_ENABLED;
-        public boolean diskCacheEnabled = DEFAULT_DISK_CACHE_ENABLED;
-        public boolean clearDiskCacheOnStart = DEFAULT_CLEAR_DISK_CACHE_ON_START;
-        public boolean initDiskCacheOnCreate = DEFAULT_INIT_DISK_CACHE_ON_CREATE;
-
-
-        public ImageCacheParams(File diskCacheDir) {
-            this.diskCacheDir = diskCacheDir;
+    public static class DiskCacheKeyGenerator {
+        private DiskCacheKeyGenerator() {
         }
 
-        public ImageCacheParams(String diskCacheDir) {
-            this.diskCacheDir = new File(diskCacheDir);
-        }
-
-        /**
-         * 设置缓存大小
-         *
-         * @param context
-         * @param percent 百分比，值的范围是在 0.05 到 0.8之间
-         */
-        public void setMemCacheSizePercent(Context context, float percent) {
-            if (percent < 0.05f || percent > 0.8f) {
-                throw new IllegalArgumentException("setMemCacheSizePercent - percent must be "
-                        + "between 0.05 and 0.8 (inclusive)");
+        public static String generate(String key) {
+            String cacheKey;
+            try {
+                final MessageDigest mDigest = MessageDigest.getInstance("MD5");
+                mDigest.update(key.getBytes());
+                cacheKey = bytesToHexString(mDigest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                cacheKey = String.valueOf(key.hashCode());
             }
-            memCacheSize = Math.round(percent * getMemoryClass(context) * 1024 * 1024);
+            return cacheKey;
         }
 
-
-        public void setMemCacheSize(int memCacheSize) {
-            this.memCacheSize = memCacheSize;
-        }
-
-        public void setDiskCacheSize(int diskCacheSize) {
-            this.diskCacheSize = diskCacheSize;
-        }
-
-        public void setCompressFormat(CompressFormat format) {
-            this.compressFormat = format;
-        }
-
-        private static int getMemoryClass(Context context) {
-            return ((ActivityManager) context.getSystemService(
-                    Context.ACTIVITY_SERVICE)).getMemoryClass();
+        private static String bytesToHexString(byte[] bytes) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                String hex = Integer.toHexString(0xFF & bytes[i]);
+                if (hex.length() == 1) {
+                    sb.append('0');
+                }
+                sb.append(hex);
+            }
+            return sb.toString();
         }
     }
-
 
 }

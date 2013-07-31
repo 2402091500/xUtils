@@ -23,7 +23,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import com.lidroid.xutils.bitmap.core.BitmapDisplayConfig;
+import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 

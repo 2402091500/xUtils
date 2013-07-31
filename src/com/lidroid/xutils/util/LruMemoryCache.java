@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.bitmap.core;
+package com.lidroid.xutils.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.bitmap.download;
+package com.lidroid.xutils.bitmap;
 
-import java.io.OutputStream;
+/**
+ * Author: wyouflf
+ * Date: 13-8-1
+ * Time: 上午2:00
+ */
+public interface BitmapGlobalConfigChangeCallBack {
+    void onMemoryCacheConfigChanged(BitmapGlobalConfig config);
 
-public interface Downloader {
-    boolean downloadToLocalStreamByUrl(String urlString, OutputStream outputStream);
+    void onDiskCacheConfigChanged(BitmapGlobalConfig config);
 }
