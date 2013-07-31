@@ -20,7 +20,7 @@ package com.lidroid.xutils.http.client.multipart;
  *
  * @since 4.0
  */
-public class MinimalField {
+class MinimalField {
 
     private final String name;
     private final String value;

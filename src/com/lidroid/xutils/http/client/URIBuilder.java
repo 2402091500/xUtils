@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @since 4.2
  */
-public class URIBuilder {
+class URIBuilder {
 
     private String scheme;
     private String encodedSchemeSpecificPart;

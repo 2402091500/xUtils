@@ -34,7 +34,7 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class HttpMultipart {
+class HttpMultipart {
 
     private static ByteArrayBuffer encode(
             final Charset charset, final String string) {

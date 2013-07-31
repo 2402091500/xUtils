@@ -48,7 +48,7 @@ import java.util.*;
  *
  * @since 4.0
  */
-public class URLEncodedUtils {
+class URLEncodedUtils {
 
     public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
     private static final String PARAMETER_SEPARATOR = "&";

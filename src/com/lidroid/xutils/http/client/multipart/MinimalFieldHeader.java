@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * The header of an entity (see RFC 2045).
  */
-public class MinimalFieldHeader implements Iterable<MinimalField> {
+class MinimalFieldHeader implements Iterable<MinimalField> {
 
     private final List<MinimalField> fields;
     private final Map<String, List<MinimalField>> fieldMap;
