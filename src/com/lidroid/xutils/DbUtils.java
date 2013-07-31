@@ -72,40 +72,33 @@ public class DbUtils {
     }
 
     public static DbUtils create(Context context) {
-        DaoConfig config = new DaoConfig();
-        config.setContext(context);
-
+        DaoConfig config = new DaoConfig(context);
         return getInstance(config);
-
     }
 
     public static DbUtils create(Context context, boolean isDebug) {
-        DaoConfig config = new DaoConfig();
-        config.setContext(context);
+        DaoConfig config = new DaoConfig(context);
         config.setDebug(isDebug);
         return getInstance(config);
 
     }
 
     public static DbUtils create(Context context, String dbName) {
-        DaoConfig config = new DaoConfig();
-        config.setContext(context);
+        DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
 
         return getInstance(config);
     }
 
     public static DbUtils create(Context context, String dbName, boolean isDebug) {
-        DaoConfig config = new DaoConfig();
-        config.setContext(context);
+        DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
         config.setDebug(isDebug);
         return getInstance(config);
     }
 
     public static DbUtils create(Context context, String dbName, boolean isDebug, int dbVersion, DbUpgradeListener dbUpgradeListener) {
-        DaoConfig config = new DaoConfig();
-        config.setContext(context);
+        DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
         config.setDebug(isDebug);
         config.setDbVersion(dbVersion);
@@ -345,18 +338,18 @@ public class DbUtils {
     //******************************************** config ******************************************************
 
     public static class DaoConfig {
-        private Context context = null;
+        private Context context;
         private String dbName = "xUtils.db"; // default db name
         private int dbVersion = 1;
         private boolean debug = true;
         private DbUpgradeListener dbUpgradeListener;
 
-        public Context getContext() {
-            return context;
+        public DaoConfig(Context context) {
+            this.context = context;
         }
 
-        public void setContext(Context context) {
-            this.context = context;
+        public Context getContext() {
+            return context;
         }
 
         public String getDbName() {
