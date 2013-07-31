@@ -167,7 +167,7 @@ public class DbUtils {
         execNonQuery(sql);
     }
 
-    public void dropDb() {
+    public void dropDb() throws DbException {
         Cursor cursor = null;
         try {
             cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
@@ -181,7 +181,7 @@ public class DbUtils {
                 }
             }
         } catch (SQLException e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -212,7 +212,7 @@ public class DbUtils {
                     return CursorUtils.getEntity(this, cursor, entityType);
                 }
             } catch (Exception e) {
-                LogUtils.e(e.getMessage(), e);
+                throw new DbException(e);
             } finally {
                 if (cursor != null) {
                     cursor.close();
@@ -278,14 +278,13 @@ public class DbUtils {
             }
             return list;
         } catch (Exception e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
                 cursor = null;
             }
         }
-        return null;
     }
 
     private <T> T findFistBySqlInfo(Class<T> entityType, SqlInfo sqlInfo) throws DbException {
@@ -296,7 +295,7 @@ public class DbUtils {
                 return CursorUtils.getEntity(this, cursor, entityType);
             }
         } catch (Exception e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -306,7 +305,7 @@ public class DbUtils {
         return null;
     }
 
-    public DbModel findDbModel(String sql) {
+    public DbModel findDbModel(String sql) throws DbException {
         debugSql(sql);
         Cursor cursor = db.rawQuery(sql, null);
         try {
@@ -314,7 +313,7 @@ public class DbUtils {
                 return CursorUtils.getDbModel(cursor);
             }
         } catch (Exception e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -324,7 +323,7 @@ public class DbUtils {
         return null;
     }
 
-    public List<DbModel> findAllDbModel(String sql) {
+    public List<DbModel> findAllDbModel(String sql) throws DbException {
         debugSql(sql);
         Cursor cursor = db.rawQuery(sql, null);
         List<DbModel> dbModelList = new ArrayList<DbModel>();
@@ -333,7 +332,7 @@ public class DbUtils {
                 dbModelList.add(CursorUtils.getDbModel(cursor));
             }
         } catch (Exception e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -416,7 +415,11 @@ public class DbUtils {
             if (mDbUpgradeListener != null) {
                 mDbUpgradeListener.onUpgrade(db, oldVersion, newVersion);
             } else {
-                dropDb();
+                try {
+                    dropDb();
+                } catch (DbException e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
             }
         }
     }
@@ -441,7 +444,7 @@ public class DbUtils {
         }
     }
 
-    private boolean tableIsExist(Table table) {
+    private boolean tableIsExist(Table table) throws DbException {
         if (table.isCheckDatabase()) {
             return true;
         }
@@ -460,7 +463,7 @@ public class DbUtils {
             }
 
         } catch (Exception e) {
-            LogUtils.e(e.getMessage(), e);
+            throw new DbException(e);
         } finally {
             if (cursor != null) {
                 cursor.close();
