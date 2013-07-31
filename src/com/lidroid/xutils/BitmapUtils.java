@@ -32,7 +32,7 @@ import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.core.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.core.BitmapDownloadProcess;
 import com.lidroid.xutils.bitmap.download.Downloader;
-import com.lidroid.xutils.bitmap.download.SimpleHttpDownloader;
+import com.lidroid.xutils.bitmap.download.SimpleDownloader;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -592,7 +592,7 @@ public class BitmapUtils {
             }
 
             if (downloader == null) {
-                downloader = new SimpleHttpDownloader();
+                downloader = new SimpleDownloader();
             }
 
             bitmapProcess = new BitmapDownloadProcess(downloader, cachePath, originalDiskCacheSize);
