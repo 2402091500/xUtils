@@ -16,6 +16,7 @@ package com.lidroid.xutils.http;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.callback.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -61,7 +62,7 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
     }
 
     // 执行请求
-    private void execRequestWithRetries(HttpRequestBase request) throws IOException {
+    private void execRequestWithRetries(HttpRequestBase request) throws HttpException {
         if (isResume && targetUrl != null) {
             File downloadFile = new File(targetUrl);
             long fileLen = 0;
@@ -73,7 +74,7 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
         }
 
         boolean retry = true;
-        IOException ioException = null;
+        HttpException httpException = null;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
             try {
@@ -85,23 +86,23 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
                 }
                 return;
             } catch (UnknownHostException e) {
-                publishProgress(UPDATE_FAILURE, e, "unknownHostException：can't resolve host");
+                publishProgress(UPDATE_FAILURE, e, e.getMessage());
                 return;
             } catch (IOException e) {
-                ioException = e;
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(e, ++executionCount, context);
             } catch (NullPointerException e) {
-                ioException = new IOException("NPE in HttpClient " + e.getMessage());
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
             } catch (Exception e) {
-                ioException = new IOException("Exception " + e.getMessage());
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
             }
         }
-        if (ioException != null) {
-            throw ioException;
+        if (httpException != null) {
+            throw httpException;
         } else {
-            throw new IOException("未知网络错误");
+            throw new HttpException("UNKNOWN ERROR");
         }
     }
 
@@ -115,7 +116,7 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
         try {
             publishProgress(UPDATE_START);
             execRequestWithRetries((HttpRequestBase) params[0]);
-        } catch (IOException e) {
+        } catch (HttpException e) {
             publishProgress(UPDATE_FAILURE, e, e.getMessage());
         }
 
@@ -201,7 +202,8 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
             if (status.getStatusCode() == 416 && isResume) {
                 errorMsg += " \n maybe you have download complete.";
             }
-            publishProgress(UPDATE_FAILURE,
+            publishProgress(
+                    UPDATE_FAILURE,
                     new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()),
                     errorMsg);
         }

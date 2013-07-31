@@ -14,8 +14,8 @@
  */
 package com.lidroid.xutils.http;
 
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
-import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -40,44 +40,39 @@ public class SyncHttpHandler {
         this.charset = charset;
     }
 
-    private Object makeRequestWithRetries(HttpRequestBase request) throws IOException {
+    private Object makeRequestWithRetries(HttpRequestBase request) throws HttpException {
 
         boolean retry = true;
-        IOException ioException = null;
+        HttpException httpException = null;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
             try {
                 HttpResponse response = client.execute(request, context);
                 return mStringDownloadHandler.handleEntity(response.getEntity(), null, charset);
             } catch (UnknownHostException e) {
-                ioException = e;
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(e, ++executionCount, context);
             } catch (IOException e) {
-                ioException = e;
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(e, ++executionCount, context);
             } catch (NullPointerException e) {
-                ioException = new IOException("NPE in HttpClient" + e.getMessage());
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
             } catch (Exception e) {
-                ioException = new IOException("Exception" + e.getMessage());
-                retry = retryHandler.retryRequest(ioException, ++executionCount, context);
+                httpException = new HttpException(e);
+                retry = retryHandler.retryRequest(new IOException(e), ++executionCount, context);
             }
         }
-        if (ioException != null) {
-            throw ioException;
+        if (httpException != null) {
+            throw httpException;
         } else {
-            throw new IOException("未知网络错误");
+            throw new HttpException("UNKNOWN ERROR");
         }
 
     }
 
-    public Object sendRequest(HttpRequestBase... params) {
-        try {
-            return makeRequestWithRetries(params[0]);
-        } catch (IOException e) {
-            LogUtils.e(e.getMessage(), e);
-        }
-        return null;
+    public Object sendRequest(HttpRequestBase... params) throws HttpException {
+        return makeRequestWithRetries(params[0]);
     }
 
 }
