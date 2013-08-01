@@ -14,9 +14,15 @@
  */
 package com.lidroid.xutils.http;
 
+import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.client.HttpGetCache;
+import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.ResponseStream;
+import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
+import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -34,44 +40,73 @@ public class SyncHttpHandler {
 
     private String charset;
 
+    private DownloadRedirectHandler downloadRedirectHandler;
+
+    public void setDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
+        this.downloadRedirectHandler = downloadRedirectHandler;
+    }
+
     public SyncHttpHandler(AbstractHttpClient client, HttpContext context, String charset) {
         this.client = client;
         this.context = context;
         this.charset = charset;
     }
 
-    private ResponseStream doSendRequest(HttpRequestBase request) throws HttpException {
+    private String _getRequestUrl; // if not get method, it will be null.
+    private long expiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
+
+    public void setExpiry(long expiry) {
+        this.expiry = expiry;
+    }
+
+    public ResponseStream sendRequest(HttpRequestBase request) throws HttpException {
 
         boolean retry = true;
-        HttpException httpException = null;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
             try {
+                if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
+                    _getRequestUrl = request.getURI().toString();
+                } else {
+                    _getRequestUrl = null;
+                }
+                if (_getRequestUrl != null) {
+                    String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
+                    if (result != null) { // 未过期的返回字符串的get请求直接返回结果
+                        return new ResponseStream(result);
+                    }
+                }
                 HttpResponse response = client.execute(request, context);
-                return new ResponseStream(response, charset);
+                return handleResponse(response);
             } catch (UnknownHostException e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (IOException e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (NullPointerException e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             } catch (Exception e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             }
         }
-        if (httpException != null) {
-            throw httpException;
-        } else {
-            throw new HttpException("UNKNOWN ERROR");
-        }
-
+        return null;
     }
 
-    public ResponseStream sendRequest(HttpRequestBase... params) throws HttpException {
-        return doSendRequest(params[0]);
+    private ResponseStream handleResponse(HttpResponse response) throws HttpException, IOException {
+        if (response != null) return null;
+        StatusLine status = response.getStatusLine();
+        if (status.getStatusCode() < 300) {
+            return new ResponseStream(response, charset, _getRequestUrl, expiry);
+        } else if (status.getStatusCode() == 302) {
+            if (downloadRedirectHandler == null) {
+                downloadRedirectHandler = new DefaultDownloadRedirectHandler();
+            }
+            HttpRequestBase request = downloadRedirectHandler.getDirectRequest(response);
+            if (request != null) {
+                return this.sendRequest(request);
+            }
+        } else {
+            throw new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase());
+        }
+        return null;
     }
 }

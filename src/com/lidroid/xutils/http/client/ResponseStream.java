@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.http.client;
 
+import com.lidroid.xutils.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HTTP;
 
@@ -33,14 +34,25 @@ public class ResponseStream extends InputStream {
 
     private String charset;
 
-    public ResponseStream(HttpResponse baseResponse) throws IOException {
-        this(baseResponse, HTTP.UTF_8);
+    private String url;
+    private long expiry;
+
+    public ResponseStream(HttpResponse baseResponse, String url, long expiry) throws IOException {
+        this(baseResponse, HTTP.UTF_8, url, expiry);
     }
 
-    public ResponseStream(HttpResponse baseResponse, String charset) throws IOException {
+    public ResponseStream(HttpResponse baseResponse, String charset, String url, long expiry) throws IOException {
         this.baseResponse = baseResponse;
         this.baseStream = baseResponse.getEntity().getContent();
         this.charset = charset;
+        this.url = url;
+        this.expiry = expiry;
+    }
+
+    private String _redirectResult;
+
+    public ResponseStream(String result) throws IOException {
+        _redirectResult = result;
     }
 
     public InputStream getBaseStream() {
@@ -48,18 +60,22 @@ public class ResponseStream extends InputStream {
     }
 
     public int getStatusCode() {
+        if (_redirectResult != null) return 200;
         return baseResponse.getStatusLine().getStatusCode();
     }
 
     public Locale getLocale() {
+        if (_redirectResult != null) return Locale.getDefault();
         return baseResponse.getLocale();
     }
 
     public String getReasonPhrase() {
+        if (_redirectResult != null) return "";
         return baseResponse.getStatusLine().getReasonPhrase();
     }
 
     public String readString() throws IOException {
+        if (_redirectResult != null) return _redirectResult;
         if (baseStream == null) return null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(baseStream, charset));
@@ -68,7 +84,9 @@ public class ResponseStream extends InputStream {
             while ((line = reader.readLine()) != null) {
                 buffer.append(line);
             }
-            return buffer.toString();
+            String result = buffer.toString();
+            HttpUtils.sHttpGetCache.put(url, result, expiry);
+            return result;
         } catch (IOException e) {
             throw e;
         } finally {
@@ -84,6 +102,7 @@ public class ResponseStream extends InputStream {
     }
 
     public void readFile(String savePath) throws IOException {
+        if (_redirectResult != null) return;
         if (baseStream == null) return;
         FileOutputStream out = null;
         try {

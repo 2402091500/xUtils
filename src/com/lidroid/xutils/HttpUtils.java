@@ -20,6 +20,7 @@ import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
 import com.lidroid.xutils.http.RetryHandler;
 import com.lidroid.xutils.http.SyncHttpHandler;
+import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.http.client.ResponseStream;
@@ -48,6 +49,12 @@ public class HttpUtils {
 
     private final DefaultHttpClient httpClient = new DefaultHttpClient();
     private final HttpContext httpContext = new BasicHttpContext();
+
+    public final static HttpGetCache sHttpGetCache = new HttpGetCache(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+
+    public DownloadRedirectHandler mDownloadRedirectHandler;
+
+    private long currRequestExpiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
 
     public HttpUtils() {
         httpClient.setHttpRequestRetryHandler(new RetryHandler(DEFAULT_RETRY_TIMES));
@@ -83,6 +90,22 @@ public class HttpUtils {
         if (charSet != null && charSet.trim().length() != 0) {
             this.charset = charSet;
         }
+    }
+
+    public void configHttpGetCacheSize(int httpGetCacheSize) {
+        sHttpGetCache.setCacheSize(httpGetCacheSize);
+    }
+
+    public void configDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
+        mDownloadRedirectHandler = downloadRedirectHandler;
+    }
+
+    public void configHttpGetCacheDefaultExpiry(long defaultExpiry) {
+        sHttpGetCache.setDefaultExpiryTime(defaultExpiry);
+    }
+
+    public void configCurrRequestExpiry(long currRequestExpiry) {
+        this.currRequestExpiry = currRequestExpiry;
     }
 
     public void configCookieStore(CookieStore cookieStore) {
@@ -144,49 +167,33 @@ public class HttpUtils {
 
     public HttpHandler<File> download(String url, String target,
                                       RequestCallBack<File> callback) {
-        return download(url, null, target, false, null, callback);
-    }
-
-    public HttpHandler<File> download(String url, String target,
-                                      DownloadRedirectHandler downloadRedirectHandler, RequestCallBack<File> callback) {
-        return download(url, null, target, false, downloadRedirectHandler, callback);
+        return download(url, null, target, false, callback);
     }
 
     public HttpHandler<File> download(String url, RequestParams params, String target,
                                       RequestCallBack<File> callback) {
-        return download(url, params, target, false, null, callback);
-    }
-
-    public HttpHandler<File> download(String url, RequestParams params, String target,
-                                      DownloadRedirectHandler downloadRedirectHandler, RequestCallBack<File> callback) {
-        return download(url, params, target, false, downloadRedirectHandler, callback);
+        return download(url, params, target, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target, boolean isResume,
                                       RequestCallBack<File> callback) {
-        return download(url, null, target, isResume, null, callback);
-    }
-
-    public HttpHandler<File> download(String url, String target, boolean isResume,
-                                      DownloadRedirectHandler downloadRedirectHandler, RequestCallBack<File> callback) {
-        return download(url, null, target, isResume, downloadRedirectHandler, callback);
+        return download(url, null, target, isResume, callback);
     }
 
     public HttpHandler<File> download(String url, RequestParams params, String target, boolean isResume,
                                       RequestCallBack<File> callback) {
-        return download(url, params, target, isResume, null, callback);
-    }
 
-    public HttpHandler<File> download(String url, RequestParams params, String target, boolean isResume,
-                                      DownloadRedirectHandler downloadRedirectHandler, RequestCallBack<File> callback) {
         HttpRequest request = new HttpRequest(HttpRequest.HttpMethod.GET, url);
+
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, charset, callback);
+
+        handler.setExpiry(currRequestExpiry);
+        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
         request.setRequestParams(params, handler);
-        handler.setDownloadRedirectHandler(downloadRedirectHandler);
+
         handler.executeOnExecutor(executor, request, target, isResume);
         return handler;
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, String contentType, RequestCallBack<T> callBack) {
@@ -196,6 +203,8 @@ public class HttpUtils {
 
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, charset, callBack);
 
+        handler.setExpiry(currRequestExpiry);
+        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
         request.setRequestParams(params, handler);
 
         handler.executeOnExecutor(executor, request);
@@ -206,7 +215,13 @@ public class HttpUtils {
         if (contentType != null) {
             request.addHeader("Content-Type", contentType);
         }
+
+        SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, charset);
+
+        handler.setExpiry(currRequestExpiry);
+        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
         request.setRequestParams(params);
-        return new SyncHttpHandler(httpClient, httpContext, charset).sendRequest(request);
+
+        return handler.sendRequest(request);
     }
 }

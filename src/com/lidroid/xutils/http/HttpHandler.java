@@ -16,13 +16,15 @@ package com.lidroid.xutils.http;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
+import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.client.HttpGetCache;
+import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.callback.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -61,6 +63,13 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
         this.charset = charset;
     }
 
+    private String _getRequestUrl;// if not get method, it will be null.
+    private long expiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
+
+    public void setExpiry(long expiry) {
+        this.expiry = expiry;
+    }
+
     // 执行请求
     private void doSendRequest(HttpRequestBase request) throws HttpException {
         if (isResume && isDownloadingFile) {
@@ -75,35 +84,36 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
         }
 
         boolean retry = true;
-        HttpException httpException = null;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
             try {
+                if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
+                    _getRequestUrl = request.getURI().toString();
+                } else {
+                    _getRequestUrl = null;
+                }
+                if (_getRequestUrl != null) {
+                    String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
+                    if (result != null) { // 未过期的返回字符串的get请求直接返回结果
+                        publishProgress(UPDATE_SUCCESS, result);
+                        return;
+                    }
+                }
                 if (!isCancelled()) {
                     HttpResponse response = client.execute(request, context);
-                    if (!isCancelled()) {
-                        handleResponse(response);
-                    }
+                    handleResponse(response);
                 }
                 return;
             } catch (UnknownHostException e) {
                 publishProgress(UPDATE_FAILURE, e, e.getMessage());
                 return;
             } catch (IOException e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(e, ++retriedTimes, context);
             } catch (NullPointerException e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             } catch (Exception e) {
-                httpException = new HttpException(e);
                 retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
             }
-        }
-        if (httpException != null) {
-            throw httpException;
-        } else {
-            throw new HttpException("UNKNOWN ERROR");
         }
     }
 
@@ -163,6 +173,10 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
     }
 
     private void handleResponse(HttpResponse response) {
+        if (response == null) {
+            publishProgress(UPDATE_FAILURE, new HttpException("UNKNOWN ERROR"), "response is null");
+            return;
+        }
         StatusLine status = response.getStatusLine();
         if (status.getStatusCode() < 300) {
             try {
@@ -174,11 +188,11 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
                         responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
                     } else {
                         responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
+                        HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) responseBody, expiry);
                     }
 
                 }
                 publishProgress(UPDATE_SUCCESS, responseBody);
-
             } catch (IOException e) {
                 publishProgress(UPDATE_FAILURE, e, e.getMessage());
             }
@@ -205,7 +219,7 @@ public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements
             }
             publishProgress(
                     UPDATE_FAILURE,
-                    new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()),
+                    new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase()),
                     errorMsg);
         }
     }
