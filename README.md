@@ -11,16 +11,16 @@
 * ViewUtils模块：android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定。
 
 * HttpUtils模块：
-  ** 支持同步，异步方式的请求，支持大文件上传；
-  ** 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求，
-  ** 支持multipart上传设置subtype如related。
-  ** 下载支持302重定向。
-  ** 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。图片的缓存由BitmapUtils模块提供支持。
+  > 支持同步，异步方式的请求，支持大文件上传；
+  > 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求，
+  > 支持multipart上传设置subtype如related。
+  > 下载支持302重定向。
+  > 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。图片的缓存由BitmapUtils模块提供支持。
 
 * BitmapUtils模块：
-  ** 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
-  ** 内存管理使用lru算法，更好的管理bitmap内存；
-  ** 可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
+  > 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
+  > 内存管理使用lru算法，更好的管理bitmap内存；
+  > 可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
 
 
 ----
