@@ -55,12 +55,12 @@ public class MyActivity extends Activity {
         testDb();
         //DbUtils.create(this).dropDb();
 
-
         bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
 
         testDownload();
         //testUpload();
         //testPost();
+        //testGet();
     }
 
     private void testDownload() {
@@ -118,6 +118,42 @@ public class MyActivity extends Activity {
                     @Override
                     public void onSuccess(String result) {
                         testTextView.setText("upload response:" + result);
+                    }
+
+
+                    @Override
+                    public void onFailure(Throwable error, String msg) {
+                        testTextView.setText(msg);
+                    }
+                });
+    }
+
+    private void testGet() {
+        RequestParams params = new RequestParams();
+        params.addQueryStringParameter("method", "info");
+        params.addQueryStringParameter("access_token",
+                "3.1042851f652496c9362b1cd77d4f849b.2592000.1377530363.3590808424-248414");
+
+        HttpUtils http = new HttpUtils();
+        http.configCurrRequestExpiry(1000 * 10);
+        http.send(HttpRequest.HttpMethod.GET,
+                "https://pcs.baidu.com/rest/2.0/pcs/quota",
+                params,
+                new RequestCallBack<String>() {
+
+                    @Override
+                    public void onStart() {
+                        testTextView.setText("conn...");
+                    }
+
+                    @Override
+                    public void onLoading(long total, long current) {
+                        testTextView.setText(current + "/" + total);
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        testTextView.setText("response:" + result);
                     }
 
 
