@@ -955,7 +955,7 @@ public final class LruDiskCache implements Closeable {
     }
 
     /////////////////////////////////////// utils //////////////////////////////////////////////////////////////////////
-    static String readFully(Reader reader) throws IOException {
+    private static String readFully(Reader reader) throws IOException {
         try {
             StringWriter writer = new StringWriter();
             char[] buffer = new char[1024];
@@ -973,7 +973,7 @@ public final class LruDiskCache implements Closeable {
      * Deletes the contents of {@code dir}. Throws an IOException if any file
      * could not be deleted, or if {@code dir} is not a readable directory.
      */
-    static void deleteContents(File dir) throws IOException {
+    private static void deleteContents(File dir) throws IOException {
         File[] files = dir.listFiles();
         if (files == null) {
             throw new IOException("not a readable directory: " + dir);
@@ -988,7 +988,7 @@ public final class LruDiskCache implements Closeable {
         }
     }
 
-    static void closeQuietly(/*Auto*/Closeable closeable) {
+    private static void closeQuietly(/*Auto*/Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
@@ -1000,7 +1000,7 @@ public final class LruDiskCache implements Closeable {
     }
 
     /////////////////////////////////////// StrictLineReader //////////////////////////////////////////////////////////////////
-    class StrictLineReader implements Closeable {
+    private class StrictLineReader implements Closeable {
         private static final byte CR = (byte) '\r';
         private static final byte LF = (byte) '\n';
 

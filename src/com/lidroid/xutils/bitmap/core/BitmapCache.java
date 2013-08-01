@@ -39,7 +39,7 @@ public class BitmapCache {
     private LruMemoryCache<String, Bitmap> mMemoryCache;
 
     private final Object mDiskCacheLock = new Object();
-    private boolean mDiskCacheNotReady = true;
+    private boolean isDiskCacheReadied = false;
 
     private BitmapGlobalConfig mConfig;
 
@@ -102,7 +102,7 @@ public class BitmapCache {
                     }
                 }
             }
-            mDiskCacheNotReady = false;
+            isDiskCacheReadied = true;
             mDiskCacheLock.notifyAll();
         }
     }
@@ -189,7 +189,7 @@ public class BitmapCache {
     public Bitmap getBitmapFromDiskCache(String key) {
         final String diskKey = DiskCacheKeyGenerator.generate(key);
         synchronized (mDiskCacheLock) {
-            while (mDiskCacheNotReady) {
+            while (!isDiskCacheReadied) {
                 try {
                     mDiskCacheLock.wait();
                 } catch (InterruptedException e) {
@@ -232,7 +232,6 @@ public class BitmapCache {
 
     public void clearDiskCache() {
         synchronized (mDiskCacheLock) {
-            mDiskCacheNotReady = true;
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
@@ -240,9 +239,10 @@ public class BitmapCache {
                     LogUtils.e(e.getMessage(), e);
                 }
                 mDiskLruCache = null;
-                initDiskCache();
+                isDiskCacheReadied = false;
             }
         }
+        initDiskCache();
     }
 
     public void clearMemoryCache() {

@@ -56,98 +56,98 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
     public static BitmapUtils create(Context ctx) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
         }
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSize(memoryCacheSize);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSize(memoryCacheSize);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent, int poolSize) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
-        mGlobalConfig.setPoolSize(poolSize);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
+            mGlobalConfig.setPoolSize(poolSize);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize, int poolSize) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSize(memoryCacheSize);
-        mGlobalConfig.setPoolSize(poolSize);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSize(memoryCacheSize);
+            mGlobalConfig.setPoolSize(poolSize);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent, int diskCacheSize, int poolSize) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
-        mGlobalConfig.setDiskCacheSize(diskCacheSize);
-        mGlobalConfig.setPoolSize(poolSize);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSizePercent(mContext, memoryCachePercent);
+            mGlobalConfig.setDiskCacheSize(diskCacheSize);
+            mGlobalConfig.setPoolSize(poolSize);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize, int diskCacheSize, int poolSize) {
         if (instance == null) {
             instance = new BitmapUtils(ctx.getApplicationContext());
-        }
-        mGlobalConfig.setDiskCachePath(diskCachePath);
-        mGlobalConfig.setMemCacheSize(memoryCacheSize);
-        mGlobalConfig.setDiskCacheSize(diskCacheSize);
-        mGlobalConfig.setPoolSize(poolSize);
+            mGlobalConfig.setDiskCachePath(diskCachePath);
+            mGlobalConfig.setMemCacheSize(memoryCacheSize);
+            mGlobalConfig.setDiskCacheSize(diskCacheSize);
+            mGlobalConfig.setPoolSize(poolSize);
 
-        mGlobalConfig.notifyMemoryCacheConfigChanged();
-        mGlobalConfig.notifyDiskCacheConfigChanged();
+            mGlobalConfig.notifyMemoryCacheConfigChanged();
+            mGlobalConfig.notifyDiskCacheConfigChanged();
+        }
         return instance;
     }
 

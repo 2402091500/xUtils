@@ -35,7 +35,11 @@ public class MyActivity extends Activity {
         setContentView(R.layout.main);
 
         ViewUtils.inject(this);
+
+        bitmapUtils = BitmapUtils.create(this);
     }
+
+    BitmapUtils bitmapUtils;
 
     @ViewInject(id = R.id.textView)
     TextView testTextView;
@@ -52,7 +56,7 @@ public class MyActivity extends Activity {
         //DbUtils.create(this).dropDb();
 
 
-        BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
+        bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
 
         testDownload();
         //testUpload();

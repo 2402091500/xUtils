@@ -28,7 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class BitmapDownloadProcess {
-    private boolean mOriginalDiskCacheNotReady = true;
+    private boolean isOriginalDiskCacheReadied = false;
     private int originalDiskCacheSize;
 
     private LruDiskCache mOriginalDiskCache;//原始图片的路径，不进行任何的压缩操作
@@ -57,7 +57,7 @@ public class BitmapDownloadProcess {
         LruDiskCache.Snapshot snapshot;
         synchronized (mOriginalDiskCacheLock) {
             // Wait for disk cache to initialize
-            while (mOriginalDiskCacheNotReady) {
+            while (!isOriginalDiskCacheReadied) {
                 try {
                     mOriginalDiskCacheLock.wait();
                 } catch (InterruptedException e) {
@@ -82,34 +82,32 @@ public class BitmapDownloadProcess {
                         fileInputStream = (FileInputStream) snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX);
                         fileDescriptor = fileInputStream.getFD();
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
-                } catch (IllegalStateException e) {
-                    LogUtils.e(e.getMessage(), e);
-                } finally {
-                    if (fileInputStream != null) {
-                        try {
-                            fileInputStream.close();
-                        } catch (IOException e) {
-                        }
-                    }
                 }
             }
         }
 
         Bitmap bitmap = null;
         if (fileDescriptor != null) {
-            if (neverCalculate)
-                bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-            else
-                bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapWidth(), config.getBitmapHeight());
+            try {
+                if (neverCalculate) {
+                    bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                } else {
+                    bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapWidth(), config.getBitmapHeight());
+                }
+            } catch (Exception e) {
+                LogUtils.e(e.getMessage(), e);
+            }
         }
+
         if (fileInputStream != null) {
             try {
                 fileInputStream.close();
             } catch (IOException e) {
             }
         }
+
         return bitmap;
     }
 
@@ -125,7 +123,7 @@ public class BitmapDownloadProcess {
                     mOriginalDiskCache = null;
                 }
             }
-            mOriginalDiskCacheNotReady = false;
+            isOriginalDiskCacheReadied = true;
             mOriginalDiskCacheLock.notifyAll();
         }
     }
@@ -139,10 +137,10 @@ public class BitmapDownloadProcess {
                     LogUtils.e(e.getMessage(), e);
                 }
                 mOriginalDiskCache = null;
-                mOriginalDiskCacheNotReady = true;
-                initOriginalDiskCache();
+                isOriginalDiskCacheReadied = false;
             }
         }
+        initOriginalDiskCache();
     }
 
     public void clearOriginalDiskCache(String key) {
