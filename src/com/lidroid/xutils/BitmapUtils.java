@@ -376,6 +376,7 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
     }
 
     public void stopTasks() {
+        mPause = true;
         synchronized (mPauseWorkLock) {
             mPauseWorkLock.notifyAll();
         }
