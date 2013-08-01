@@ -101,6 +101,7 @@ public class HttpUtils {
     }
 
     public void configHttpGetCacheDefaultExpiry(long defaultExpiry) {
+        currRequestExpiry = defaultExpiry;
         sHttpGetCache.setDefaultExpiryTime(defaultExpiry);
     }
 
