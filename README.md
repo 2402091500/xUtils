@@ -1,9 +1,7 @@
 ## xUtils简介
 * xUtils 包含了很多实用的android工具。
-* xUtils 源于Afinal框架，对Afinal进行了适当的精简，和一些适度的扩展和重构。
-* xUtils 具有Afinal的一些特性如：无需考虑bitmap在android中加载的时候oom的问题和快速滑动的时候图片加载位置错位等问题；
-简洁，约定大于配置...
-* xUtils 与 Afinal 目前的主要区别： Afinal 的View注解要继承FinalActivity, 如果要使用FragmentActivity或其他View自定义视图就要对已有代码进行较大的改造，耦合太强，非常不方便，而xUtils使用静态初始化方法。 xUtils对http模块进行了较大的重构，支持大文件上传，支持7种http谓词，multipart支持设置subType，下载支持302重定向...
+* xUtils 源于Afinal框架，对Afinal进行了大量重构重构，尤其是http模块全面兼容各种http请求。
+* xUtils 具有Afinal的一些特性如：无需考虑bitmap在android中加载的时候oom的问题和快速滑动的时候图片加载位置错位等问题；简洁，约定大于配置...
 
 
 ## 目前xUtils主要有四大模块：
@@ -12,9 +10,17 @@
 
 * ViewUtils模块：android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定。
 
-* HttpUtils模块：支持同步，异步方式的请求，支持大文件上传；支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求，支持multipart上传设置subtype如related。返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
+* HttpUtils模块：
+  ** 支持同步，异步方式的请求，支持大文件上传；
+  ** 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求，
+  ** 支持multipart上传设置subtype如related。
+  ** 下载支持302重定向。
+  ** 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。图片的缓存由BitmapUtils模块提供支持。
 
-* BitmapUtils模块：加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；内存管理使用lru算法，更好的管理bitmap内存；可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
+* BitmapUtils模块：
+  ** 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
+  ** 内存管理使用lru算法，更好的管理bitmap内存；
+  ** 可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
 
 
 ----
