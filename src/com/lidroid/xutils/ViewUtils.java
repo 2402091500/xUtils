@@ -16,6 +16,7 @@
 package com.lidroid.xutils;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AbsListView;
@@ -37,6 +38,10 @@ public class ViewUtils {
 
     public static void inject(View view) {
         injectView(view);
+    }
+
+    public static void inject(Fragment fragment) {
+        injectFragment(fragment);
     }
 
     private static void injectActivity(Activity activity) {
@@ -111,6 +116,47 @@ public class ViewUtils {
                     Select select = viewInject.select();
                     if (!TextUtils.isEmpty(select.selected()))
                         setViewSelectListener(view, field, select.selected(), select.noSelected());
+
+                }
+            }
+        }
+    }
+
+    private static void injectFragment(Fragment fragment) {
+        View fragmentView = fragment.getView();
+        if (fragmentView == null) return;
+        Field[] fields = fragment.getClass().getDeclaredFields();
+        if (fields != null && fields.length > 0) {
+            for (Field field : fields) {
+                ViewInject viewInject = field.getAnnotation(ViewInject.class);
+                if (viewInject != null) {
+                    int viewId = viewInject.id();
+                    try {
+                        field.setAccessible(true);
+                        field.set(fragment, fragmentView.findViewById(viewId));
+                    } catch (Exception e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+
+                    String clickMethod = viewInject.click();
+                    if (!TextUtils.isEmpty(clickMethod))
+                        setViewClickListener(fragment, field, clickMethod);
+
+                    String longClickMethod = viewInject.longClick();
+                    if (!TextUtils.isEmpty(longClickMethod))
+                        setViewLongClickListener(fragment, field, longClickMethod);
+
+                    String itemClickMethod = viewInject.itemClick();
+                    if (!TextUtils.isEmpty(itemClickMethod))
+                        setItemClickListener(fragment, field, itemClickMethod);
+
+                    String itemLongClickMethod = viewInject.itemLongClick();
+                    if (!TextUtils.isEmpty(itemLongClickMethod))
+                        setItemLongClickListener(fragment, field, itemLongClickMethod);
+
+                    Select select = viewInject.select();
+                    if (!TextUtils.isEmpty(select.selected()))
+                        setViewSelectListener(fragment, field, select.selected(), select.noSelected());
 
                 }
             }
