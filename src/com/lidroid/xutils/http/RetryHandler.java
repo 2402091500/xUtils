@@ -19,6 +19,7 @@ import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.RequestWrapper;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -74,8 +75,18 @@ public class RetryHandler implements HttpRequestRetryHandler {
 
         if (retry) {
             try {
-                HttpRequestBase currRequest = (HttpRequestBase) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-                retry = currRequest != null && "GET".equals(currRequest.getMethod());
+                Object currRequest = context.getAttribute(ExecutionContext.HTTP_REQUEST);
+                if (currRequest != null) {
+                    if (currRequest instanceof HttpRequestBase) {
+                        HttpRequestBase requestBase = (HttpRequestBase) currRequest;
+                        retry = requestBase != null && "GET".equals(requestBase.getMethod());
+                    } else if (currRequest instanceof RequestWrapper) {
+                        RequestWrapper requestWrapper = (RequestWrapper) currRequest;
+                        retry = requestWrapper != null && "GET".equals(requestWrapper.getMethod());
+                    }
+                } else {
+                    LogUtils.e("retry error, curr request is null");
+                }
             } catch (Exception e) {
                 retry = false;
                 LogUtils.e("retry error", e);
