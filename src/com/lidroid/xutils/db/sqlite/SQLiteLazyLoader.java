@@ -53,6 +53,7 @@ public class SQLiteLazyLoader<T> {
         setForeignEntityType(foreignColumn);
     }
 
+    @SuppressWarnings("unchecked")
     private void setForeignEntityType(Foreign foreignColumn) {
         foreignEntityType = (Class<T>) foreignColumn.getColumnField().getType();
         if (foreignEntityType.equals(SQLiteLazyLoader.class)) {
