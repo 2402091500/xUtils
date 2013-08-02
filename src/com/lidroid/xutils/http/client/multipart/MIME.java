@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 /**
  * @since 4.0
  */
-class MIME {
+public class MIME {
 
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TRANSFER_ENC = "Content-Transfer-Encoding";
