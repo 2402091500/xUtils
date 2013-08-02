@@ -16,7 +16,6 @@
 package com.lidroid.xutils;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AbsListView;
@@ -33,19 +32,24 @@ public class ViewUtils {
     }
 
     public static void inject(Activity activity) {
-        injectActivity(activity);
+        injectObject(activity, activity);
     }
 
     public static void inject(View view) {
-        injectView(view);
+        injectObject(view, view);
     }
 
-    public static void inject(Fragment fragment) {
-        injectFragment(fragment);
+    public static void inject(Object target, Activity activity) {
+        injectObject(target, activity);
     }
 
-    private static void injectActivity(Activity activity) {
-        Field[] fields = activity.getClass().getDeclaredFields();
+    public static void inject(Object target, View view) {
+        injectObject(target, view);
+    }
+
+
+    private static void injectObject(Object target, Activity activity) {
+        Field[] fields = target.getClass().getDeclaredFields();
         if (fields != null && fields.length > 0) {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
@@ -53,38 +57,38 @@ public class ViewUtils {
                     int viewId = viewInject.id();
                     try {
                         field.setAccessible(true);
-                        field.set(activity, activity.findViewById(viewId));
+                        field.set(target, activity.findViewById(viewId));
                     } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
 
                     String clickMethod = viewInject.click();
                     if (!TextUtils.isEmpty(clickMethod))
-                        setViewClickListener(activity, field, clickMethod);
+                        setViewClickListener(target, field, clickMethod);
 
                     String longClickMethod = viewInject.longClick();
                     if (!TextUtils.isEmpty(longClickMethod))
-                        setViewLongClickListener(activity, field, longClickMethod);
+                        setViewLongClickListener(target, field, longClickMethod);
 
                     String itemClickMethod = viewInject.itemClick();
                     if (!TextUtils.isEmpty(itemClickMethod))
-                        setItemClickListener(activity, field, itemClickMethod);
+                        setItemClickListener(target, field, itemClickMethod);
 
                     String itemLongClickMethod = viewInject.itemLongClick();
                     if (!TextUtils.isEmpty(itemLongClickMethod))
-                        setItemLongClickListener(activity, field, itemLongClickMethod);
+                        setItemLongClickListener(target, field, itemLongClickMethod);
 
                     Select select = viewInject.select();
                     if (!TextUtils.isEmpty(select.selected()))
-                        setViewSelectListener(activity, field, select.selected(), select.noSelected());
+                        setViewSelectListener(target, field, select.selected(), select.noSelected());
 
                 }
             }
         }
     }
 
-    private static void injectView(View view) {
-        Field[] fields = view.getClass().getDeclaredFields();
+    private static void injectObject(Object target, View view) {
+        Field[] fields = target.getClass().getDeclaredFields();
         if (fields != null && fields.length > 0) {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
@@ -92,71 +96,30 @@ public class ViewUtils {
                     int viewId = viewInject.id();
                     try {
                         field.setAccessible(true);
-                        field.set(view, view.findViewById(viewId));
+                        field.set(target, view.findViewById(viewId));
                     } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
 
                     String clickMethod = viewInject.click();
                     if (!TextUtils.isEmpty(clickMethod))
-                        setViewClickListener(view, field, clickMethod);
+                        setViewClickListener(target, field, clickMethod);
 
                     String longClickMethod = viewInject.longClick();
                     if (!TextUtils.isEmpty(longClickMethod))
-                        setViewLongClickListener(view, field, longClickMethod);
+                        setViewLongClickListener(target, field, longClickMethod);
 
                     String itemClickMethod = viewInject.itemClick();
                     if (!TextUtils.isEmpty(itemClickMethod))
-                        setItemClickListener(view, field, itemClickMethod);
+                        setItemClickListener(target, field, itemClickMethod);
 
                     String itemLongClickMethod = viewInject.itemLongClick();
                     if (!TextUtils.isEmpty(itemLongClickMethod))
-                        setItemLongClickListener(view, field, itemLongClickMethod);
+                        setItemLongClickListener(target, field, itemLongClickMethod);
 
                     Select select = viewInject.select();
                     if (!TextUtils.isEmpty(select.selected()))
-                        setViewSelectListener(view, field, select.selected(), select.noSelected());
-
-                }
-            }
-        }
-    }
-
-    private static void injectFragment(Fragment fragment) {
-        View fragmentView = fragment.getView();
-        if (fragmentView == null) return;
-        Field[] fields = fragment.getClass().getDeclaredFields();
-        if (fields != null && fields.length > 0) {
-            for (Field field : fields) {
-                ViewInject viewInject = field.getAnnotation(ViewInject.class);
-                if (viewInject != null) {
-                    int viewId = viewInject.id();
-                    try {
-                        field.setAccessible(true);
-                        field.set(fragment, fragmentView.findViewById(viewId));
-                    } catch (Exception e) {
-                        LogUtils.e(e.getMessage(), e);
-                    }
-
-                    String clickMethod = viewInject.click();
-                    if (!TextUtils.isEmpty(clickMethod))
-                        setViewClickListener(fragment, field, clickMethod);
-
-                    String longClickMethod = viewInject.longClick();
-                    if (!TextUtils.isEmpty(longClickMethod))
-                        setViewLongClickListener(fragment, field, longClickMethod);
-
-                    String itemClickMethod = viewInject.itemClick();
-                    if (!TextUtils.isEmpty(itemClickMethod))
-                        setItemClickListener(fragment, field, itemClickMethod);
-
-                    String itemLongClickMethod = viewInject.itemLongClick();
-                    if (!TextUtils.isEmpty(itemLongClickMethod))
-                        setItemLongClickListener(fragment, field, itemLongClickMethod);
-
-                    Select select = viewInject.select();
-                    if (!TextUtils.isEmpty(select.selected()))
-                        setViewSelectListener(fragment, field, select.selected(), select.noSelected());
+                        setViewSelectListener(target, field, select.selected(), select.noSelected());
 
                 }
             }
