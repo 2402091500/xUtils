@@ -52,7 +52,7 @@ public class HttpUtils {
 
     public final static HttpGetCache sHttpGetCache = new HttpGetCache(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
 
-    public DownloadRedirectHandler mDownloadRedirectHandler;
+    public DownloadRedirectHandler downloadRedirectHandler;
 
     private long currRequestExpiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
 
@@ -97,7 +97,7 @@ public class HttpUtils {
     }
 
     public void configDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
-        mDownloadRedirectHandler = downloadRedirectHandler;
+        this.downloadRedirectHandler = downloadRedirectHandler;
     }
 
     public void configHttpGetCacheDefaultExpiry(long defaultExpiry) {
@@ -189,7 +189,7 @@ public class HttpUtils {
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, charset, callback);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
+        handler.setDownloadRedirectHandler(downloadRedirectHandler);
         request.setRequestParams(params, handler);
 
         handler.executeOnExecutor(executor, request, target, isResume);
@@ -205,7 +205,7 @@ public class HttpUtils {
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, charset, callBack);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
+        handler.setDownloadRedirectHandler(downloadRedirectHandler);
         request.setRequestParams(params, handler);
 
         handler.executeOnExecutor(executor, request);
@@ -220,7 +220,7 @@ public class HttpUtils {
         SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, charset);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(mDownloadRedirectHandler);
+        handler.setDownloadRedirectHandler(downloadRedirectHandler);
         request.setRequestParams(params);
 
         return handler.sendRequest(request);
