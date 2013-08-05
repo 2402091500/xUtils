@@ -54,38 +54,20 @@ public class ViewUtils {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
                 if (viewInject != null) {
-                    int viewId = viewInject.id();
-                    try {
-                        field.setAccessible(true);
-                        field.set(target, activity.findViewById(viewId));
-                    } catch (Exception e) {
-                        LogUtils.e(e.getMessage(), e);
+                    if (View.class.isAssignableFrom(field.getType())) {
+                        try {
+                            field.setAccessible(true);
+                            field.set(target, activity.findViewById(viewInject.id()));
+                            setEventListener(target, field, viewInject);
+                        } catch (Exception e) {
+                            LogUtils.e(e.getMessage(), e);
+                        }
                     }
-
-                    String clickMethod = viewInject.click();
-                    if (!TextUtils.isEmpty(clickMethod))
-                        setViewClickListener(target, field, clickMethod);
-
-                    String longClickMethod = viewInject.longClick();
-                    if (!TextUtils.isEmpty(longClickMethod))
-                        setViewLongClickListener(target, field, longClickMethod);
-
-                    String itemClickMethod = viewInject.itemClick();
-                    if (!TextUtils.isEmpty(itemClickMethod))
-                        setItemClickListener(target, field, itemClickMethod);
-
-                    String itemLongClickMethod = viewInject.itemLongClick();
-                    if (!TextUtils.isEmpty(itemLongClickMethod))
-                        setItemLongClickListener(target, field, itemLongClickMethod);
-
-                    Select select = viewInject.select();
-                    if (!TextUtils.isEmpty(select.selected()))
-                        setViewSelectListener(target, field, select.selected(), select.noSelected());
-
                 }
             }
         }
     }
+
 
     private static void injectObject(Object target, View view) {
         Field[] fields = target.getClass().getDeclaredFields();
@@ -93,39 +75,47 @@ public class ViewUtils {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
                 if (viewInject != null) {
-                    int viewId = viewInject.id();
-                    try {
-                        field.setAccessible(true);
-                        field.set(target, view.findViewById(viewId));
-                    } catch (Exception e) {
-                        LogUtils.e(e.getMessage(), e);
+                    if (View.class.isAssignableFrom(field.getType())) {
+                        try {
+                            field.setAccessible(true);
+                            field.set(target, view.findViewById(viewInject.id()));
+                            setEventListener(target, field, viewInject);
+                        } catch (Exception e) {
+                            LogUtils.e(e.getMessage(), e);
+                        }
                     }
-
-                    String clickMethod = viewInject.click();
-                    if (!TextUtils.isEmpty(clickMethod))
-                        setViewClickListener(target, field, clickMethod);
-
-                    String longClickMethod = viewInject.longClick();
-                    if (!TextUtils.isEmpty(longClickMethod))
-                        setViewLongClickListener(target, field, longClickMethod);
-
-                    String itemClickMethod = viewInject.itemClick();
-                    if (!TextUtils.isEmpty(itemClickMethod))
-                        setItemClickListener(target, field, itemClickMethod);
-
-                    String itemLongClickMethod = viewInject.itemLongClick();
-                    if (!TextUtils.isEmpty(itemLongClickMethod))
-                        setItemLongClickListener(target, field, itemLongClickMethod);
-
-                    Select select = viewInject.select();
-                    if (!TextUtils.isEmpty(select.selected()))
-                        setViewSelectListener(target, field, select.selected(), select.noSelected());
-
                 }
             }
         }
     }
 
+
+    private static void setEventListener(Object target, Field field, ViewInject viewInject) {
+        String clickMethod = viewInject.click();
+        if (!TextUtils.isEmpty(clickMethod)) {
+            setViewClickListener(target, field, clickMethod);
+        }
+
+        String longClickMethod = viewInject.longClick();
+        if (!TextUtils.isEmpty(longClickMethod)) {
+            setViewLongClickListener(target, field, longClickMethod);
+        }
+
+        String itemClickMethod = viewInject.itemClick();
+        if (!TextUtils.isEmpty(itemClickMethod)) {
+            setItemClickListener(target, field, itemClickMethod);
+        }
+
+        String itemLongClickMethod = viewInject.itemLongClick();
+        if (!TextUtils.isEmpty(itemLongClickMethod)) {
+            setItemLongClickListener(target, field, itemLongClickMethod);
+        }
+
+        Select select = viewInject.select();
+        if (!TextUtils.isEmpty(select.selected())) {
+            setViewSelectListener(target, field, select.selected(), select.noSelected());
+        }
+    }
 
     private static void setViewClickListener(Object target, Field field, String clickMethod) {
         try {
