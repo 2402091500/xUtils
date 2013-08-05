@@ -31,8 +31,8 @@ public class HttpGetCache {
      */
     private LruMemoryCache<String, String> mMemoryCache;
 
-    public final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
-    public final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
+    private final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
+    private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
     private final static long MIN_EXPIRY_TIME = 500;
 
     /**
@@ -43,13 +43,20 @@ public class HttpGetCache {
 
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
-    private long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
+    private static long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
+
+    /**
+     * HttpGetCache(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+     */
+    public HttpGetCache() {
+        this(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+    }
 
     public HttpGetCache(int cacheSize, long defaultExpiryTime) {
         if (cacheSize > this.cacheSize) {
             this.cacheSize = cacheSize;
         }
-        this.setDefaultExpiryTime(defaultExpiryTime);
+        HttpGetCache.setDefaultExpiryTime(defaultExpiryTime);
 
         mMemoryCache = new LruMemoryCache<String, String>(cacheSize);
         mUrlExpiryMap = new KeyExpiryMap<String, Long>();
@@ -63,10 +70,14 @@ public class HttpGetCache {
         mMemoryCache = new LruMemoryCache<String, String>(cacheSize);
     }
 
-    public void setDefaultExpiryTime(long defaultExpiryTime) {
+    public static void setDefaultExpiryTime(long defaultExpiryTime) {
         if (defaultExpiryTime > MIN_EXPIRY_TIME) {
-            this.defaultExpiryTime = defaultExpiryTime;
+            HttpGetCache.defaultExpiryTime = defaultExpiryTime;
         }
+    }
+
+    public static long getDefaultExpiryTime() {
+        return HttpGetCache.defaultExpiryTime;
     }
 
     public void put(String url, String result) {

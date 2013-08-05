@@ -53,7 +53,7 @@ public class SyncHttpHandler {
     }
 
     private String _getRequestUrl; // if not get method, it will be null.
-    private long expiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
+    private long expiry = HttpGetCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
         this.expiry = expiry;

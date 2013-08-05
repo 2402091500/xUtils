@@ -50,11 +50,11 @@ public class HttpUtils {
     private final DefaultHttpClient httpClient = new DefaultHttpClient();
     private final HttpContext httpContext = new BasicHttpContext();
 
-    public final static HttpGetCache sHttpGetCache = new HttpGetCache(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+    public final static HttpGetCache sHttpGetCache = new HttpGetCache();
 
     public DownloadRedirectHandler downloadRedirectHandler;
 
-    private long currRequestExpiry = HttpGetCache.DEFAULT_EXPIRY_TIME;
+    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
 
     public HttpUtils() {
         httpClient.setHttpRequestRetryHandler(new RetryHandler(DEFAULT_RETRY_TIMES));
@@ -102,7 +102,7 @@ public class HttpUtils {
 
     public void configHttpGetCacheDefaultExpiry(long defaultExpiry) {
         currRequestExpiry = defaultExpiry;
-        sHttpGetCache.setDefaultExpiryTime(defaultExpiry);
+        HttpGetCache.setDefaultExpiryTime(defaultExpiry);
     }
 
     public void configCurrRequestExpiry(long currRequestExpiry) {
