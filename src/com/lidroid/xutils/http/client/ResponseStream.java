@@ -85,7 +85,9 @@ public class ResponseStream extends InputStream {
                 buffer.append(line);
             }
             String result = buffer.toString();
-            HttpUtils.sHttpGetCache.put(url, result, expiry);
+            if (url != null) {
+                HttpUtils.sHttpGetCache.put(url, result, expiry);
+            }
             return result;
         } catch (IOException e) {
             throw e;
