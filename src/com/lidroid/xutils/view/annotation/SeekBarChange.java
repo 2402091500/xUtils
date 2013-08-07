@@ -20,28 +20,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Author: wyouflf
+ * Date: 13-8-7
+ * Time: 下午9:03
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ViewInject {
-    public int id();
+public @interface SeekBarChange {
 
-    public String click() default "";
+    public String progressChanged();
 
-    public String longClick() default "";
+    public String startTrackingTouch() default "";
 
-    public String itemClick() default "";
-
-    public String itemLongClick() default "";
-
-    public String checkedChanged() default "";
-
-    public String preferenceChange() default "";
-
-    public String tabChanged() default "";
-
-    public String scrollChanged() default "";
-
-    public Select select() default @Select(selected = "");
-
-    public SeekBarChange seekBarChange() default @SeekBarChange(progressChanged = "");
+    public String stopTrackingTouch() default "";
 }
