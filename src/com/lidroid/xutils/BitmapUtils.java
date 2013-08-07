@@ -30,6 +30,7 @@ import com.lidroid.xutils.bitmap.BitmapGlobalConfigChangeCallBack;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.Downloader;
+import com.lidroid.xutils.util.CompatibleAsyncTask;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.ref.WeakReference;
@@ -431,7 +432,7 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
         }
     }
 
-    private class BitmapLoadTask extends AsyncTask<Object, Void, Bitmap> {
+    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
         private Object uriData;
         private final WeakReference<ImageView> imageViewReference;
         private final BitmapDisplayConfig displayConfig;

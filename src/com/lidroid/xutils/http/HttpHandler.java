@@ -21,6 +21,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.callback.*;
+import com.lidroid.xutils.util.CompatibleAsyncTask;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -34,7 +35,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 
-public class HttpHandler<T> extends AsyncTask<Object, Object, Object> implements RequestCallBackHandler {
+public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> implements RequestCallBackHandler {
 
     private final AbstractHttpClient client;
     private final HttpContext context;
