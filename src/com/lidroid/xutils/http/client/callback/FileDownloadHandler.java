@@ -73,7 +73,16 @@ public class FileDownloadHandler {
             }
         } finally {
             if (inputStream != null) {
-                inputStream.close();
+                try {
+                    inputStream.close();
+                } catch (Exception e) {
+                }
+            }
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (Exception e) {
+                }
             }
         }
 
