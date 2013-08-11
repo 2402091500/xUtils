@@ -221,8 +221,13 @@ public class MyActivity extends Activity {
         child.parent = parent;
 
         try {
+
             DbUtils db = DbUtils.create(this);
-            db.saveBindingId(child);
+
+            Parent test = db.findFirst(parent);//通过entity的属性查找
+            LogUtils.d("wyouflf :" + test);
+
+            db.saveBindingId(child);//保存对象关联数据库生成的id
 
             List<Child> children = db.findAll(Selector.from(Child.class));
             LogUtils.d("wyouflf size:" + children.size());
@@ -236,14 +241,14 @@ public class MyActivity extends Activity {
                 LogUtils.d("wyouflf parent:" + list.get(list.size() - 1).toString());
             }
 
-            parent.name = "hahaha123";
-            db.update(parent);
+            //parent.name = "hahaha123";
+            //db.update(parent);
 
             Parent entity = db.findById(Parent.class, parent.getId());
             LogUtils.d("wyouflf parent:" + entity.toString());
 
             List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
-            LogUtils.d("wyouflf parent:" + dbModels.size());
+            LogUtils.d("wyouflf:" + dbModels.size());
 
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);

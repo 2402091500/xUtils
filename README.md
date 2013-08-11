@@ -43,7 +43,12 @@ db.save(user); // 使用saveBindingId保存实体时会为实体的id赋值
 
 ...
 // 查找
+Parent entity = db.findById(Parent.class, parent.getId());
+Parent entity = db.findFirst(entity);//通过entity的属性查找
+List<Parent> list = db.findAll(entity);//通过entity的属性查找
+Parent Parent = db.findFirst(Selector.from(Parent.class).where(WhereBuilder.b("name","=","test")));
 List<Parent> list = db.findAll(Selector.from(Parent.class).where(WhereBuilder.b("id","<",54)).orderBy("id").limit(10));
+DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
 ...
 ```

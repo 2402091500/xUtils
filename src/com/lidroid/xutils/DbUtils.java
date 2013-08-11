@@ -214,7 +214,9 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                wb.append(keyValue.getKey(), "=", keyValue.getValue());
+                if (keyValue.getValue() != null) {
+                    wb.append(keyValue.getKey(), "=", keyValue.getValue());
+                }
             }
             selector.where(wb);
         }
@@ -227,7 +229,9 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                wb.append(keyValue.getKey(), "=", keyValue.getValue());
+                if (keyValue.getValue() != null) {
+                    wb.append(keyValue.getKey(), "=", keyValue.getValue());
+                }
             }
             selector.where(wb);
         }
