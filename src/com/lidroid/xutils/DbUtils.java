@@ -188,6 +188,7 @@ public class DbUtils {
         execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
         Id id = Table.get(entityType).getId();
         Selector selector = Selector.from(entityType).where(WhereBuilder.b(id.getColumnName(), "=", idValue));
@@ -233,6 +234,7 @@ public class DbUtils {
         return findAll(selector);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T findFirst(Selector selector) throws DbException {
         Cursor cursor = execQuery(selector.limit(1).toString());
         try {
@@ -250,6 +252,7 @@ public class DbUtils {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Selector selector) throws DbException {
         Cursor cursor = execQuery(selector.toString());
         List<T> result = new ArrayList<T>();
