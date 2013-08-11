@@ -54,7 +54,11 @@ public class MyActivity extends Activity {
     public void testButtonClick(View v) {
 
         testDb();
-        //DbUtils.create(this).dropDb();
+        /*try {
+            DbUtils.create(this).dropDb();
+        } catch (DbException e) {
+            e.printStackTrace();
+        }*/
 
         bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
 
@@ -209,8 +213,6 @@ public class MyActivity extends Activity {
         parent.isVIP = false;
         parent.setAdmin(true);
         parent.setEmail("wyouflf@gmail.com");
-        parent.setTime(new Date());
-        parent.setTime2(new java.sql.Date(new Date().getTime()));
 
         /*Parent parent2 = new Parent();
         parent2.name = "测试2";
@@ -222,10 +224,17 @@ public class MyActivity extends Activity {
 
         try {
 
-            DbUtils db = DbUtils.create(this);
+            DbUtils db = DbUtils.create(this, true);
 
-            Parent test = db.findFirst(parent);//通过entity的属性查找
-            LogUtils.d("wyouflf :" + test);
+            try {
+                Parent test = db.findFirst(parent);//通过entity的属性查找
+                LogUtils.d("wyouflf :" + test);
+            } catch (Exception e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+
+            parent.setTime(new Date());
+            parent.setTime2(new java.sql.Date(new Date().getTime()));
 
             db.saveBindingId(child);//保存对象关联数据库生成的id
 

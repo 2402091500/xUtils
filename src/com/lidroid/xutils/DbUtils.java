@@ -162,12 +162,12 @@ public class DbUtils {
                 while (cursor.moveToNext()) {
                     try {
                         execNonQuery("DROP TABLE " + cursor.getString(0));
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DbException(e);
         } finally {
             if (cursor != null) {
@@ -214,9 +214,7 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                if (keyValue.getValue() != null) {
-                    wb.append(keyValue.getKey(), "=", keyValue.getValue());
-                }
+                wb.append(keyValue.getKey(), "=", keyValue.getValue());
             }
             selector.where(wb);
         }
@@ -229,9 +227,7 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                if (keyValue.getValue() != null) {
-                    wb.append(keyValue.getKey(), "=", keyValue.getValue());
-                }
+                wb.append(keyValue.getKey(), "=", keyValue.getValue());
             }
             selector.where(wb);
         }
@@ -482,28 +478,44 @@ public class DbUtils {
     }
 
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
-    public void execNonQuery(SqlInfo sqlInfo) {
+    public void execNonQuery(SqlInfo sqlInfo) throws DbException {
         debugSql(sqlInfo.getSql());
-        if (sqlInfo.getBindingArgs() != null) {
-            database.execSQL(sqlInfo.getSql(), sqlInfo.getBindingArgsAsArray());
-        } else {
-            database.execSQL(sqlInfo.getSql());
+        try {
+            if (sqlInfo.getBindingArgs() != null) {
+                database.execSQL(sqlInfo.getSql(), sqlInfo.getBindingArgsAsArray());
+            } else {
+                database.execSQL(sqlInfo.getSql());
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
         }
     }
 
-    public void execNonQuery(String sql) {
+    public void execNonQuery(String sql) throws DbException {
         debugSql(sql);
-        database.execSQL(sql);
+        try {
+            database.execSQL(sql);
+        } catch (Exception e) {
+            throw new DbException(e);
+        }
     }
 
-    public Cursor execQuery(SqlInfo sqlInfo) {
+    public Cursor execQuery(SqlInfo sqlInfo) throws DbException {
         debugSql(sqlInfo.getSql());
-        return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindingArgsAsStringArray());
+        try {
+            return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindingArgsAsStringArray());
+        } catch (Exception e) {
+            throw new DbException(e);
+        }
     }
 
-    public Cursor execQuery(String sql) {
+    public Cursor execQuery(String sql) throws DbException {
         debugSql(sql);
-        return database.rawQuery(sql, null);
+        try {
+            return database.rawQuery(sql, null);
+        } catch (Exception e) {
+            throw new DbException(e);
+        }
     }
 
 }

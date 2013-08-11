@@ -182,6 +182,29 @@ public class ColumnUtils {
         return value;
     }
 
+    public static String fieldType2DbType(Class<?> fieldType) {
+        if (fieldType.equals(int.class) ||
+                fieldType.equals(Integer.class) ||
+                fieldType.equals(boolean.class) ||
+                fieldType.equals(Boolean.class) ||
+                fieldType.equals(Date.class) ||
+                fieldType.equals(java.sql.Date.class) ||
+                fieldType.equals(long.class) ||
+                fieldType.equals(Long.class) ||
+                fieldType.equals(byte.class) ||
+                fieldType.equals(Byte.class) ||
+                fieldType.equals(short.class) ||
+                fieldType.equals(Short.class)) {
+            return "INTEGER";
+        } else if (fieldType.equals(float.class) ||
+                fieldType.equals(Float.class) ||
+                fieldType.equals(double.class) ||
+                fieldType.equals(Double.class)) {
+            return "REAL";
+        }
+        return "TEXT";
+    }
+
 
     private static boolean isStartWithIs(String fieldName) {
         return fieldName != null && fieldName.startsWith("is");

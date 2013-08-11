@@ -103,7 +103,7 @@ public class WhereBuilder {
         value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
         if (value == null) {
             sqlSb.append("NULL");
-        } else if (value instanceof String) {
+        } else if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
             sqlSb.append("'" + value + "'");
         } else {
             sqlSb.append(value);

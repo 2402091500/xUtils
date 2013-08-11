@@ -208,8 +208,8 @@ public class SqlInfoBuilder {
 
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
-            sqlBuffer.append("\"").append(column.getColumnName());
-            sqlBuffer.append("\",");
+            sqlBuffer.append("\"").append(column.getColumnName()).append("\"  ");
+            sqlBuffer.append(column.getDbType()).append(",");
         }
 
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
@@ -228,7 +228,7 @@ public class SqlInfoBuilder {
         return kv;
     }
 
-    public static List<KeyValue> entity2KeyValueList(DbUtils db, Object entity) throws DbException {
+    public static List<KeyValue> entity2KeyValueList(DbUtils db, Object entity) {
 
         List<KeyValue> keyValueList = new ArrayList<KeyValue>();
 
