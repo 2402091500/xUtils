@@ -169,8 +169,8 @@ public class ViewUtils {
     private static void setItemClickListener(Object handler, Field field, String methodName) {
         try {
             Object obj = field.get(handler);
-            if (obj instanceof AbsListView) {
-                ((AbsListView) obj).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(methodName));
+            if (obj instanceof AdapterView) {
+                ((AdapterView) obj).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
@@ -180,8 +180,8 @@ public class ViewUtils {
     private static void setItemLongClickListener(Object handler, Field field, String methodName) {
         try {
             Object obj = field.get(handler);
-            if (obj instanceof AbsListView) {
-                ((AbsListView) obj).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(methodName));
+            if (obj instanceof AdapterView) {
+                ((AdapterView) obj).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
@@ -246,8 +246,8 @@ public class ViewUtils {
     private static void setViewSelectListener(Object handler, Field field, String select, String noSelect) {
         try {
             Object obj = field.get(handler);
-            if (obj instanceof View) {
-                ((AbsListView) obj).setOnItemSelectedListener(new ViewCommonEventListener(handler).selected(select).noSelected(noSelect));
+            if (obj instanceof AdapterView) {
+                ((AdapterView) obj).setOnItemSelectedListener(new ViewCommonEventListener(handler).selected(select).noSelected(noSelect));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
