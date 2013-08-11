@@ -44,7 +44,7 @@ public class Column {
         Object value = null;
         if (valueStr != null) {
             Class columnType = columnField.getType();
-            value = ColumnUtils.valueStr2SimpleColumnValue(columnType, valueStr);
+            value = ColumnUtils.valueStr2FieldValue(columnType, valueStr);
         }
 
         if (setMethod != null) {
@@ -82,7 +82,7 @@ public class Column {
                 }
             }
         }
-        return ColumnUtils.convertIfNeeded(resultObj);
+        return ColumnUtils.convert2DbColumnValueIfNeeded(resultObj);
     }
 
     public String getColumnName() {

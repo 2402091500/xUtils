@@ -23,46 +23,46 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SqlBuilder {
+public class SqlInfoBuilder {
 
-    private SqlBuilder() {
+    private SqlInfoBuilder() {
     }
 
     //*********************************************** insert sql ***********************************************
 
     public static SqlInfo buildInsertSqlInfo(DbUtils db, Object entity) throws DbException {
 
-        List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
+        SqlInfo result = null;
 
-        StringBuffer sqlSb = null;
-        SqlInfo sqlInfo = null;
+        List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
+        StringBuffer sqlBuffer = null;
         int size = keyValueList.size();
         if (keyValueList != null && size > 0) {
 
-            sqlInfo = new SqlInfo();
-            sqlSb = new StringBuffer();
+            result = new SqlInfo();
+            sqlBuffer = new StringBuffer();
 
-            sqlSb.append("INSERT INTO ");
-            sqlSb.append(Table.get(entity.getClass()).getTableName());
-            sqlSb.append(" (");
+            sqlBuffer.append("INSERT INTO ");
+            sqlBuffer.append(Table.get(entity.getClass()).getTableName());
+            sqlBuffer.append(" (");
             for (KeyValue kv : keyValueList) {
-                sqlSb.append(kv.getKey()).append(",");
-                sqlInfo.addValue(kv.getValue());
+                sqlBuffer.append(kv.getKey()).append(",");
+                result.addValue(kv.getValue());
             }
-            sqlSb.deleteCharAt(sqlSb.length() - 1);
-            sqlSb.append(") VALUES ( ");
+            sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+            sqlBuffer.append(") VALUES ( ");
 
             int length = keyValueList.size();
             for (int i = 0; i < length; i++) {
-                sqlSb.append("?,");
+                sqlBuffer.append("?,");
             }
-            sqlSb.deleteCharAt(sqlSb.length() - 1);
-            sqlSb.append(")");
+            sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+            sqlBuffer.append(")");
 
-            sqlInfo.setSql(sqlSb.toString());
+            result.setSql(sqlBuffer.toString());
         }
 
-        return sqlInfo;
+        return result;
     }
 
     //*********************************************** delete sql ***********************************************
@@ -72,51 +72,49 @@ public class SqlBuilder {
     }
 
     public static SqlInfo buildDeleteSqlInfo(Object entity) throws DbException {
-        Table table = Table.get(entity.getClass());
+        SqlInfo result = new SqlInfo();
 
+        Table table = Table.get(entity.getClass());
         Id id = table.getId();
         Object idValue = id.getColumnValue(entity);
 
         if (idValue == null) {
             throw new DbException(entity.getClass() + " id value is null");
         }
-        StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
-        sqlSb.append(" WHERE ").append(id.getColumnName()).append("=?");
+        StringBuilder sb = new StringBuilder(buildDeleteSqlByTableName(table.getTableName()));
+        sb.append(" WHERE ").append(WhereBuilder.b(id.getColumnName(), "=", idValue));
 
-        SqlInfo sqlInfo = new SqlInfo();
-        sqlInfo.setSql(sqlSb.toString());
-        sqlInfo.addValue(idValue);
+        result.setSql(sb.toString());
 
-        return sqlInfo;
+        return result;
     }
 
     public static SqlInfo buildDeleteSqlInfo(Class<?> entityType, Object idValue) throws DbException {
+        SqlInfo result = new SqlInfo();
+
         Table table = Table.get(entityType);
         Id id = table.getId();
 
         if (null == idValue) {
             throw new DbException("idValue is null");
         }
+        StringBuilder sb = new StringBuilder(buildDeleteSqlByTableName(table.getTableName()));
+        sb.append(" WHERE ").append(WhereBuilder.b(id.getColumnName(), "=", idValue));
 
-        StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
-        sqlSb.append(" WHERE ").append(id.getColumnName()).append("=?");
+        result.setSql(sb.toString());
 
-        SqlInfo sqlInfo = new SqlInfo();
-        sqlInfo.setSql(sqlSb.toString());
-        sqlInfo.addValue(idValue);
-
-        return sqlInfo;
+        return result;
     }
 
     public static SqlInfo buildDeleteSqlInfo(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
         Table table = Table.get(entityType);
-        StringBuffer sqlSb = new StringBuffer(buildDeleteSqlByTableName(table.getTableName()));
+        StringBuilder sb = new StringBuilder(buildDeleteSqlByTableName(table.getTableName()));
 
         if (whereBuilder != null) {
-            sqlSb.append(" WHERE ").append(whereBuilder.toString());
+            sb.append(" WHERE ").append(whereBuilder.toString());
         }
 
-        return new SqlInfo(sqlSb.toString());
+        return new SqlInfo(sb.toString());
     }
 
     //*********************************************** update sql ***********************************************
@@ -124,7 +122,8 @@ public class SqlBuilder {
     public static SqlInfo buildUpdateSqlInfo(Object entity) throws DbException {
 
         Table table = Table.get(entity.getClass());
-        Object idValue = table.getId().getColumnValue(entity);
+        Id id = table.getId();
+        Object idValue = id.getColumnValue(entity);
 
         if (null == idValue) {//主键值不能为null，否则不能更新
             throw new DbException("this entity[" + entity.getClass() + "]'s id value is null");
@@ -141,19 +140,19 @@ public class SqlBuilder {
 
         if (keyValueList == null || keyValueList.size() == 0) return null;
 
-        SqlInfo sqlInfo = new SqlInfo();
-        StringBuffer sqlSb = new StringBuffer("UPDATE ");
-        sqlSb.append(table.getTableName());
-        sqlSb.append(" SET ");
+        SqlInfo result = new SqlInfo();
+        StringBuffer sqlBuffer = new StringBuffer("UPDATE ");
+        sqlBuffer.append(table.getTableName());
+        sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            sqlSb.append(kv.getKey()).append("=?,");
-            sqlInfo.addValue(kv.getValue());
+            sqlBuffer.append(kv.getKey()).append("=?,");
+            result.addValue(kv.getValue());
         }
-        sqlSb.deleteCharAt(sqlSb.length() - 1);
-        sqlSb.append(" WHERE ").append(table.getId().getColumnName()).append("=?");
-        sqlInfo.addValue(idValue);
-        sqlInfo.setSql(sqlSb.toString());
-        return sqlInfo;
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(" WHERE ").append(WhereBuilder.b(id.getColumnName(), "=", idValue));
+
+        result.setSql(sqlBuffer.toString());
+        return result;
     }
 
     public static SqlInfo buildUpdateSqlInfo(Object entity, WhereBuilder whereBuilder) throws DbException {
@@ -173,57 +172,22 @@ public class SqlBuilder {
             throw new DbException("this entity[" + entity.getClass() + "] has no column");
         }
 
-        SqlInfo sqlInfo = new SqlInfo();
-        StringBuffer sqlSb = new StringBuffer("UPDATE ");
-        sqlSb.append(table.getTableName());
-        sqlSb.append(" SET ");
+        SqlInfo result = new SqlInfo();
+        StringBuffer sqlBuffer = new StringBuffer("UPDATE ");
+        sqlBuffer.append(table.getTableName());
+        sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            sqlSb.append(kv.getKey()).append("=?,");
-            sqlInfo.addValue(kv.getValue());
+            sqlBuffer.append(kv.getKey()).append("=?,");
+            result.addValue(kv.getValue());
         }
-        sqlSb.deleteCharAt(sqlSb.length() - 1);
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         if (whereBuilder != null) {
-            sqlSb.append(" WHERE ").append(whereBuilder.toString());
-        }
-        sqlInfo.setSql(sqlSb.toString());
-        return sqlInfo;
-    }
-
-    //*********************************************** select sql ***********************************************
-
-    private static String buildSelectSqlByTableName(String tableName) {
-        return new StringBuffer("SELECT * FROM ").append(tableName).toString();
-    }
-
-    public static SqlInfo buildSelectSqlInfo(Class<?> entityType, Object idValue) throws DbException {
-        Table table = Table.get(entityType);
-
-        StringBuffer sqlSb = new StringBuffer(buildSelectSqlByTableName(table.getTableName()));
-        sqlSb.append(" WHERE ").append(table.getId().getColumnName()).append("=?");
-
-        SqlInfo sqlInfo = new SqlInfo();
-        sqlInfo.setSql(sqlSb.toString());
-        sqlInfo.addValue(idValue);
-
-        return sqlInfo;
-    }
-
-    public static SqlInfo buildSelectSqlInfo(Class<?> clazz) throws DbException {
-        return new SqlInfo(buildSelectSqlByTableName(Table.get(clazz).getTableName()));
-    }
-
-    public static SqlInfo buildSelectSqlInfo(Class<?> clazz, WhereBuilder whereBuilder) throws DbException {
-        Table table = Table.get(clazz);
-
-        StringBuffer sqlSb = new StringBuffer(buildSelectSqlByTableName(table.getTableName()));
-
-        if (whereBuilder != null) {
-            sqlSb.append(" WHERE ").append(whereBuilder.toString());
+            sqlBuffer.append(" WHERE ").append(whereBuilder.toString());
         }
 
-        return new SqlInfo(sqlSb.toString());
+        result.setSql(sqlBuffer.toString());
+        return result;
     }
-
 
     //*********************************************** others ***********************************************
 
@@ -231,26 +195,26 @@ public class SqlBuilder {
         Table table = Table.get(entityType);
 
         Id id = table.getId();
-        StringBuffer sqlSb = new StringBuffer();
-        sqlSb.append("CREATE TABLE IF NOT EXISTS ");
-        sqlSb.append(table.getTableName());
-        sqlSb.append(" ( ");
+        StringBuffer sqlBuffer = new StringBuffer();
+        sqlBuffer.append("CREATE TABLE IF NOT EXISTS ");
+        sqlBuffer.append(table.getTableName());
+        sqlBuffer.append(" ( ");
 
         if (id.isAutoIncreaseType()) {
-            sqlSb.append("\"").append(id.getColumnName()).append("\"  ").append("INTEGER PRIMARY KEY AUTOINCREMENT,");
+            sqlBuffer.append("\"").append(id.getColumnName()).append("\"  ").append("INTEGER PRIMARY KEY AUTOINCREMENT,");
         } else {
-            sqlSb.append("\"").append(id.getColumnName()).append("\"  ").append("TEXT PRIMARY KEY,");
+            sqlBuffer.append("\"").append(id.getColumnName()).append("\"  ").append("TEXT PRIMARY KEY,");
         }
 
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
-            sqlSb.append("\"").append(column.getColumnName());
-            sqlSb.append("\",");
+            sqlBuffer.append("\"").append(column.getColumnName());
+            sqlBuffer.append("\",");
         }
 
-        sqlSb.deleteCharAt(sqlSb.length() - 1);
-        sqlSb.append(" )");
-        return new SqlInfo(sqlSb.toString());
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(" )");
+        return new SqlInfo(sqlBuffer.toString());
     }
 
     private static KeyValue column2KeyValue(Object entity, Column column) {

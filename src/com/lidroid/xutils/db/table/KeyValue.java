@@ -21,7 +21,7 @@ public class KeyValue {
 
     public KeyValue(String key, Object value) {
         this.key = key;
-        this.value = ColumnUtils.convertIfNeeded(value);
+        this.value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
     }
 
     public String getKey() {

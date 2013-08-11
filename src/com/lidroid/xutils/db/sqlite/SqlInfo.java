@@ -71,7 +71,7 @@ public class SqlInfo {
             bindingArgs = new LinkedList<Object>();
         }
 
-        bindingArgs.add(ColumnUtils.convertIfNeeded(value));
+        bindingArgs.add(ColumnUtils.convert2DbColumnValueIfNeeded(value));
     }
 
 }

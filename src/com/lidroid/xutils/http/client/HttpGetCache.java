@@ -15,8 +15,8 @@
 
 package com.lidroid.xutils.http.client;
 
-import com.lidroid.xutils.util.KeyExpiryMap;
-import com.lidroid.xutils.util.LruMemoryCache;
+import com.lidroid.xutils.util.core.KeyExpiryMap;
+import com.lidroid.xutils.util.core.LruMemoryCache;
 
 /**
  * Author: wyouflf

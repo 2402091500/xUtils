@@ -26,7 +26,7 @@ import java.util.List;
 public class Foreign extends Column {
 
     /**
-     * if this instance create by CursorUtils or SqlBuilder.entity2KeyValueList, db will not be null.
+     * if this instance create by CursorUtils or SqlInfoBuilder.entity2KeyValueList, db will not be null.
      */
     public DbUtils db;
 
@@ -49,7 +49,7 @@ public class Foreign extends Column {
         if (valueStr != null) {
             Class columnType = columnField.getType();
             if (ColumnUtils.isSimpleColumnType(columnField)) {
-                value = ColumnUtils.valueStr2SimpleColumnValue(columnType, valueStr);
+                value = ColumnUtils.valueStr2FieldValue(columnType, valueStr);
             } else if (columnType.equals(SQLiteLazyLoader.class)) {
                 value = new SQLiteLazyLoader(this, valueStr);
             } else if (columnType.equals(List.class)) {
@@ -151,6 +151,6 @@ public class Foreign extends Column {
             }
         }
 
-        return ColumnUtils.convertIfNeeded(resultObj);
+        return ColumnUtils.convert2DbColumnValueIfNeeded(resultObj);
     }
 }

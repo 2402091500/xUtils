@@ -15,7 +15,7 @@
 
 package com.lidroid.xutils.db.sqlite;
 
-import com.lidroid.xutils.db.table.KeyValue;
+import com.lidroid.xutils.db.table.ColumnUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +29,56 @@ public class WhereBuilder {
 
     private List<String> whereItems;
 
-    public WhereBuilder() {
+    private WhereBuilder() {
         this.whereItems = new ArrayList<String>();
     }
 
-    public WhereBuilder append(KeyValue keyValue, String op) {
-        StringBuffer sqlSb = new StringBuffer(keyValue.getKey()).append(" " + op + " ");
-        Object value = keyValue.getValue();
-        if (value == null) {
-            sqlSb.append("NULL");
-        } else if (value instanceof String) {
-            sqlSb.append("'" + value + "'");
-        } else {
-            sqlSb.append(value);
-        }
-        whereItems.add(sqlSb.toString());
+    /**
+     * create new instance
+     *
+     * @return
+     */
+    public static WhereBuilder b() {
+        return new WhereBuilder();
+    }
+
+    /**
+     * create new instance
+     *
+     * @param columnName
+     * @param op         operator: "=","<","LIKE"...
+     * @param value
+     * @return
+     */
+    public static WhereBuilder b(String columnName, String op, Object value) {
+        WhereBuilder result = new WhereBuilder();
+        result.appendCondition(null, columnName, op, value);
+        return result;
+    }
+
+    /**
+     * add AND condition
+     *
+     * @param columnName
+     * @param op         operator: "=","<","LIKE"...
+     * @param value
+     * @return
+     */
+    public WhereBuilder append(String columnName, String op, Object value) {
+        appendCondition(whereItems.size() == 0 ? null : "AND", columnName, op, value);
+        return this;
+    }
+
+    /**
+     * add OR condition
+     *
+     * @param columnName
+     * @param op         operator: "=","<","LIKE"...
+     * @param value
+     * @return
+     */
+    public WhereBuilder appendOR(String columnName, String op, Object value) {
+        appendCondition(whereItems.size() == 0 ? null : "OR", columnName, op, value);
         return this;
     }
 
@@ -52,15 +87,27 @@ public class WhereBuilder {
         if (whereItems == null || whereItems.size() < 1) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
-        boolean first = true;
+        StringBuilder sb = new StringBuilder();
         for (String item : whereItems) {
-            if (!first) {
-                sb.append(" AND ");
-            }
             sb.append(item);
-            first = false;
         }
         return sb.toString();
+    }
+
+    private void appendCondition(String conj, String columnName, String op, Object value) {
+        StringBuilder sqlSb = new StringBuilder();
+        if (conj != null && conj.length() > 0) {
+            sqlSb.append(" " + conj + " ");
+        }
+        sqlSb.append(columnName).append(" " + op + " ");
+        value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
+        if (value == null) {
+            sqlSb.append("NULL");
+        } else if (value instanceof String) {
+            sqlSb.append("'" + value + "'");
+        } else {
+            sqlSb.append(value);
+        }
+        whereItems.add(sqlSb.toString());
     }
 }

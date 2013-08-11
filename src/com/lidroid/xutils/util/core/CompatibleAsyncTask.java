@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.util;
+package com.lidroid.xutils.util.core;
 
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
+import com.lidroid.xutils.util.LogUtils;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.*;
@@ -248,7 +249,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
          */
         RUNNING,
         /**
-         * Indicates that {@link com.lidroid.xutils.util.CompatibleAsyncTask#onPostExecute} has finished.
+         * Indicates that {@link CompatibleAsyncTask#onPostExecute} has finished.
          */
         FINISHED,
     }
@@ -508,7 +509,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link com.lidroid.xutils.util.CompatibleAsyncTask.Status#RUNNING} or {@link com.lidroid.xutils.util.CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
@@ -543,11 +544,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link com.lidroid.xutils.util.CompatibleAsyncTask.Status#RUNNING} or {@link com.lidroid.xutils.util.CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
      * @see #execute(Object[])
      */
     public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                       Params... params) {
+                                                                                 Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:

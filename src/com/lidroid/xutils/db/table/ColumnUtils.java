@@ -131,30 +131,30 @@ public class ColumnUtils {
                 columnType.equals(Character.class);
     }
 
-    public static Object valueStr2SimpleColumnValue(Class columnType, String valueStr) {
+    public static Object valueStr2FieldValue(Class columnFieldType, String valueStr) {
         Object value = null;
-        if (isSimpleColumnType(columnType) && valueStr != null) {
-            if (columnType.equals(String.class) || columnType.equals(CharSequence.class)) {
+        if (isSimpleColumnType(columnFieldType) && valueStr != null) {
+            if (columnFieldType.equals(String.class) || columnFieldType.equals(CharSequence.class)) {
                 value = valueStr;
-            } else if (columnType.equals(int.class) || columnType.equals(Integer.class)) {
+            } else if (columnFieldType.equals(int.class) || columnFieldType.equals(Integer.class)) {
                 value = Integer.valueOf(valueStr);
-            } else if (columnType.equals(long.class) || columnType.equals(Long.class)) {
+            } else if (columnFieldType.equals(long.class) || columnFieldType.equals(Long.class)) {
                 value = Long.valueOf(valueStr);
-            } else if (columnType.equals(java.sql.Date.class)) {
+            } else if (columnFieldType.equals(java.sql.Date.class)) {
                 value = new java.sql.Date(Long.valueOf(valueStr));
-            } else if (columnType.equals(Date.class)) {
+            } else if (columnFieldType.equals(Date.class)) {
                 value = new Date(Long.valueOf(valueStr));
-            } else if (columnType.equals(boolean.class) || columnType.equals(Boolean.class)) {
+            } else if (columnFieldType.equals(boolean.class) || columnFieldType.equals(Boolean.class)) {
                 value = ColumnUtils.convert2Boolean(valueStr);
-            } else if (columnType.equals(float.class) || columnType.equals(Float.class)) {
+            } else if (columnFieldType.equals(float.class) || columnFieldType.equals(Float.class)) {
                 value = Float.valueOf(valueStr);
-            } else if (columnType.equals(double.class) || columnType.equals(Double.class)) {
+            } else if (columnFieldType.equals(double.class) || columnFieldType.equals(Double.class)) {
                 value = Double.valueOf(valueStr);
-            } else if (columnType.equals(byte.class) || columnType.equals(Byte.class)) {
+            } else if (columnFieldType.equals(byte.class) || columnFieldType.equals(Byte.class)) {
                 value = Byte.valueOf(valueStr);
-            } else if (columnType.equals(short.class) || columnType.equals(Short.class)) {
+            } else if (columnFieldType.equals(short.class) || columnFieldType.equals(Short.class)) {
                 value = Short.valueOf(valueStr);
-            } else if (columnType.equals(char.class) || columnType.equals(Character.class)) {
+            } else if (columnFieldType.equals(char.class) || columnFieldType.equals(Character.class)) {
                 value = valueStr.charAt(0);
             }
         }
@@ -169,7 +169,7 @@ public class ColumnUtils {
         return false;
     }
 
-    public static Object convertIfNeeded(final Object value) {
+    public static Object convert2DbColumnValueIfNeeded(final Object value) {
         if (value != null) {
             if (value instanceof Boolean) {
                 return ((Boolean) value) ? 1 : 0;

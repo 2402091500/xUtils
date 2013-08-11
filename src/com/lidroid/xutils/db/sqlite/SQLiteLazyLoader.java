@@ -15,7 +15,10 @@
 
 package com.lidroid.xutils.db.sqlite;
 
-import com.lidroid.xutils.db.table.*;
+import com.lidroid.xutils.db.table.Column;
+import com.lidroid.xutils.db.table.ColumnUtils;
+import com.lidroid.xutils.db.table.Foreign;
+import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -67,7 +70,7 @@ public class SQLiteLazyLoader<T> {
         List<T> entities = null;
         if (foreignColumn != null && foreignColumn.db != null) {
             Object columnValue = this.getColumnValue();
-            entities = foreignColumn.db.findAll(foreignEntityType, new WhereBuilder().append(new KeyValue(foreignColumnName, columnValue), "="));
+            entities = foreignColumn.db.findAll(Selector.from(foreignEntityType).where(WhereBuilder.b(foreignColumnName, "=", columnValue)));
         }
         return entities;
     }
@@ -76,7 +79,7 @@ public class SQLiteLazyLoader<T> {
         T entity = null;
         if (foreignColumn != null && foreignColumn.db != null) {
             Object columnValue = this.getColumnValue();
-            entity = foreignColumn.db.findFirst(foreignEntityType, new WhereBuilder().append(new KeyValue(foreignColumnName, columnValue), "="));
+            entity = foreignColumn.db.findFirst(Selector.from(foreignEntityType).where(WhereBuilder.b(foreignColumnName, "=", columnValue)));
         }
         return entity;
     }
@@ -84,7 +87,7 @@ public class SQLiteLazyLoader<T> {
     public Object getColumnValue() {
         if (foreignColumn != null) {
             try {
-                return ColumnUtils.valueStr2SimpleColumnValue(foreignEntityType.getDeclaredField(foreignColumnName).getType(), valueStr);
+                return ColumnUtils.valueStr2FieldValue(foreignEntityType.getDeclaredField(foreignColumnName).getType(), valueStr);
             } catch (NoSuchFieldException e) {
                 LogUtils.d(e.getMessage(), e);
             }

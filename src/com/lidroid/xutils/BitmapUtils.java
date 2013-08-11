@@ -30,8 +30,8 @@ import com.lidroid.xutils.bitmap.BitmapGlobalConfigChangeCallBack;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.Downloader;
-import com.lidroid.xutils.util.CompatibleAsyncTask;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

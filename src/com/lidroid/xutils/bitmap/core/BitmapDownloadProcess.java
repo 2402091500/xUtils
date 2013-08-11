@@ -20,7 +20,7 @@ import android.graphics.BitmapFactory;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.LruDiskCache;
+import com.lidroid.xutils.util.core.LruDiskCache;
 
 import java.io.File;
 import java.io.FileDescriptor;

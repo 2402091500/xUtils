@@ -21,14 +21,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.lidroid.xutils.db.sqlite.CursorUtils;
-import com.lidroid.xutils.db.sqlite.SqlBuilder;
-import com.lidroid.xutils.db.sqlite.SqlInfo;
-import com.lidroid.xutils.db.sqlite.WhereBuilder;
-import com.lidroid.xutils.db.table.DbModel;
-import com.lidroid.xutils.db.table.KeyValue;
-import com.lidroid.xutils.db.table.Table;
-import com.lidroid.xutils.db.table.TableUtils;
+import com.lidroid.xutils.db.sqlite.*;
+import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -45,7 +39,7 @@ public class DbUtils {
      */
     private static HashMap<String, DbUtils> daoMap = new HashMap<String, DbUtils>();
 
-    private SQLiteDatabase db;
+    private SQLiteDatabase database;
     private DaoConfig config;
 
     private DbUtils(DaoConfig config) {
@@ -57,7 +51,7 @@ public class DbUtils {
             throw new RuntimeException("android context is null");
         }
 
-        this.db = new SQLiteDbHelper(config.getContext().getApplicationContext(), config.getDbName(), config.getDbVersion(), config.getDbUpgradeListener()).getWritableDatabase();
+        this.database = new SQLiteDbHelper(config.getContext().getApplicationContext(), config.getDbName(), config.getDbVersion(), config.getDbUpgradeListener()).getWritableDatabase();
         this.config = config;
     }
 
@@ -123,17 +117,17 @@ public class DbUtils {
 
     public void save(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlBuilder.buildInsertSqlInfo(this, entity));
+        execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
     }
 
     public boolean saveBindingId(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        List<KeyValue> entityKvList = SqlBuilder.entity2KeyValueList(this, entity);
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null && entityKvList.size() > 0) {
             Table table = Table.get(entity.getClass());
             ContentValues cv = new ContentValues();
             DbUtils.fillContentValues(cv, entityKvList);
-            Long id = db.insert(table.getTableName(), null, cv);
+            Long id = database.insert(table.getTableName(), null, cv);
             if (id == -1) {
                 return false;
             }
@@ -146,28 +140,28 @@ public class DbUtils {
 
     public void delete(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlBuilder.buildDeleteSqlInfo(entity));
+        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
     }
 
     public void deleteById(Class<?> entityType, Object idValue) throws DbException {
         createTableIfNotExist(entityType);
-        execNonQuery(SqlBuilder.buildDeleteSqlInfo(entityType, idValue));
+        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, idValue));
     }
 
     public void delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
         createTableIfNotExist(entityType);
-        SqlInfo sql = SqlBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
+        SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
         execNonQuery(sql);
     }
 
     public void dropDb() throws DbException {
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
+            cursor = execQuery("SELECT name FROM sqlite_master WHERE type ='table'");
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     try {
-                        db.execSQL("DROP TABLE " + cursor.getString(0));
+                        execNonQuery("DROP TABLE " + cursor.getString(0));
                     } catch (SQLException e) {
                         LogUtils.e(e.getMessage(), e);
                     }
@@ -186,106 +180,21 @@ public class DbUtils {
 
     public void update(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlBuilder.buildUpdateSqlInfo(entity));
+        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity));
     }
 
     public void update(Object entity, WhereBuilder whereBuilder) throws DbException {
         createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlBuilder.buildUpdateSqlInfo(entity, whereBuilder));
+        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
     }
-
 
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
-        createTableIfNotExist(entityType);
-        SqlInfo sqlInfo = SqlBuilder.buildSelectSqlInfo(entityType, idValue);
-        if (sqlInfo != null) {
-            Cursor cursor = execQuery(sqlInfo);
-            try {
-                if (cursor.moveToNext()) {
-                    return CursorUtils.getEntity(this, cursor, entityType);
-                }
-            } catch (Exception e) {
-                throw new DbException(e);
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                    cursor = null;
-                }
-            }
-        }
-        return null;
-    }
-
-    public <T> T findFirst(Class<T> entityType) throws DbException {
-        createTableIfNotExist(entityType);
-        return findFistBySqlInfo(entityType, SqlBuilder.buildSelectSqlInfo(entityType));
-    }
-
-    public <T> T findFirst(Class<T> entityType, String orderByColumnName, boolean desc) throws DbException {
-        createTableIfNotExist(entityType);
-        return findFistBySqlInfo(entityType,
-                SqlBuilder.buildSelectSqlInfo(entityType).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
-    }
-
-    public <T> T findFirst(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
-        createTableIfNotExist(entityType);
-        return findFistBySqlInfo(entityType, SqlBuilder.buildSelectSqlInfo(entityType, whereBuilder));
-    }
-
-    public <T> T findFirst(Class<T> entityType, WhereBuilder whereBuilder, String orderByColumnName, boolean desc) throws DbException {
-        createTableIfNotExist(entityType);
-        return findFistBySqlInfo(entityType,
-                SqlBuilder.buildSelectSqlInfo(entityType, whereBuilder).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
-    }
-
-    public <T> List<T> findAll(Class<T> entityType) throws DbException {
-        createTableIfNotExist(entityType);
-        return findAllBySqlInfo(entityType, SqlBuilder.buildSelectSqlInfo(entityType));
-    }
-
-    public <T> List<T> findAll(Class<T> entityType, String orderByColumnName, boolean desc) throws DbException {
-        createTableIfNotExist(entityType);
-        return findAllBySqlInfo(entityType,
-                SqlBuilder.buildSelectSqlInfo(entityType).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
-    }
-
-    public <T> List<T> findAll(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
-        createTableIfNotExist(entityType);
-        return findAllBySqlInfo(entityType, SqlBuilder.buildSelectSqlInfo(entityType, whereBuilder));
-    }
-
-    public <T> List<T> findAll(Class<T> entityType, WhereBuilder whereBuilder, String orderByColumnName, boolean desc) throws DbException {
-        createTableIfNotExist(entityType);
-        return findAllBySqlInfo(entityType,
-                SqlBuilder.buildSelectSqlInfo(entityType, whereBuilder).append2Sql(" ORDER BY " + orderByColumnName + (desc ? " DESC" : " ASC")));
-    }
-
-    private <T> List<T> findAllBySqlInfo(Class<T> entityType, SqlInfo sqlInfo) throws DbException {
-        createTableIfNotExist(entityType);
-        Cursor cursor = execQuery(sqlInfo);
+        Id id = Table.get(entityType).getId();
+        Selector selector = Selector.from(entityType).where(WhereBuilder.b(id.getColumnName(), "=", idValue));
+        Cursor cursor = execQuery(selector.limit(1).toString());
         try {
-            List<T> list = new ArrayList<T>();
-            while (cursor.moveToNext()) {
-                T t = CursorUtils.getEntity(this, cursor, entityType);
-                list.add(t);
-            }
-            return list;
-        } catch (Exception e) {
-            throw new DbException(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
-        }
-    }
-
-    private <T> T findFistBySqlInfo(Class<T> entityType, SqlInfo sqlInfo) throws DbException {
-        createTableIfNotExist(entityType);
-        Cursor cursor = execQuery(sqlInfo);
-        try {
-            while (cursor.moveToNext()) {
-                return CursorUtils.getEntity(this, cursor, entityType);
+            if (cursor.moveToNext()) {
+                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
             }
         } catch (Exception e) {
             throw new DbException(e);
@@ -298,9 +207,69 @@ public class DbUtils {
         return null;
     }
 
-    public DbModel findDbModel(String sql) throws DbException {
-        debugSql(sql);
-        Cursor cursor = db.rawQuery(sql, null);
+    public <T> T findFirst(Object entity) throws DbException {
+        Selector selector = Selector.from(entity.getClass());
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+        if (entityKvList != null) {
+            WhereBuilder wb = WhereBuilder.b();
+            for (KeyValue keyValue : entityKvList) {
+                wb.append(keyValue.getKey(), "=", keyValue.getValue());
+            }
+            selector.where(wb);
+        }
+        return findFirst(selector);
+    }
+
+    public <T> List<T> findAll(Object entity) throws DbException {
+        Selector selector = Selector.from(entity.getClass());
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+        if (entityKvList != null) {
+            WhereBuilder wb = WhereBuilder.b();
+            for (KeyValue keyValue : entityKvList) {
+                wb.append(keyValue.getKey(), "=", keyValue.getValue());
+            }
+            selector.where(wb);
+        }
+        return findAll(selector);
+    }
+
+    public <T> T findFirst(Selector selector) throws DbException {
+        Cursor cursor = execQuery(selector.limit(1).toString());
+        try {
+            if (cursor.moveToNext()) {
+                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return null;
+    }
+
+    public <T> List<T> findAll(Selector selector) throws DbException {
+        Cursor cursor = execQuery(selector.toString());
+        List<T> result = new ArrayList<T>();
+        try {
+            while (cursor.moveToNext()) {
+                result.add((T) CursorUtils.getEntity(this, cursor, selector.getEntityType()));
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return result;
+    }
+
+    public DbModel findDbModelFirst(String sql) throws DbException {
+        Cursor cursor = execQuery(sql);
         try {
             if (cursor.moveToNext()) {
                 return CursorUtils.getDbModel(cursor);
@@ -316,9 +285,43 @@ public class DbUtils {
         return null;
     }
 
-    public List<DbModel> findAllDbModel(String sql) throws DbException {
-        debugSql(sql);
-        Cursor cursor = db.rawQuery(sql, null);
+    public DbModel findDbModelFirst(DbModelSelector selector) throws DbException {
+        Cursor cursor = execQuery(selector.limit(1).toString());
+        try {
+            if (cursor.moveToNext()) {
+                return CursorUtils.getDbModel(cursor);
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return null;
+    }
+
+    public List<DbModel> findDbModelAll(String sql) throws DbException {
+        Cursor cursor = execQuery(sql);
+        List<DbModel> dbModelList = new ArrayList<DbModel>();
+        try {
+            while (cursor.moveToNext()) {
+                dbModelList.add(CursorUtils.getDbModel(cursor));
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return dbModelList;
+    }
+
+    public List<DbModel> findDbModelAll(DbModelSelector selector) throws DbException {
+        Cursor cursor = execQuery(selector.toString());
         List<DbModel> dbModelList = new ArrayList<DbModel>();
         try {
             while (cursor.moveToNext()) {
@@ -341,7 +344,7 @@ public class DbUtils {
         private Context context;
         private String dbName = "xUtils.db"; // default db name
         private int dbVersion = 1;
-        private boolean debug = true;
+        private boolean debug = false;
         private DbUpgradeListener dbUpgradeListener;
 
         public DaoConfig(Context context) {
@@ -432,7 +435,7 @@ public class DbUtils {
 
     private void createTableIfNotExist(Class<?> entityType) throws DbException {
         if (!tableIsExist(Table.get(entityType))) {
-            SqlInfo sqlInfo = SqlBuilder.buildCreateTableSqlInfo(entityType);
+            SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(entityType);
             execNonQuery(sqlInfo);
         }
     }
@@ -444,9 +447,7 @@ public class DbUtils {
 
         Cursor cursor = null;
         try {
-            String sql = "SELECT COUNT(*) AS c FROM sqlite_master WHERE type ='table' AND name ='" + table.getTableName() + "' ";
-            debugSql(sql);
-            cursor = db.rawQuery(sql, null);
+            cursor = execQuery("SELECT COUNT(*) AS c FROM sqlite_master WHERE type ='table' AND name ='" + table.getTableName() + "'");
             if (cursor != null && cursor.moveToNext()) {
                 int count = cursor.getInt(0);
                 if (count > 0) {
@@ -473,18 +474,29 @@ public class DbUtils {
         }
     }
 
-    private void execNonQuery(SqlInfo sqlInfo) {
+    ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
+    public void execNonQuery(SqlInfo sqlInfo) {
         debugSql(sqlInfo.getSql());
         if (sqlInfo.getBindingArgs() != null) {
-            db.execSQL(sqlInfo.getSql(), sqlInfo.getBindingArgsAsArray());
+            database.execSQL(sqlInfo.getSql(), sqlInfo.getBindingArgsAsArray());
         } else {
-            db.execSQL(sqlInfo.getSql());
+            database.execSQL(sqlInfo.getSql());
         }
     }
 
-    private Cursor execQuery(SqlInfo sqlInfo) {
+    public void execNonQuery(String sql) {
+        debugSql(sql);
+        database.execSQL(sql);
+    }
+
+    public Cursor execQuery(SqlInfo sqlInfo) {
         debugSql(sqlInfo.getSql());
-        return db.rawQuery(sqlInfo.getSql(), sqlInfo.getBindingArgsAsStringArray());
+        return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindingArgsAsStringArray());
+    }
+
+    public Cursor execQuery(String sql) {
+        debugSql(sql);
+        return database.rawQuery(sql, null);
     }
 
 }

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.view.event;
+package com.lidroid.xutils.view;
 
 import android.preference.Preference;
 import android.view.View;

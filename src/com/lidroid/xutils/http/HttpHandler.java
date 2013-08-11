@@ -14,14 +14,13 @@
  */
 package com.lidroid.xutils.http;
 
-import android.os.AsyncTask;
 import android.os.SystemClock;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.callback.*;
-import com.lidroid.xutils.util.CompatibleAsyncTask;
+import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;

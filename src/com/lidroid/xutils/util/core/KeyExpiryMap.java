@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.util;
+package com.lidroid.xutils.util.core;
 
 import java.util.concurrent.ConcurrentHashMap;
 

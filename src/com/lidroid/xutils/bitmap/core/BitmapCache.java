@@ -20,8 +20,8 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.LruDiskCache;
-import com.lidroid.xutils.util.LruMemoryCache;
+import com.lidroid.xutils.util.core.LruDiskCache;
+import com.lidroid.xutils.util.core.LruMemoryCache;
 
 import java.io.File;
 import java.io.IOException;

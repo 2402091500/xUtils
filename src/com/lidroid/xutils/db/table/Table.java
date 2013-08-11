@@ -15,8 +15,6 @@
 
 package com.lidroid.xutils.db.table;
 
-import com.lidroid.xutils.exception.DbException;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
@@ -46,16 +44,12 @@ public class Table {
         this.columnMap = TableUtils.getColumnMap(entityType);
     }
 
-    public static Table get(Class entityType) throws DbException {
+    public static Table get(Class entityType) {
 
         Table table = tableMap.get(entityType.getName());
         if (table == null) {
             table = new Table(entityType);
             tableMap.put(entityType.getName(), table);
-        }
-
-        if (table == null) {
-            throw new DbException("the class[" + entityType + "]'s table is null");
         }
 
         return table;

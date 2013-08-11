@@ -22,10 +22,10 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.*;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.ViewCommonEventListener;
 import com.lidroid.xutils.view.annotation.SeekBarChange;
 import com.lidroid.xutils.view.annotation.Select;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.event.ViewCommonEventListener;
 
 import java.lang.reflect.Field;
 
@@ -42,25 +42,43 @@ public class ViewUtils {
         injectObject(view, view);
     }
 
-    public static void inject(Object target, Activity activity) {
-        injectObject(target, activity);
+    public static void inject(Object handler, Activity activity) {
+        injectObject(handler, activity);
     }
 
-    public static void inject(Object target, View view) {
-        injectObject(target, view);
+    public static void inject(Object handler, View view) {
+        injectObject(handler, view);
     }
 
 
-    private static void injectObject(Object target, Activity activity) {
-        Field[] fields = target.getClass().getDeclaredFields();
+    private static void injectObject(Object handler, Activity activity) {
+        Field[] fields = handler.getClass().getDeclaredFields();
         if (fields != null && fields.length > 0) {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
                 if (viewInject != null) {
                     try {
                         field.setAccessible(true);
-                        field.set(target, activity.findViewById(viewInject.id()));
-                        setEventListener(target, field, viewInject);
+                        field.set(handler, activity.findViewById(viewInject.id()));
+                        setEventListener(handler, field, viewInject);
+                    } catch (Exception e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void injectObject(Object handler, View view) {
+        Field[] fields = handler.getClass().getDeclaredFields();
+        if (fields != null && fields.length > 0) {
+            for (Field field : fields) {
+                ViewInject viewInject = field.getAnnotation(ViewInject.class);
+                if (viewInject != null) {
+                    try {
+                        field.setAccessible(true);
+                        field.set(handler, view.findViewById(viewInject.id()));
+                        setEventListener(handler, field, viewInject);
                     } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
@@ -70,196 +88,177 @@ public class ViewUtils {
     }
 
 
-    private static void injectObject(Object target, View view) {
-        Field[] fields = target.getClass().getDeclaredFields();
-        if (fields != null && fields.length > 0) {
-            for (Field field : fields) {
-                ViewInject viewInject = field.getAnnotation(ViewInject.class);
-                if (viewInject != null) {
-                    try {
-                        field.setAccessible(true);
-                        field.set(target, view.findViewById(viewInject.id()));
-                        setEventListener(target, field, viewInject);
-                    } catch (Exception e) {
-                        LogUtils.e(e.getMessage(), e);
-                    }
-                }
-            }
-        }
-    }
-
-
-    private static void setEventListener(Object target, Field field, ViewInject viewInject) {
+    private static void setEventListener(Object handler, Field field, ViewInject viewInject) {
         String methodName = viewInject.click();
         if (!TextUtils.isEmpty(methodName)) {
-            setViewClickListener(target, field, methodName);
+            setViewClickListener(handler, field, methodName);
         }
 
         methodName = viewInject.longClick();
         if (!TextUtils.isEmpty(methodName)) {
-            setViewLongClickListener(target, field, methodName);
+            setViewLongClickListener(handler, field, methodName);
         }
 
         methodName = viewInject.itemClick();
         if (!TextUtils.isEmpty(methodName)) {
-            setItemClickListener(target, field, methodName);
+            setItemClickListener(handler, field, methodName);
         }
 
         methodName = viewInject.itemLongClick();
         if (!TextUtils.isEmpty(methodName)) {
-            setItemLongClickListener(target, field, methodName);
+            setItemLongClickListener(handler, field, methodName);
         }
 
         methodName = viewInject.checkedChanged();
         if (!TextUtils.isEmpty(methodName)) {
             if (RadioGroup.class.isAssignableFrom(field.getType())) {
-                setRadioGroupCheckedChangedListener(target, field, methodName);
+                setRadioGroupCheckedChangedListener(handler, field, methodName);
             } else if (CompoundButton.class.isAssignableFrom(field.getType())) {
-                setCompoundButtonCheckedChangedListener(target, field, methodName);
+                setCompoundButtonCheckedChangedListener(handler, field, methodName);
             }
         }
 
         methodName = viewInject.preferenceChange();
         if (!TextUtils.isEmpty(methodName)) {
-            setPreferenceChangeListener(target, field, methodName);
+            setPreferenceChangeListener(handler, field, methodName);
         }
 
         methodName = viewInject.tabChanged();
         if (!TextUtils.isEmpty(methodName)) {
-            setTabChangedListener(target, field, methodName);
+            setTabChangedListener(handler, field, methodName);
         }
 
         methodName = viewInject.scrollChanged();
         if (!TextUtils.isEmpty(methodName)) {
-            setScrollChangedListener(target, field, methodName);
+            setScrollChangedListener(handler, field, methodName);
         }
 
         Select select = viewInject.select();
         if (!TextUtils.isEmpty(select.selected())) {
-            setViewSelectListener(target, field, select.selected(), select.noSelected());
+            setViewSelectListener(handler, field, select.selected(), select.noSelected());
         }
 
         SeekBarChange seekBarChange = viewInject.seekBarChange();
         if (!TextUtils.isEmpty(seekBarChange.progressChanged())) {
-            setSeekBarChangeListener(target, field, seekBarChange.progressChanged(), seekBarChange.startTrackingTouch(), seekBarChange.stopTrackingTouch());
+            setSeekBarChangeListener(handler, field, seekBarChange.progressChanged(), seekBarChange.startTrackingTouch(), seekBarChange.stopTrackingTouch());
         }
     }
 
-    private static void setViewClickListener(Object target, Field field, String methodName) {
+    private static void setViewClickListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof View) {
-                ((View) obj).setOnClickListener(new ViewCommonEventListener(target).click(methodName));
+                ((View) obj).setOnClickListener(new ViewCommonEventListener(handler).click(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setViewLongClickListener(Object target, Field field, String methodName) {
+    private static void setViewLongClickListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof View) {
-                ((View) obj).setOnLongClickListener(new ViewCommonEventListener(target).longClick(methodName));
+                ((View) obj).setOnLongClickListener(new ViewCommonEventListener(handler).longClick(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setItemClickListener(Object target, Field field, String methodName) {
+    private static void setItemClickListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof AbsListView) {
-                ((AbsListView) obj).setOnItemClickListener(new ViewCommonEventListener(target).itemClick(methodName));
+                ((AbsListView) obj).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setItemLongClickListener(Object target, Field field, String methodName) {
+    private static void setItemLongClickListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof AbsListView) {
-                ((AbsListView) obj).setOnItemLongClickListener(new ViewCommonEventListener(target).itemLongClick(methodName));
+                ((AbsListView) obj).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setRadioGroupCheckedChangedListener(Object target, Field field, String methodName) {
+    private static void setRadioGroupCheckedChangedListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof RadioGroup) {
-                ((RadioGroup) obj).setOnCheckedChangeListener(new ViewCommonEventListener(target).radioGroupCheckedChanged(methodName));
+                ((RadioGroup) obj).setOnCheckedChangeListener(new ViewCommonEventListener(handler).radioGroupCheckedChanged(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setCompoundButtonCheckedChangedListener(Object target, Field field, String methodName) {
+    private static void setCompoundButtonCheckedChangedListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof CompoundButton) {
-                ((CompoundButton) obj).setOnCheckedChangeListener(new ViewCommonEventListener(target).compoundButtonCheckedChanged(methodName));
+                ((CompoundButton) obj).setOnCheckedChangeListener(new ViewCommonEventListener(handler).compoundButtonCheckedChanged(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setPreferenceChangeListener(Object target, Field field, String methodName) {
+    private static void setPreferenceChangeListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof Preference) {
-                ((Preference) obj).setOnPreferenceChangeListener(new ViewCommonEventListener(target).preferenceChange(methodName));
+                ((Preference) obj).setOnPreferenceChangeListener(new ViewCommonEventListener(handler).preferenceChange(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setTabChangedListener(Object target, Field field, String methodName) {
+    private static void setTabChangedListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof TabHost) {
-                ((TabHost) obj).setOnTabChangedListener(new ViewCommonEventListener(target).tabChanged(methodName));
+                ((TabHost) obj).setOnTabChangedListener(new ViewCommonEventListener(handler).tabChanged(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setScrollChangedListener(Object target, Field field, String methodName) {
+    private static void setScrollChangedListener(Object handler, Field field, String methodName) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof ViewTreeObserver) {
-                ((ViewTreeObserver) obj).addOnScrollChangedListener(new ViewCommonEventListener(target).scrollChanged(methodName));
+                ((ViewTreeObserver) obj).addOnScrollChangedListener(new ViewCommonEventListener(handler).scrollChanged(methodName));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setViewSelectListener(Object target, Field field, String select, String noSelect) {
+    private static void setViewSelectListener(Object handler, Field field, String select, String noSelect) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof View) {
-                ((AbsListView) obj).setOnItemSelectedListener(new ViewCommonEventListener(target).selected(select).noSelected(noSelect));
+                ((AbsListView) obj).setOnItemSelectedListener(new ViewCommonEventListener(handler).selected(select).noSelected(noSelect));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
-    private static void setSeekBarChangeListener(Object target, Field field, String progressChanged, String startTrackingTouch, String stopTrackingTouch) {
+    private static void setSeekBarChangeListener(Object handler, Field field, String progressChanged, String startTrackingTouch, String stopTrackingTouch) {
         try {
-            Object obj = field.get(target);
+            Object obj = field.get(handler);
             if (obj instanceof SeekBar) {
-                ((SeekBar) obj).setOnSeekBarChangeListener(new ViewCommonEventListener(target).progressChanged(progressChanged).startTrackingTouch(startTrackingTouch).stopTrackingTouch(stopTrackingTouch));
+                ((SeekBar) obj).setOnSeekBarChangeListener(new ViewCommonEventListener(handler).progressChanged(progressChanged).startTrackingTouch(startTrackingTouch).stopTrackingTouch(stopTrackingTouch));
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
