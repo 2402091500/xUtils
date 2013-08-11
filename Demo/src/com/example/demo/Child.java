@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.example.test;
+package com.example.demo;
 
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Transient;
@@ -31,12 +31,12 @@ public class Child {
 
     private String email;
 
-    @Foreign(column = "parentId", foreign = "id")
-    public Parent parent;
     //@Foreign(column = "parentId", foreign = "id")
     //public SQLiteLazyLoader<Parent> parent;
     //@Foreign(column = "parentId", foreign = "isVIP")
     //public List<Parent> parent;
+    @Foreign(column = "parentId", foreign = "id")
+    public Parent parent;
 
     @Transient
     public String willIgnore;

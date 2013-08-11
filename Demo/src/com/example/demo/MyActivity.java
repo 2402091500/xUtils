@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,8 +10,9 @@ import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
-import com.lidroid.xutils.db.table.KeyValue;
+import com.lidroid.xutils.db.table.DbModel;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
@@ -223,15 +224,13 @@ public class MyActivity extends Activity {
             DbUtils db = DbUtils.create(this);
             db.saveBindingId(child);
 
-            List<Child> children = db.findAll(Child.class);
+            List<Child> children = db.findAll(Selector.from(Child.class));
             LogUtils.d("wyouflf size:" + children.size());
             if (children.size() > 0) {
                 LogUtils.d("wyouflf child:" + children.get(children.size() - 1).parent);
             }
 
-            WhereBuilder wb = new WhereBuilder();
-            wb.append(new KeyValue("id", 54), "<");
-            List<Parent> list = db.findAll(Parent.class, wb);
+            List<Parent> list = db.findAll(Selector.from(Parent.class).where(WhereBuilder.b("id", "<", 54)).orderBy("id").limit(10));
             LogUtils.d("wyouflf size:" + list.size());
             if (list.size() > 0) {
                 LogUtils.d("wyouflf parent:" + list.get(list.size() - 1).toString());
@@ -242,6 +241,9 @@ public class MyActivity extends Activity {
 
             Parent entity = db.findById(Parent.class, parent.getId());
             LogUtils.d("wyouflf parent:" + entity.toString());
+
+            List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
+            LogUtils.d("wyouflf parent:" + dbModels.size());
 
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);

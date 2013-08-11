@@ -40,6 +40,12 @@ User user = new User(); //这里需要注意的是User对象必须有id属性，
 user.setEmail("wyouflf@qq.com");
 user.setName("wyouflf");
 db.save(user); // 使用saveBindingId保存实体时会为实体的id赋值
+
+...
+// 查找
+List<Parent> list = db.findAll(Selector.from(Parent.class).where(WhereBuilder.b("id","<",54)).orderBy("id").limit(10));
+List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
+...
 ```
 
 ----
