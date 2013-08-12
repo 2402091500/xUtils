@@ -34,15 +34,16 @@ public class SQLiteLazyLoader<T> {
 
     private String valueStr;
 
-    public SQLiteLazyLoader(String foreignColumnName, Object value) {
+    public SQLiteLazyLoader(Class<?> entityType, String columnName, Object value) {
 
-        this.foreignColumnName = foreignColumnName;
+        HashMap<String, Column> columns = TableUtils.getColumnMap(entityType);
+        if (columns != null && columns.containsKey(columnName)) {
+            this.foreignColumn = (Foreign) columns.get(columnName);
+        }
+        this.foreignColumnName = this.foreignColumn.getForeignColumnName();
+
         if (value != null) {
             this.valueStr = String.valueOf(value);
-        }
-        HashMap<String, Column> columns = TableUtils.getColumnMap(foreignEntityType);
-        if (columns != null && columns.containsKey(foreignColumnName)) {
-            this.foreignColumn = (Foreign) columns.get(foreignColumnName);
         }
 
         foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
