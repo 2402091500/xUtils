@@ -10,6 +10,7 @@ import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
@@ -218,14 +219,15 @@ public class MyActivity extends Activity {
         parent2.name = "测试2";
         parent2.isVIP = false;*/
 
-        Child child = new Child();
-        child.name = "child name";
-        //child.parent = new SQLiteLazyLoader<Parent>("parentId", 1);
-        child.parent = parent;
-
         try {
 
             DbUtils db = DbUtils.create(this, true);
+
+            Child child = new Child();
+            child.name = "child name";
+            //db.saveBindingId(parent);
+            //child.parent = new SQLiteLazyLoader<Parent>(Child.class, "parentId", parent.getId());
+            child.parent = parent;
 
             try {
                 Parent test = db.findFirst(parent);//通过entity的属性查找
