@@ -17,6 +17,7 @@ package com.example.demo;
 
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Transient;
+import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 
 /**
  * Author: wyouflf

@@ -220,6 +220,7 @@ public class MyActivity extends Activity {
 
         Child child = new Child();
         child.name = "child name";
+        //child.parent = new SQLiteLazyLoader<Parent>("parentId", 1);
         child.parent = parent;
 
         try {
