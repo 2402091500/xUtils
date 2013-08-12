@@ -20,7 +20,6 @@ import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 public class Foreign extends Column {
@@ -123,7 +122,7 @@ public class Foreign extends Column {
                             }
                         }
 
-                        Class foreignEntityType = (Class) ((ParameterizedType) this.getColumnField().getGenericType()).getActualTypeArguments()[0];
+                        Class foreignEntityType = ColumnUtils.getForeignEntityType(this);
                         Field foreignField = foreignEntityType.getDeclaredField(foreignColumnName);
                         Column column = new Column(foreignEntityType, foreignField);
                         resultObj = column.getColumnValue(foreignValues.get(0));
@@ -152,5 +151,14 @@ public class Foreign extends Column {
         }
 
         return ColumnUtils.convert2DbColumnValueIfNeeded(resultObj);
+    }
+
+    @Override
+    public String getDbType() {
+        try {
+            return ColumnUtils.fieldType2DbType(ColumnUtils.getForeignEntityType(this).getDeclaredField(foreignColumnName).getType());
+        } catch (NoSuchFieldException e) {
+            return "TEXT";
+        }
     }
 }

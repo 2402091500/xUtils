@@ -22,7 +22,6 @@ import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class SQLiteLazyLoader<T> {
             this.foreignColumn = (Foreign) columns.get(foreignColumnName);
         }
 
-        setForeignEntityType(foreignColumn);
+        foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
     }
 
     public SQLiteLazyLoader(Foreign foreignColumn, String valueStr) {
@@ -53,17 +52,7 @@ public class SQLiteLazyLoader<T> {
         this.foreignColumnName = foreignColumn.getForeignColumnName();
         this.valueStr = valueStr;
 
-        setForeignEntityType(foreignColumn);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setForeignEntityType(Foreign foreignColumn) {
-        foreignEntityType = (Class<T>) foreignColumn.getColumnField().getType();
-        if (foreignEntityType.equals(SQLiteLazyLoader.class)) {
-            foreignEntityType = (Class) ((ParameterizedType) foreignColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
-        } else if (foreignEntityType.equals(List.class)) {
-            foreignEntityType = (Class) ((ParameterizedType) foreignColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
-        }
+        foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
     }
 
     public List<T> getListFromDb() throws DbException {

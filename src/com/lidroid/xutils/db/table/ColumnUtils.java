@@ -19,11 +19,14 @@ import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Transient;
+import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Date;
+import java.util.List;
 
 public class ColumnUtils {
 
@@ -159,6 +162,15 @@ public class ColumnUtils {
             }
         }
         return value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Class<?> getForeignEntityType(com.lidroid.xutils.db.table.Foreign foreignColumn) {
+        Class<?> result = (Class<?>) foreignColumn.getColumnField().getType();
+        if (result.equals(SQLiteLazyLoader.class) || result.equals(List.class)) {
+            result = (Class<?>) ((ParameterizedType) foreignColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
+        }
+        return result;
     }
 
     public static Boolean convert2Boolean(final Object value) {
