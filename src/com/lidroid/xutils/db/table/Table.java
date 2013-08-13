@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils.db.table;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 
@@ -37,10 +36,7 @@ public class Table {
 
     private Table(Class entityType) {
         this.tableName = TableUtils.getTableName(entityType);
-        Field idField = TableUtils.getPrimaryKeyField(entityType);
-        if (idField != null) {
-            this.id = new Id(entityType, idField);
-        }
+        this.id = TableUtils.getId(entityType);
         this.columnMap = TableUtils.getColumnMap(entityType);
     }
 

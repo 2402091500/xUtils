@@ -38,7 +38,7 @@ public class TableUtils {
     }
 
     /**
-     * key: entityType.className
+     * key: entityType.canonicalName
      */
     private static ConcurrentHashMap<String, HashMap<String, Column>> entityColumnsMap = new ConcurrentHashMap<String, HashMap<String, Column>>();
 
@@ -92,7 +92,7 @@ public class TableUtils {
     }
 
     public static Column getColumnOrId(Class<?> entityType, String columnName) {
-        if (getPrimaryKeyFieldName(entityType).equals(columnName)) {
+        if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
             return com.lidroid.xutils.db.table.Table.get(entityType).getId();
         }
         return getColumnMap(entityType).get(columnName);
@@ -100,14 +100,24 @@ public class TableUtils {
 
     public static Column getColumnOrId(Class<?> entityType, Field columnField) {
         String columnName = ColumnUtils.getColumnNameByField(columnField);
-        if (getPrimaryKeyFieldName(entityType).equals(columnName)) {
+        if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
             return com.lidroid.xutils.db.table.Table.get(entityType).getId();
         }
         return getColumnMap(entityType).get(columnName);
     }
 
-    public static Field getPrimaryKeyField(Class<?> entityType) {
+    /**
+     * key: entityType.canonicalName
+     */
+    private static ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id> entityIdMap = new ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id>();
+
+    public static synchronized com.lidroid.xutils.db.table.Id getId(Class<?> entityType) {
         if (Object.class.equals(entityType)) return null;
+
+        if (entityIdMap.containsKey(entityType.getCanonicalName())) {
+            return entityIdMap.get(entityType.getCanonicalName());
+        }
+
         Field primaryKeyField = null;
         Field[] fields = entityType.getDeclaredFields();
         if (fields != null) {
@@ -129,27 +139,33 @@ public class TableUtils {
             }
 
             if (primaryKeyField == null && !Object.class.equals(entityType.getSuperclass())) {
-                return getPrimaryKeyField(entityType.getSuperclass());
+                return getId(entityType.getSuperclass());
             }
 
         } else {
             throw new RuntimeException("this model[" + entityType + "] has no any field");
         }
-        return primaryKeyField;
+
+        com.lidroid.xutils.db.table.Id id = new com.lidroid.xutils.db.table.Id(entityType, primaryKeyField);
+        entityIdMap.put(entityType.getCanonicalName(), id);
+        return id;
     }
 
     public static String getPrimaryKeyFieldName(Class<?> entityType) {
-        Field idField = getPrimaryKeyField(entityType);
-        return idField == null ? null : idField.getName();
+        com.lidroid.xutils.db.table.Id id = getId(entityType);
+        return id == null ? null : id.getColumnField().getName();
+    }
+
+    public static String getPrimaryKeyColumnName(Class<?> entityType) {
+        com.lidroid.xutils.db.table.Id id = getId(entityType);
+        return id == null ? null : id.getColumnName();
     }
 
     public static boolean hasPrimaryKeyValue(Object entity) {
         if (entity == null) return false;
 
         try {
-            com.lidroid.xutils.db.table.Table table = com.lidroid.xutils.db.table.Table.get(entity.getClass());
-            com.lidroid.xutils.db.table.Id id = table.getId();
-
+            com.lidroid.xutils.db.table.Id id = getId(entity.getClass());
             return id.getColumnValue(entity) == null;
         } catch (Exception e) {
             return false;
