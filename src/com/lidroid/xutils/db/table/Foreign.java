@@ -48,7 +48,7 @@ public class Foreign extends Column {
         if (valueStr != null) {
             Class columnType = columnField.getType();
             if (ColumnUtils.isSimpleColumnType(columnField)) {
-                value = ColumnUtils.valueStr2FieldValue(columnType, valueStr);
+                value = ColumnUtils.valueStr2SimpleTypeFieldValue(columnType, valueStr);
             } else if (columnType.equals(SQLiteLazyLoader.class)) {
                 value = new SQLiteLazyLoader(this, valueStr);
             } else if (columnType.equals(List.class)) {
@@ -123,11 +123,10 @@ public class Foreign extends Column {
                         }
 
                         Class foreignEntityType = ColumnUtils.getForeignEntityType(this);
-                        Field foreignField = foreignEntityType.getDeclaredField(foreignColumnName);
-                        Column column = new Column(foreignEntityType, foreignField);
+                        Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
                         resultObj = column.getColumnValue(foreignValues.get(0));
                     }
-                } catch (NoSuchFieldException e) {
+                } catch (Exception e) {
                     resultObj = null;
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -140,10 +139,9 @@ public class Foreign extends Column {
                             LogUtils.e(e.getMessage(), e);
                         }
                     }
-                    Field foreignField = columnType.getDeclaredField(foreignColumnName);
-                    Column column = new Column(columnType, foreignField);
+                    Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
                     resultObj = column.getColumnValue(resultObj);
-                } catch (NoSuchFieldException e) {
+                } catch (Exception e) {
                     resultObj = null;
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -156,8 +154,8 @@ public class Foreign extends Column {
     @Override
     public String getDbType() {
         try {
-            return ColumnUtils.fieldType2DbType(ColumnUtils.getForeignEntityType(this).getDeclaredField(foreignColumnName).getType());
-        } catch (NoSuchFieldException e) {
+            return ColumnUtils.fieldType2DbType(TableUtils.getColumnOrId(ColumnUtils.getForeignEntityType(this), foreignColumnName).columnField.getType());
+        } catch (Exception e) {
             return "TEXT";
         }
     }

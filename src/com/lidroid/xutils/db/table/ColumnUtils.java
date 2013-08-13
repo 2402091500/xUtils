@@ -47,6 +47,10 @@ public class ColumnUtils {
                 LogUtils.d(methodName + " not exist");
             }
         }
+
+        if (getMethod == null && !Object.class.equals(entityType.getSuperclass())) {
+            return getColumnGetMethod(entityType.getSuperclass(), field);
+        }
         return getMethod;
     }
 
@@ -63,6 +67,10 @@ public class ColumnUtils {
             } catch (NoSuchMethodException e) {
                 LogUtils.d(methodName + " not exist");
             }
+        }
+
+        if (setMethod == null && !Object.class.equals(entityType.getSuperclass())) {
+            return getColumnSetMethod(entityType.getSuperclass(), field);
         }
         return setMethod;
     }
@@ -134,7 +142,7 @@ public class ColumnUtils {
                 columnType.equals(Character.class);
     }
 
-    public static Object valueStr2FieldValue(Class columnFieldType, String valueStr) {
+    public static Object valueStr2SimpleTypeFieldValue(Class columnFieldType, String valueStr) {
         Object value = null;
         if (isSimpleColumnType(columnFieldType) && valueStr != null) {
             if (columnFieldType.equals(String.class) || columnFieldType.equals(CharSequence.class)) {
@@ -216,7 +224,6 @@ public class ColumnUtils {
         }
         return "TEXT";
     }
-
 
     private static boolean isStartWithIs(String fieldName) {
         return fieldName != null && fieldName.startsWith("is");

@@ -15,14 +15,12 @@
 
 package com.lidroid.xutils.db.sqlite;
 
-import com.lidroid.xutils.db.table.Column;
 import com.lidroid.xutils.db.table.ColumnUtils;
 import com.lidroid.xutils.db.table.Foreign;
 import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class SQLiteLazyLoader<T> {
@@ -34,12 +32,10 @@ public class SQLiteLazyLoader<T> {
 
     private String valueStr;
 
+    @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Class<?> entityType, String columnName, Object value) {
 
-        HashMap<String, Column> columns = TableUtils.getColumnMap(entityType);
-        if (columns != null && columns.containsKey(columnName)) {
-            this.foreignColumn = (Foreign) columns.get(columnName);
-        }
+        this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
         this.foreignColumnName = this.foreignColumn.getForeignColumnName();
 
         if (value != null) {
@@ -49,6 +45,7 @@ public class SQLiteLazyLoader<T> {
         foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
     }
 
+    @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Foreign foreignColumn, String valueStr) {
 
         this.foreignColumn = foreignColumn;
@@ -79,8 +76,10 @@ public class SQLiteLazyLoader<T> {
     public Object getColumnValue() {
         if (foreignColumn != null) {
             try {
-                return ColumnUtils.valueStr2FieldValue(foreignEntityType.getDeclaredField(foreignColumnName).getType(), valueStr);
-            } catch (NoSuchFieldException e) {
+                return ColumnUtils.valueStr2SimpleTypeFieldValue(
+                        TableUtils.getColumnOrId(foreignEntityType, foreignColumnName).getColumnField().getType(),
+                        valueStr);
+            } catch (Exception e) {
                 LogUtils.d(e.getMessage(), e);
             }
         }

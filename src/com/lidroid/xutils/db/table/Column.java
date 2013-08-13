@@ -44,7 +44,7 @@ public class Column {
         Object value = null;
         if (valueStr != null) {
             Class columnType = columnField.getType();
-            value = ColumnUtils.valueStr2FieldValue(columnType, valueStr);
+            value = ColumnUtils.valueStr2SimpleTypeFieldValue(columnType, valueStr);
         }
 
         if (setMethod != null) {

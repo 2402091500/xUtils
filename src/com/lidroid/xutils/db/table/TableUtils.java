@@ -46,12 +46,21 @@ public class TableUtils {
      * @param entityType
      * @return key: columnName
      */
-    public static HashMap<String, Column> getColumnMap(Class<?> entityType) {
+    public static synchronized HashMap<String, Column> getColumnMap(Class<?> entityType) {
 
         if (entityColumnsMap.containsKey(entityType.getCanonicalName())) {
             return entityColumnsMap.get(entityType.getCanonicalName());
         }
+
         HashMap<String, Column> columnMap = new HashMap<String, Column>();
+        addColumns(entityType, columnMap);
+        entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
+
+        return columnMap;
+    }
+
+    private static void addColumns(Class<?> entityType, HashMap<String, Column> columnMap) {
+        if (Object.class.equals(entityType)) return;
         try {
             Field[] fields = entityType.getDeclaredFields();
             String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
@@ -62,24 +71,43 @@ public class TableUtils {
                 if (ColumnUtils.isSimpleColumnType(field)) {
                     if (!field.getName().equals(primaryKeyFieldName)) {
                         Column column = new Column(entityType, field);
-                        columnMap.put(column.getColumnName(), column);
+                        if (!columnMap.containsKey(column.getColumnName())) {
+                            columnMap.put(column.getColumnName(), column);
+                        }
                     }
                 } else if (ColumnUtils.isForeign(field)) {
                     Foreign column = new Foreign(entityType, field);
-                    columnMap.put(column.getColumnName(), column);
+                    if (!columnMap.containsKey(column.getColumnName())) {
+                        columnMap.put(column.getColumnName(), column);
+                    }
                 }
+            }
+
+            if (!Object.class.equals(entityType.getSuperclass())) {
+                addColumns(entityType.getSuperclass(), columnMap);
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
+    }
 
-        if (columnMap != null && entityColumnsMap.containsKey(entityType.getCanonicalName())) {
-            entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
+    public static Column getColumnOrId(Class<?> entityType, String columnName) {
+        if (getPrimaryKeyFieldName(entityType).equals(columnName)) {
+            return com.lidroid.xutils.db.table.Table.get(entityType).getId();
         }
-        return columnMap;
+        return getColumnMap(entityType).get(columnName);
+    }
+
+    public static Column getColumnOrId(Class<?> entityType, Field columnField) {
+        String columnName = ColumnUtils.getColumnNameByField(columnField);
+        if (getPrimaryKeyFieldName(entityType).equals(columnName)) {
+            return com.lidroid.xutils.db.table.Table.get(entityType).getId();
+        }
+        return getColumnMap(entityType).get(columnName);
     }
 
     public static Field getPrimaryKeyField(Class<?> entityType) {
+        if (Object.class.equals(entityType)) return null;
         Field primaryKeyField = null;
         Field[] fields = entityType.getDeclaredFields();
         if (fields != null) {
@@ -98,6 +126,10 @@ public class TableUtils {
                         break;
                     }
                 }
+            }
+
+            if (primaryKeyField == null && !Object.class.equals(entityType.getSuperclass())) {
+                return getPrimaryKeyField(entityType.getSuperclass());
             }
 
         } else {
@@ -112,38 +144,15 @@ public class TableUtils {
     }
 
     public static boolean hasPrimaryKeyValue(Object entity) {
-        if (entity == null) {
+        if (entity == null) return false;
+
+        try {
+            com.lidroid.xutils.db.table.Table table = com.lidroid.xutils.db.table.Table.get(entity.getClass());
+            com.lidroid.xutils.db.table.Id id = table.getId();
+
+            return id.getColumnValue(entity) == null;
+        } catch (Exception e) {
             return false;
         }
-        Class entityType = entity.getClass();
-        Field primaryKeyField = null;
-        Field[] fields = entityType.getDeclaredFields();
-        if (fields != null) {
-
-            for (Field field : fields) {
-                if (field.getAnnotation(Id.class) != null) {
-                    primaryKeyField = field;
-                    break;
-                }
-            }
-
-            if (primaryKeyField == null) {
-                for (Field field : fields) {
-                    if ("id".equals(field.getName()) || "_id".equals(field.getName())) {
-                        primaryKeyField = field;
-                        break;
-                    }
-                }
-            }
-
-        } else {
-            throw new RuntimeException("this model[" + entityType + "] has no any field");
-        }
-
-        if (primaryKeyField != null) {
-            com.lidroid.xutils.db.table.Id id = new com.lidroid.xutils.db.table.Id(entityType, primaryKeyField);
-            return id.getColumnValue(entity) == null;
-        }
-        return false;
     }
 }

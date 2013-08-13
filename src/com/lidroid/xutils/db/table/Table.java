@@ -46,10 +46,10 @@ public class Table {
 
     public static Table get(Class entityType) {
 
-        Table table = tableMap.get(entityType.getName());
+        Table table = tableMap.get(entityType.getCanonicalName());
         if (table == null) {
             table = new Table(entityType);
-            tableMap.put(entityType.getName(), table);
+            tableMap.put(entityType.getCanonicalName(), table);
         }
 
         return table;

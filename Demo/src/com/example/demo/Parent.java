@@ -7,8 +7,7 @@ import java.util.Date;
  * Date: 13-7-25
  * Time: 下午7:06
  */
-public class Parent {
-    private int id;
+public class Parent extends EntityBase {
 
     public String name;
 
@@ -46,14 +45,6 @@ public class Parent {
         this.time2 = time2;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -65,7 +56,7 @@ public class Parent {
     @Override
     public String toString() {
         return "Parent{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", isAdmin=" + isAdmin +

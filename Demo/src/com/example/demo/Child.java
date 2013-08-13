@@ -17,16 +17,13 @@ package com.example.demo;
 
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Transient;
-import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 
 /**
  * Author: wyouflf
  * Date: 13-7-29
  * Time: 下午5:04
  */
-public class Child {
-
-    private int id;
+public class Child extends EntityBase {
 
     public String name;
 
@@ -43,14 +40,6 @@ public class Child {
     public String willIgnore;
 
     private String text;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getEmail() {
         return email;
@@ -71,7 +60,7 @@ public class Child {
     @Override
     public String toString() {
         return "Child{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", parent=" + parent +
