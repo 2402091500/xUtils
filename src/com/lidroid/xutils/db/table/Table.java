@@ -40,7 +40,7 @@ public class Table {
         this.columnMap = TableUtils.getColumnMap(entityType);
     }
 
-    public static Table get(Class entityType) {
+    public static synchronized Table get(Class entityType) {
 
         Table table = tableMap.get(entityType.getCanonicalName());
         if (table == null) {
