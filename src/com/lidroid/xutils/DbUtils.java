@@ -40,6 +40,8 @@ public class DbUtils {
 
     private SQLiteDatabase database;
     private DaoConfig config;
+    private boolean debug = false;
+    private boolean allowTransaction = false;
 
     private DbUtils(DaoConfig config) {
         if (config == null) {
@@ -60,6 +62,8 @@ public class DbUtils {
         if (dao == null) {
             dao = new DbUtils(daoConfig);
             daoMap.put(daoConfig.getDbName(), dao);
+        } else {
+            dao.config = daoConfig;
         }
         return dao;
     }
@@ -69,31 +73,15 @@ public class DbUtils {
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, boolean isDebug) {
-        DaoConfig config = new DaoConfig(context);
-        config.setDebug(isDebug);
-        return getInstance(config);
-
-    }
-
     public static DbUtils create(Context context, String dbName) {
         DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
-
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String dbName, boolean isDebug) {
+    public static DbUtils create(Context context, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) {
         DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
-        config.setDebug(isDebug);
-        return getInstance(config);
-    }
-
-    public static DbUtils create(Context context, String dbName, boolean isDebug, int dbVersion, DbUpgradeListener dbUpgradeListener) {
-        DaoConfig config = new DaoConfig(context);
-        config.setDbName(dbName);
-        config.setDebug(isDebug);
         config.setDbVersion(dbVersion);
         config.setDbUpgradeListener(dbUpgradeListener);
         return getInstance(config);
@@ -103,54 +91,154 @@ public class DbUtils {
         return getInstance(daoConfig);
     }
 
+    public void configDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public void configAllowTransaction(boolean allowTransaction) {
+        this.allowTransaction = allowTransaction;
+    }
+
+    public SQLiteDatabase getDatabase() {
+        return database;
+    }
 
     //*********************************************** operations ********************************************************
 
     public void saveOrUpdate(Object entity) throws DbException {
-        if (TableUtils.hasPrimaryKeyValue(entity)) {
-            update(entity);
-        } else {
-            saveBindingId(entity);
+        try {
+            beginTransaction();
+
+            saveOrUpdateWithoutTransaction(entity);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void saveOrUpdate(List<Object> entities) throws DbException {
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                saveOrUpdateWithoutTransaction(entity);
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
         }
     }
 
     public void save(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
+        try {
+            beginTransaction();
+
+            saveWithoutTransaction(entity);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void save(List<Object> entities) throws DbException {
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                saveWithoutTransaction(entity);
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     public boolean saveBindingId(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null && entityKvList.size() > 0) {
-            Table table = Table.get(entity.getClass());
-            ContentValues cv = new ContentValues();
-            DbUtils.fillContentValues(cv, entityKvList);
-            Long id = database.insert(table.getTableName(), null, cv);
-            if (id == -1) {
-                return false;
-            }
-            table.getId().setValue2Entity(entity, id.toString());
-            return true;
+        boolean result = false;
+        try {
+            beginTransaction();
+
+            result = saveBindingIdWithoutTransaction(entity);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
         }
-        return false;
+        return result;
+    }
+
+    public void saveBindingId(List<Object> entities) throws DbException {
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                if (!saveBindingIdWithoutTransaction(entity)) {
+                    throw new DbException("saveBindingId error, transaction will not commit!");
+                }
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
 
     public void delete(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
+        try {
+            beginTransaction();
+
+            deleteWithoutTransaction(entity);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void delete(List<Object> entities) throws DbException {
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                deleteWithoutTransaction(entity);
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     public void deleteById(Class<?> entityType, Object idValue) throws DbException {
-        createTableIfNotExist(entityType);
-        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, idValue));
+        try {
+            beginTransaction();
+
+            createTableIfNotExist(entityType);
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, idValue));
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     public void delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
-        createTableIfNotExist(entityType);
-        SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
-        execNonQuery(sql);
+        try {
+            beginTransaction();
+
+            createTableIfNotExist(entityType);
+            SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
+            execNonQuery(sql);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     public void dropDb() throws DbException {
@@ -178,13 +266,42 @@ public class DbUtils {
 
 
     public void update(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity));
+        try {
+            beginTransaction();
+
+            updateWithoutTransaction(entity);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void update(List<Object> entities) throws DbException {
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                updateWithoutTransaction(entity);
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     public void update(Object entity, WhereBuilder whereBuilder) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
+        try {
+            beginTransaction();
+
+            createTableIfNotExist(entity.getClass());
+            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -346,7 +463,6 @@ public class DbUtils {
         private Context context;
         private String dbName = "xUtils.db"; // default db name
         private int dbVersion = 1;
-        private boolean debug = false;
         private DbUpgradeListener dbUpgradeListener;
 
         public DaoConfig(Context context) {
@@ -371,14 +487,6 @@ public class DbUtils {
 
         public void setDbVersion(int dbVersion) {
             this.dbVersion = dbVersion;
-        }
-
-        public boolean isDebug() {
-            return debug;
-        }
-
-        public void setDebug(boolean debug) {
-            this.debug = debug;
         }
 
         public DbUpgradeListener getDbUpgradeListener() {
@@ -420,6 +528,47 @@ public class DbUtils {
                 }
             }
         }
+    }
+
+    //***************************** private operations with out transaction *****************************
+    private void saveOrUpdateWithoutTransaction(Object entity) throws DbException {
+        if (TableUtils.hasPrimaryKeyValue(entity)) {
+            update(entity);
+        } else {
+            saveBindingId(entity);
+        }
+    }
+
+    private void saveWithoutTransaction(Object entity) throws DbException {
+        createTableIfNotExist(entity.getClass());
+        execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
+    }
+
+    private boolean saveBindingIdWithoutTransaction(Object entity) throws DbException {
+        createTableIfNotExist(entity.getClass());
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+        if (entityKvList != null && entityKvList.size() > 0) {
+            Table table = Table.get(entity.getClass());
+            ContentValues cv = new ContentValues();
+            DbUtils.fillContentValues(cv, entityKvList);
+            Long id = database.insert(table.getTableName(), null, cv);
+            if (id == -1) {
+                return false;
+            }
+            table.getId().setValue2Entity(entity, id.toString());
+            return true;
+        }
+        return false;
+    }
+
+    private void deleteWithoutTransaction(Object entity) throws DbException {
+        createTableIfNotExist(entity.getClass());
+        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
+    }
+
+    private void updateWithoutTransaction(Object entity) throws DbException {
+        createTableIfNotExist(entity.getClass());
+        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity));
     }
 
     //************************************************ private tools ***********************************
@@ -470,13 +619,32 @@ public class DbUtils {
         return false;
     }
 
+    ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
     private void debugSql(String sql) {
-        if (config != null && config.isDebug()) {
+        if (config != null && debug) {
             LogUtils.d(sql);
         }
     }
 
-    ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
+    private void beginTransaction() {
+        if (allowTransaction) {
+            database.beginTransaction();
+        }
+    }
+
+    private void setTransactionSuccessful() {
+        if (allowTransaction) {
+            database.setTransactionSuccessful();
+        }
+    }
+
+    private void endTransaction() {
+        if (allowTransaction) {
+            database.endTransaction();
+        }
+    }
+
+
     public void execNonQuery(SqlInfo sqlInfo) throws DbException {
         debugSql(sqlInfo.getSql());
         try {

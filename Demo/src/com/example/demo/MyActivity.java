@@ -10,7 +10,6 @@ import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
@@ -221,7 +220,8 @@ public class MyActivity extends Activity {
 
         try {
 
-            DbUtils db = DbUtils.create(this, true);
+            DbUtils db = DbUtils.create(this);
+            db.configAllowTransaction(true);
 
             Child child = new Child();
             child.name = "child name";
