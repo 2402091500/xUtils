@@ -27,10 +27,6 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
 
-    public KeyExpiryMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-    }
-
     public KeyExpiryMap(int initialCapacity) {
         super(initialCapacity);
     }
