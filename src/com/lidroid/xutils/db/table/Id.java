@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 
 public class Id extends Column {
 
-    public Id(Class entityType, Field field) {
+    protected Id(Class entityType, Field field) {
         super(entityType, field);
     }
 

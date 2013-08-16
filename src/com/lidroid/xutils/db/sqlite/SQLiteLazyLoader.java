@@ -55,7 +55,7 @@ public class SQLiteLazyLoader<T> {
         foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
     }
 
-    public List<T> getListFromDb() throws DbException {
+    public List<T> getAllFromDb() throws DbException {
         List<T> entities = null;
         if (foreignColumn != null && foreignColumn.db != null) {
             Object columnValue = this.getColumnValue();
@@ -64,7 +64,7 @@ public class SQLiteLazyLoader<T> {
         return entities;
     }
 
-    public T getOneFromDb() throws DbException {
+    public T getFirstFromDb() throws DbException {
         T entity = null;
         if (foreignColumn != null && foreignColumn.db != null) {
             Object columnValue = this.getColumnValue();

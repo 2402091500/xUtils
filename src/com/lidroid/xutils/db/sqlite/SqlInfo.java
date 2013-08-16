@@ -39,11 +39,6 @@ public class SqlInfo {
         this.sql = sql;
     }
 
-    public SqlInfo append2Sql(String str) {
-        sql += str;
-        return this;
-    }
-
     public LinkedList<Object> getBindingArgs() {
         return bindingArgs;
     }

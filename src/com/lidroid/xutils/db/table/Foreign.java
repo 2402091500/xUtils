@@ -25,13 +25,13 @@ import java.util.List;
 public class Foreign extends Column {
 
     /**
-     * if this instance create by CursorUtils or SqlInfoBuilder.entity2KeyValueList, db will not be null.
+     * 被 CursorUtils.getEntity 或 SqlInfoBuilder.entity2KeyValueList 赋值
      */
     public DbUtils db;
 
     private String foreignColumnName;
 
-    public Foreign(Class entityType, Field field) {
+    protected Foreign(Class entityType, Field field) {
         super(entityType, field);
         foreignColumnName = ColumnUtils.getForeignColumnNameByField(field);
     }
@@ -53,13 +53,13 @@ public class Foreign extends Column {
                 value = new SQLiteLazyLoader(this, valueStr);
             } else if (columnType.equals(List.class)) {
                 try {
-                    value = new SQLiteLazyLoader(this, valueStr).getListFromDb();
+                    value = new SQLiteLazyLoader(this, valueStr).getAllFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
-                    value = new SQLiteLazyLoader(this, valueStr).getOneFromDb();
+                    value = new SQLiteLazyLoader(this, valueStr).getFirstFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -110,15 +110,13 @@ public class Foreign extends Column {
             } else if (columnType.equals(List.class)) {
                 try {
                     List foreignValues = (List) resultObj;
-                    if (foreignValues != null && foreignValues.size() > 0) {
+                    if (foreignValues.size() > 0 && this.db != null) {
 
-                        if (this.db != null) { // save associates to db
-                            for (Object item : foreignValues) {
-                                try {
-                                    this.db.saveOrUpdate(item);
-                                } catch (DbException e) {
-                                    LogUtils.e(e.getMessage(), e);
-                                }
+                        for (Object item : foreignValues) {
+                            try {
+                                this.db.saveOrUpdate(item);
+                            } catch (DbException e) {
+                                LogUtils.e(e.getMessage(), e);
                             }
                         }
 
@@ -132,7 +130,7 @@ public class Foreign extends Column {
                 }
             } else {
                 try {
-                    if (this.db != null) {// save associates to db
+                    if (this.db != null) {
                         try {
                             this.db.saveOrUpdate(resultObj);
                         } catch (DbException e) {

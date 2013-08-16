@@ -269,7 +269,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
+            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, whereBuilder));
 
             setTransactionSuccessful();
         } finally {
@@ -539,7 +539,7 @@ public class DbUtils {
     }
 
     private void updateWithoutTransaction(Object entity) throws DbException {
-        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity));
+        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity));
     }
 
     //************************************************ tools ***********************************

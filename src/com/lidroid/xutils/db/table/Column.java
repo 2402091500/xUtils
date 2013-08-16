@@ -30,7 +30,7 @@ public class Column {
 
     protected Field columnField;
 
-    public Column(Class entityType, Field field) {
+    protected Column(Class entityType, Field field) {
         this.columnField = field;
         this.columnName = ColumnUtils.getColumnNameByField(field);
         this.defaultValue = ColumnUtils.getColumnDefaultValue(field);

@@ -53,13 +53,13 @@ public class TableUtils {
         }
 
         HashMap<String, Column> columnMap = new HashMap<String, Column>();
-        addColumns(entityType, columnMap);
+        addColumns2Map(entityType, columnMap);
         entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
 
         return columnMap;
     }
 
-    private static void addColumns(Class<?> entityType, HashMap<String, Column> columnMap) {
+    private static void addColumns2Map(Class<?> entityType, HashMap<String, Column> columnMap) {
         if (Object.class.equals(entityType)) return;
         try {
             Field[] fields = entityType.getDeclaredFields();
@@ -84,7 +84,7 @@ public class TableUtils {
             }
 
             if (!Object.class.equals(entityType.getSuperclass())) {
-                addColumns(entityType.getSuperclass(), columnMap);
+                addColumns2Map(entityType.getSuperclass(), columnMap);
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);

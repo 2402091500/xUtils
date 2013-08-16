@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * 构造insert，update，delete，create语句。
+ * 构造select，请使用Selector。
+ */
 public class SqlInfoBuilder {
 
     private SqlInfoBuilder() {
@@ -32,35 +36,30 @@ public class SqlInfoBuilder {
 
     public static SqlInfo buildInsertSqlInfo(DbUtils db, Object entity) throws DbException {
 
-        SqlInfo result = null;
-
         List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
-        StringBuffer sqlBuffer = null;
-        int size = keyValueList.size();
-        if (keyValueList != null && size > 0) {
+        if (keyValueList.size() == 0) return null;
 
-            result = new SqlInfo();
-            sqlBuffer = new StringBuffer();
+        SqlInfo result = new SqlInfo();
+        StringBuffer sqlBuffer = new StringBuffer();
 
-            sqlBuffer.append("INSERT INTO ");
-            sqlBuffer.append(Table.get(entity.getClass()).getTableName());
-            sqlBuffer.append(" (");
-            for (KeyValue kv : keyValueList) {
-                sqlBuffer.append(kv.getKey()).append(",");
-                result.addValue(kv.getValue());
-            }
-            sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
-            sqlBuffer.append(") VALUES ( ");
-
-            int length = keyValueList.size();
-            for (int i = 0; i < length; i++) {
-                sqlBuffer.append("?,");
-            }
-            sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
-            sqlBuffer.append(")");
-
-            result.setSql(sqlBuffer.toString());
+        sqlBuffer.append("INSERT INTO ");
+        sqlBuffer.append(Table.get(entity.getClass()).getTableName());
+        sqlBuffer.append(" (");
+        for (KeyValue kv : keyValueList) {
+            sqlBuffer.append(kv.getKey()).append(",");
+            result.addValue(kv.getValue());
         }
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(") VALUES ( ");
+
+        int length = keyValueList.size();
+        for (int i = 0; i < length; i++) {
+            sqlBuffer.append("?,");
+        }
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(")");
+
+        result.setSql(sqlBuffer.toString());
 
         return result;
     }
@@ -119,7 +118,10 @@ public class SqlInfoBuilder {
 
     //*********************************************** update sql ***********************************************
 
-    public static SqlInfo buildUpdateSqlInfo(Object entity) throws DbException {
+    public static SqlInfo buildUpdateSqlInfo(DbUtils db, Object entity) throws DbException {
+
+        List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
+        if (keyValueList.size() == 0) return null;
 
         Table table = Table.get(entity.getClass());
         Id id = table.getId();
@@ -128,17 +130,6 @@ public class SqlInfoBuilder {
         if (null == idValue) {//主键值不能为null，否则不能更新
             throw new DbException("this entity[" + entity.getClass() + "]'s id value is null");
         }
-
-        List<KeyValue> keyValueList = new ArrayList<KeyValue>();
-        //添加属性
-        Collection<Column> columns = table.columnMap.values();
-        for (Column column : columns) {
-            KeyValue kv = column2KeyValue(entity, column);
-            if (kv != null)
-                keyValueList.add(kv);
-        }
-
-        if (keyValueList == null || keyValueList.size() == 0) return null;
 
         SqlInfo result = new SqlInfo();
         StringBuffer sqlBuffer = new StringBuffer("UPDATE ");
@@ -155,22 +146,12 @@ public class SqlInfoBuilder {
         return result;
     }
 
-    public static SqlInfo buildUpdateSqlInfo(Object entity, WhereBuilder whereBuilder) throws DbException {
+    public static SqlInfo buildUpdateSqlInfo(DbUtils db, Object entity, WhereBuilder whereBuilder) throws DbException {
+
+        List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
+        if (keyValueList.size() == 0) return null;
 
         Table table = Table.get(entity.getClass());
-
-        List<KeyValue> keyValueList = new ArrayList<KeyValue>();
-
-        //添加属性
-        Collection<Column> columns = table.columnMap.values();
-        for (Column column : columns) {
-            KeyValue kv = column2KeyValue(entity, column);
-            if (kv != null) keyValueList.add(kv);
-        }
-
-        if (keyValueList == null || keyValueList.size() == 0) {
-            throw new DbException("this entity[" + entity.getClass() + "] has no column");
-        }
 
         SqlInfo result = new SqlInfo();
         StringBuffer sqlBuffer = new StringBuffer("UPDATE ");
@@ -237,7 +218,8 @@ public class SqlInfoBuilder {
 
         if (id != null) {
             Object idValue = id.getColumnValue(entity);
-            if (idValue != null && !id.isAutoIncreaseType()) { //用了非自增长,添加id , 采用自增长就不需要添加id了
+            if (idValue != null && !id.isAutoIncreaseType()) {
+                //用了非自增长,添加id
                 KeyValue kv = new KeyValue(table.getId().getColumnName(), idValue);
                 keyValueList.add(kv);
             }
@@ -256,5 +238,4 @@ public class SqlInfoBuilder {
 
         return keyValueList;
     }
-
 }
