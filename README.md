@@ -7,26 +7,25 @@
 ## 目前xUtils主要有四大模块：
 
 * DbUtils模块：
-  > * android中的orm框架，一行代码就可以进行增删改查;
-  > * 支持绑定外键, 保存实体时外键自动保存;
-  > * 自动加载外键关联实体，支持延时加载;
-  > * 支持链式表达查询,参考下面的介绍或Demo中的例子。
+  > * android中的orm框架，一行代码就可以进行增删改查；
+  > * 支持绑定外键，保存实体时外键自动保存；
+  > * 自动加载外键关联实体，支持延时加载；
+  > * 支持链式表达查询，参考下面的介绍或Demo中的例子。
 
 * ViewUtils模块：
-  > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定;
+  > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定；
   > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作。
 
 * HttpUtils模块：
-  > * 支持同步，异步方式的请求;
-  > * 支持大文件上传,上传大文件不会oom；
-  > * 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求;
-  > * 支持multipart上传设置subtype如related;
-  > * 下载支持302重定向;
+  > * 支持同步，异步方式的请求；
+  > * 支持大文件上传，上传大文件不会oom；
+  > * 支持GET，POST，PUT，MOVE，COPY，DELETE，HEAD请求；
+  > * 下载支持302重定向；
   > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
 
 * BitmapUtils模块：
   > * 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
-  > * 支持加载网络图片和本地图片;
+  > * 支持加载网络图片和本地图片；
   > * 内存管理使用lru算法，更好的管理bitmap内存；
   > * 可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
 
@@ -126,7 +125,8 @@ RequestParams params = new RequestParams();
 params.addHeader("name", "value");
 params.addQueryStringParameter("name", "value");
 
-// 只包含字符串参数时默认使用BodyParamsEntity，类似UrlEncodedFormEntity（"application/x-www-form-urlencoded"）上传。
+// 只包含字符串参数时默认使用BodyParamsEntity，
+// 类似于UrlEncodedFormEntity（"application/x-www-form-urlencoded"）。
 params.addBodyParameter("name", "value");
 
 // 加入文件参数后默认使用MultipartEntity（"multipart/form-data"），
