@@ -218,7 +218,6 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            createTableIfNotExist(entityType);
             execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, idValue));
 
             setTransactionSuccessful();
@@ -231,7 +230,6 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            createTableIfNotExist(entityType);
             SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
             execNonQuery(sql);
 
@@ -240,30 +238,6 @@ public class DbUtils {
             endTransaction();
         }
     }
-
-    public void dropDb() throws DbException {
-        Cursor cursor = null;
-        try {
-            cursor = execQuery("SELECT name FROM sqlite_master WHERE type ='table'");
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    try {
-                        execNonQuery("DROP TABLE " + cursor.getString(0));
-                    } catch (Exception e) {
-                        LogUtils.e(e.getMessage(), e);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new DbException(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
-        }
-    }
-
 
     public void update(Object entity) throws DbException {
         try {
@@ -295,7 +269,6 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            createTableIfNotExist(entity.getClass());
             execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity, whereBuilder));
 
             setTransactionSuccessful();
@@ -562,16 +535,14 @@ public class DbUtils {
     }
 
     private void deleteWithoutTransaction(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
         execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
     }
 
     private void updateWithoutTransaction(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
         execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(entity));
     }
 
-    //************************************************ private tools ***********************************
+    //************************************************ tools ***********************************
 
     private static void fillContentValues(ContentValues contentValues, List<KeyValue> list) {
         if (list != null && contentValues != null) {
@@ -585,13 +556,14 @@ public class DbUtils {
     }
 
     private void createTableIfNotExist(Class<?> entityType) throws DbException {
-        if (!tableIsExist(Table.get(entityType))) {
+        if (!tableIsExist(entityType)) {
             SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(entityType);
             execNonQuery(sqlInfo);
         }
     }
 
-    private boolean tableIsExist(Table table) throws DbException {
+    public boolean tableIsExist(Class<?> entityType) throws DbException {
+        Table table = Table.get(entityType);
         if (table.isCheckDatabase()) {
             return true;
         }
@@ -617,6 +589,29 @@ public class DbUtils {
         }
 
         return false;
+    }
+
+    public void dropDb() throws DbException {
+        Cursor cursor = null;
+        try {
+            cursor = execQuery("SELECT name FROM sqlite_master WHERE type ='table'");
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    try {
+                        execNonQuery("DROP TABLE " + cursor.getString(0));
+                    } catch (Exception e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DbException(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
     }
 
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
