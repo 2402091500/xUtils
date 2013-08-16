@@ -14,6 +14,7 @@
 
 * ViewUtils模块：
   > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定。
+  > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作。
 
 * HttpUtils模块：
   > * 支持同步，异步方式的请求，支持大文件上传；
@@ -65,8 +66,13 @@ List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("
 * 无需findViewById和setClickListener等。
 
 ```java
-@ViewInject(id=R.id.button,click="btnClick") Button button;
-@ViewInject(id=R.id.textView) TextView textView;
+@ViewInject(id=R.id.textView)
+TextView textView;
+
+@OnClick(R.id.test_button)
+public void testButtonClick(View v) {
+    ...
+}
 ...
 //在使用注解对象之前调用(如onCreate中)：
 @Override

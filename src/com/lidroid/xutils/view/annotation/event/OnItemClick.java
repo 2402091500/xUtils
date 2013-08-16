@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.view.annotation;
+package com.lidroid.xutils.view.annotation.event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,16 +22,11 @@ import java.lang.annotation.Target;
 
 /**
  * Author: wyouflf
- * Date: 13-8-7
- * Time: 下午9:03
+ * Date: 13-8-16
+ * Time: 下午2:32
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SeekBarChange {
-
-    public String progressChanged();
-
-    public String startTrackingTouch() default "";
-
-    public String stopTrackingTouch() default "";
+public @interface OnItemClick {
+    int[] value();
 }

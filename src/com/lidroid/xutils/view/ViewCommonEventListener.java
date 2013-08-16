@@ -43,103 +43,97 @@ public class ViewCommonEventListener implements
 
     private Object handler;
 
-    private String clickMethod;
-    private String longClickMethod;
-    private String itemClickMethod;
-    private String itemLongClickMethod;
-    private String radioGroupCheckedChangedMethod;
-    private String compoundButtonCheckedChangedMethod;
-    private String preferenceChangeMethod;
-    private String sharedPreferenceChangedMethod;
-    private String tabChangedMethod;
-    private String scrollChangedMethod;
+    private Method clickMethod;
+    private Method longClickMethod;
+    private Method itemClickMethod;
+    private Method itemLongClickMethod;
+    private Method radioGroupCheckedChangedMethod;
+    private Method compoundButtonCheckedChangedMethod;
+    private Method preferenceChangeMethod;
+    private Method tabChangedMethod;
+    private Method scrollChangedMethod;
 
     // ItemSelected
-    private String itemSelectMethod;
-    private String nothingSelectedMethod;
+    private Method itemSelectMethod;
+    private Method nothingSelectedMethod;
 
     // SeekBarChange
-    private String progressChangedMethod;
-    private String startTrackingTouchMethod;
-    private String stopTrackingTouchMethod;
+    private Method progressChangedMethod;
+    private Method startTrackingTouchMethod;
+    private Method stopTrackingTouchMethod;
 
     public ViewCommonEventListener(Object handler) {
         this.handler = handler;
     }
 
 
-    public ViewCommonEventListener click(String methodName) {
-        this.clickMethod = methodName;
+    public ViewCommonEventListener click(Method method) {
+        this.clickMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener longClick(String methodName) {
-        this.longClickMethod = methodName;
+    public ViewCommonEventListener longClick(Method method) {
+        this.longClickMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener itemClick(String methodName) {
-        this.itemClickMethod = methodName;
+    public ViewCommonEventListener itemClick(Method method) {
+        this.itemClickMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener itemLongClick(String methodName) {
-        this.itemLongClickMethod = methodName;
+    public ViewCommonEventListener itemLongClick(Method method) {
+        this.itemLongClickMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener radioGroupCheckedChanged(String methodName) {
-        this.radioGroupCheckedChangedMethod = methodName;
+    public ViewCommonEventListener radioGroupCheckedChanged(Method method) {
+        this.radioGroupCheckedChangedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener compoundButtonCheckedChanged(String methodName) {
-        this.compoundButtonCheckedChangedMethod = methodName;
+    public ViewCommonEventListener compoundButtonCheckedChanged(Method method) {
+        this.compoundButtonCheckedChangedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener preferenceChange(String methodName) {
-        this.preferenceChangeMethod = methodName;
+    public ViewCommonEventListener preferenceChange(Method method) {
+        this.preferenceChangeMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener sharedPreferenceChanged(String methodName) {
-        this.sharedPreferenceChangedMethod = methodName;
+    public ViewCommonEventListener tabChanged(Method method) {
+        this.tabChangedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener tabChanged(String methodName) {
-        this.tabChangedMethod = methodName;
+    public ViewCommonEventListener scrollChanged(Method method) {
+        this.scrollChangedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener scrollChanged(String methodName) {
-        this.scrollChangedMethod = methodName;
+    public ViewCommonEventListener selected(Method method) {
+        this.itemSelectMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener selected(String methodName) {
-        this.itemSelectMethod = methodName;
+    public ViewCommonEventListener noSelected(Method method) {
+        this.nothingSelectedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener noSelected(String methodName) {
-        this.nothingSelectedMethod = methodName;
+    public ViewCommonEventListener progressChanged(Method method) {
+        this.progressChangedMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener progressChanged(String methodName) {
-        this.progressChangedMethod = methodName;
+    public ViewCommonEventListener startTrackingTouch(Method method) {
+        this.startTrackingTouchMethod = method;
         return this;
     }
 
-    public ViewCommonEventListener startTrackingTouch(String methodName) {
-        this.startTrackingTouchMethod = methodName;
-        return this;
-    }
-
-    public ViewCommonEventListener stopTrackingTouch(String methodName) {
-        this.stopTrackingTouchMethod = methodName;
+    public ViewCommonEventListener stopTrackingTouch(Method method) {
+        this.stopTrackingTouchMethod = method;
         return this;
     }
 
@@ -147,8 +141,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onClick(View v) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(clickMethod, View.class);
-            method.invoke(handler, v);
+            clickMethod.invoke(handler, v);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -157,8 +150,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onLongClick(View v) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(longClickMethod, View.class);
-            Object result = method.invoke(handler, v);
+            Object result = longClickMethod.invoke(handler, v);
             return result == null ? false : Boolean.valueOf(result.toString());
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
@@ -169,8 +161,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(itemClickMethod, AdapterView.class, View.class, int.class, long.class);
-            method.invoke(handler, parent, view, position, id);
+            itemClickMethod.invoke(handler, parent, view, position, id);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -179,8 +170,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(itemLongClickMethod, AdapterView.class, View.class, int.class, long.class);
-            Object result = method.invoke(handler, parent, view, position, id);
+            Object result = itemLongClickMethod.invoke(handler, parent, view, position, id);
             return result == null ? false : Boolean.valueOf(result.toString());
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
@@ -191,8 +181,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(radioGroupCheckedChangedMethod, RadioGroup.class, int.class);
-            method.invoke(handler, group, checkedId);
+            radioGroupCheckedChangedMethod.invoke(handler, group, checkedId);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -201,8 +190,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(compoundButtonCheckedChangedMethod, CompoundButton.class, boolean.class);
-            method.invoke(handler, buttonView, isChecked);
+            compoundButtonCheckedChangedMethod.invoke(handler, buttonView, isChecked);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -211,8 +199,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(preferenceChangeMethod, Preference.class, Object.class);
-            Object result = method.invoke(handler, preference, newValue);
+            Object result = preferenceChangeMethod.invoke(handler, preference, newValue);
             return result == null ? false : Boolean.valueOf(result.toString());
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
@@ -223,8 +210,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onTabChanged(String tabId) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(tabChangedMethod, String.class);
-            method.invoke(handler, tabId);
+            tabChangedMethod.invoke(handler, tabId);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -233,8 +219,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onScrollChanged() {
         try {
-            Method method = handler.getClass().getDeclaredMethod(scrollChangedMethod);
-            method.invoke(handler);
+            scrollChangedMethod.invoke(handler);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -243,8 +228,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(itemSelectMethod, AdapterView.class, View.class, int.class, long.class);
-            method.invoke(handler, parent, view, position, id);
+            itemSelectMethod.invoke(handler, parent, view, position, id);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -253,8 +237,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(nothingSelectedMethod, AdapterView.class);
-            method.invoke(handler, parent);
+            nothingSelectedMethod.invoke(handler, parent);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -263,8 +246,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(progressChangedMethod, SeekBar.class, int.class, boolean.class);
-            method.invoke(handler, seekBar, progress, fromUser);
+            progressChangedMethod.invoke(handler, seekBar, progress, fromUser);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -273,8 +255,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(startTrackingTouchMethod, SeekBar.class);
-            method.invoke(handler, seekBar);
+            startTrackingTouchMethod.invoke(handler, seekBar);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -283,8 +264,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         try {
-            Method method = handler.getClass().getDeclaredMethod(stopTrackingTouchMethod, SeekBar.class);
-            method.invoke(handler, seekBar);
+            stopTrackingTouchMethod.invoke(handler, seekBar);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }

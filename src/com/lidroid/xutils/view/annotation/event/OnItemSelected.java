@@ -13,17 +13,20 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.view.annotation;
+package com.lidroid.xutils.view.annotation.event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
+/**
+ * Author: wyouflf
+ * Date: 13-8-16
+ * Time: 下午2:41
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Select {
-    public String selected();
-
-    public String noSelected() default "";
+public @interface OnItemSelected {
+    int[] value();
 }

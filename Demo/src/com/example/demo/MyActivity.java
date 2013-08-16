@@ -19,6 +19,7 @@ import com.lidroid.xutils.http.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
 import java.io.File;
@@ -42,15 +43,13 @@ public class MyActivity extends Activity {
 
     BitmapUtils bitmapUtils;
 
-    @ViewInject(id = R.id.textView)
+    @ViewInject(R.id.textView)
     TextView testTextView;
 
-    @ViewInject(id = R.id.button, click = "testButtonClick")
-    Button testButton;
-
-    @ViewInject(id = R.id.imageView)
+    @ViewInject(R.id.imageView)
     ImageView testImageView;
 
+    @OnClick(R.id.button)
     public void testButtonClick(View v) {
 
         testDb();
