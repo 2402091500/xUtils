@@ -1,6 +1,6 @@
 ## xUtils简介
 * xUtils 包含了很多实用的android工具。
-* xUtils 源于Afinal框架，对Afinal进行了大量重构重构，尤其是http模块全面兼容各种http请求。
+* xUtils 源于Afinal框架，对Afinal进行了大量重构。
 * xUtils 具有Afinal的一些特性如：无需考虑bitmap在android中加载的时候oom的问题和快速滑动的时候图片加载位置错位等问题；简洁，约定大于配置...
 
 
@@ -13,18 +13,20 @@
   > * 支持链式表达查询,参考下面的介绍或Demo中的例子。
 
 * ViewUtils模块：
-  > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定。
+  > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定;
   > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作。
 
 * HttpUtils模块：
-  > * 支持同步，异步方式的请求，支持大文件上传；
-  > * 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求，
-  > * 支持multipart上传设置subtype如related。
-  > * 下载支持302重定向。
-  > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。图片的缓存由BitmapUtils模块提供支持。
+  > * 支持同步，异步方式的请求;
+  > * 支持大文件上传,上传大文件不会oom；
+  > * 支持GET,POST,PUT,MOVE,COPY,DELETE,HEAD请求;
+  > * 支持multipart上传设置subtype如related;
+  > * 下载支持302重定向;
+  > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
 
 * BitmapUtils模块：
   > * 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
+  > * 支持加载网络图片和本地图片;
   > * 内存管理使用lru算法，更好的管理bitmap内存；
   > * 可配置线程加载线程数量，缓存大小，缓存路径，加载显示动画等...
 
@@ -61,7 +63,6 @@ List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("
 
 ----
 ## ViewUtils使用方法
-* 修改自原来的FinalActivity, 但没有使用继承式的实用方式。
 * 完全注解方式就可以进行UI绑定和事件绑定。
 * 无需findViewById和setClickListener等。
 
@@ -124,7 +125,14 @@ http.send(HttpRequest.HttpMethod.GET,
 RequestParams params = new RequestParams();
 params.addHeader("name", "value");
 params.addQueryStringParameter("name", "value");
+
+// 只包含字符串参数时默认使用BodyParamsEntity，类似UrlEncodedFormEntity（"application/x-www-form-urlencoded"）上传。
 params.addBodyParameter("name", "value");
+
+// 加入文件参数后默认使用MultipartEntity（"multipart/form-data"），
+// 如需"multipart/related"，xUtils中提供的MultipartEntity支持设置subType为"related"。
+// 使用params.setBodyEntity(httpEntity)可设置更多类型的HttpEntity（如：
+// MultipartEntity,BodyParamsEntity,UploadFileEntity,UploadInputStreamEntity,StringEntity）。
 params.addBodyParameter("file", new File("path"));
 ...
 
@@ -199,7 +207,7 @@ handler.stop();
 
 ```java
 BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
-//BitmapUtils.create(this).display(testImageView, "/sdcard/test.jpg");默认支持加载本地图片
+//BitmapUtils.create(this).display(testImageView, "/sdcard/test.jpg"); //支持加载本地图片
 ```
 
 ----
@@ -207,7 +215,9 @@ BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/i
 ### 输出日志 LogUtils
 
 ```java
-LogUtils.d("wyouflf"); // 自动添加TAG，格式： className[methodName, lineNumber]，可设置全局的allowD，allowE...
+// 自动添加TAG，格式： className[methodName, lineNumber]
+// 可设置全局的allowD，allowE...，控制是否输出log。
+LogUtils.d("wyouflf");
 ```
 
 ----
