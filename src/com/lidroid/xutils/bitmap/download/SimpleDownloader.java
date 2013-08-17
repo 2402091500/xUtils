@@ -31,20 +31,20 @@ public class SimpleDownloader implements Downloader {
     /**
      * 把网络或本地图片下载到文件的 outputStream
      *
-     * @param urlString
+     * @param uri
      * @param outputStream
      * @return
      */
-    public boolean downloadToLocalStreamByUrl(String urlString, OutputStream outputStream) {
+    public boolean downloadToLocalStreamByUri(String uri, OutputStream outputStream) {
         URLConnection urlConnection = null;
         BufferedInputStream ins = null;
 
         try {
-            if (urlString.startsWith("/")) {
-                FileInputStream fileInputStream = new FileInputStream(urlString);
+            if (uri.startsWith("/")) {
+                FileInputStream fileInputStream = new FileInputStream(uri);
                 ins = new BufferedInputStream(fileInputStream);
             } else {
-                final URL url = new URL(urlString);
+                final URL url = new URL(uri);
                 urlConnection = url.openConnection();
                 ins = new BufferedInputStream(urlConnection.getInputStream());
             }

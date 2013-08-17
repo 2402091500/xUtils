@@ -13,7 +13,7 @@ public class MimeTypeUtils {
     }
 
     public static String getMimeType(final String fileName) {
-        String result = "text/plain";
+        String result = "application/octet-stream";
         int extPos = fileName.lastIndexOf(".");
         if (extPos != -1) {
             String ext = fileName.substring(extPos + 1);

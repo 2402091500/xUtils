@@ -27,8 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 
 public class BitmapCache {
@@ -122,17 +120,17 @@ public class BitmapCache {
     /**
      * Adds a bitmap to both memory and disk cache.
      *
-     * @param key    Unique identifier for the bitmap to store
+     * @param uri    Unique identifier for the bitmap to store
      * @param bitmap The bitmap to store
      */
-    public void addBitmapToCache(String key, Bitmap bitmap, CompressFormat compressFormat) {
-        if (key == null || bitmap == null) {
+    public void addBitmapToCache(String uri, Bitmap bitmap, CompressFormat compressFormat) {
+        if (uri == null || bitmap == null) {
             return;
         }
 
         // add to memory cache
-        if (mMemoryCache != null && mMemoryCache.get(key) == null) {
-            mMemoryCache.put(key, bitmap);
+        if (mMemoryCache != null && mMemoryCache.get(uri) == null) {
+            mMemoryCache.put(uri, bitmap);
         }
 
         // add to disk cache
@@ -143,12 +141,11 @@ public class BitmapCache {
                     mDiskLruCache.getDirectory().mkdirs();
                 }
 
-                final String diskKey = DiskCacheKeyGenerator.generate(key);
                 OutputStream out = null;
                 try {
-                    LruDiskCache.Snapshot snapshot = mDiskLruCache.get(diskKey);
+                    LruDiskCache.Snapshot snapshot = mDiskLruCache.get(uri);
                     if (snapshot == null) {
-                        final LruDiskCache.Editor editor = mDiskLruCache.edit(diskKey);
+                        final LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
                         if (editor != null) {
                             out = editor.newOutputStream(DISK_CACHE_INDEX);
                             CompressFormat format = compressFormat == null ? mConfig.getDefaultCompressFormat() : compressFormat;
@@ -178,12 +175,12 @@ public class BitmapCache {
     /**
      * Get from memory cache.
      *
-     * @param key Unique identifier for which item to get
+     * @param uri Unique identifier for which item to get
      * @return The bitmap if found in cache, null otherwise
      */
-    public Bitmap getBitmapFromMemCache(String key) {
+    public Bitmap getBitmapFromMemCache(String uri) {
         if (mMemoryCache != null) {
-            final Bitmap memBitmap = mMemoryCache.get(key);
+            final Bitmap memBitmap = mMemoryCache.get(uri);
             if (memBitmap != null) {
                 return memBitmap;
             }
@@ -195,11 +192,10 @@ public class BitmapCache {
     /**
      * 获取硬盘缓存
      *
-     * @param key
+     * @param uri
      * @return
      */
-    public Bitmap getBitmapFromDiskCache(String key) {
-        final String diskKey = DiskCacheKeyGenerator.generate(key);
+    public Bitmap getBitmapFromDiskCache(String uri) {
         synchronized (mDiskCacheLock) {
             while (!isDiskCacheReadied) {
                 try {
@@ -210,7 +206,7 @@ public class BitmapCache {
             if (mDiskLruCache != null) {
                 InputStream inputStream = null;
                 try {
-                    final LruDiskCache.Snapshot snapshot = mDiskLruCache.get(diskKey);
+                    final LruDiskCache.Snapshot snapshot = mDiskLruCache.get(uri);
                     if (snapshot != null) {
                         inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
                         if (inputStream != null) {
@@ -263,18 +259,16 @@ public class BitmapCache {
         }
     }
 
-
-    public void clearCache(String key) {
-        clearMemoryCache(key);
-        clearDiskCache(key);
+    public void clearCache(String uri) {
+        clearMemoryCache(uri);
+        clearDiskCache(uri);
     }
 
-    public void clearDiskCache(String key) {
-        final String diskKey = DiskCacheKeyGenerator.generate(key);
+    public void clearDiskCache(String uri) {
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
-                    mDiskLruCache.remove(diskKey);
+                    mDiskLruCache.remove(uri);
                 } catch (IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -282,9 +276,9 @@ public class BitmapCache {
         }
     }
 
-    public void clearMemoryCache(String key) {
+    public void clearMemoryCache(String uri) {
         if (mMemoryCache != null) {
-            mMemoryCache.remove(key);
+            mMemoryCache.remove(uri);
         }
     }
 
@@ -322,34 +316,4 @@ public class BitmapCache {
             }
         }
     }
-
-    public static class DiskCacheKeyGenerator {
-        private DiskCacheKeyGenerator() {
-        }
-
-        public static String generate(String key) {
-            String cacheKey;
-            try {
-                final MessageDigest mDigest = MessageDigest.getInstance("MD5");
-                mDigest.update(key.getBytes());
-                cacheKey = bytesToHexString(mDigest.digest());
-            } catch (NoSuchAlgorithmException e) {
-                cacheKey = String.valueOf(key.hashCode());
-            }
-            return cacheKey;
-        }
-
-        private static String bytesToHexString(byte[] bytes) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1) {
-                    sb.append('0');
-                }
-                sb.append(hex);
-            }
-            return sb.toString();
-        }
-    }
-
 }

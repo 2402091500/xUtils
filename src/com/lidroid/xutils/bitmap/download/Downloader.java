@@ -18,5 +18,5 @@ package com.lidroid.xutils.bitmap.download;
 import java.io.OutputStream;
 
 public interface Downloader {
-    boolean downloadToLocalStreamByUrl(String urlString, OutputStream outputStream);
+    boolean downloadToLocalStreamByUri(String uri, OutputStream outputStream);
 }

@@ -62,7 +62,6 @@ public class BitmapDownloadProcess {
     }
 
     public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config) {
-        final String diskKey = BitmapCache.DiskCacheKeyGenerator.generate(uri);
         FileDescriptor fileDescriptor = null;
         FileInputStream fileInputStream = null;
         LruDiskCache.Snapshot snapshot;
@@ -77,17 +76,17 @@ public class BitmapDownloadProcess {
 
             if (mOriginalDiskCache != null) {
                 try {
-                    snapshot = mOriginalDiskCache.get(diskKey);
+                    snapshot = mOriginalDiskCache.get(uri);
                     if (snapshot == null) {
-                        LruDiskCache.Editor editor = mOriginalDiskCache.edit(diskKey);
+                        LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
                         if (editor != null) {
-                            if (downloader.downloadToLocalStreamByUrl(uri, editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX))) {
+                            if (downloader.downloadToLocalStreamByUri(uri, editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX))) {
                                 editor.commit();
                             } else {
                                 editor.abort();
                             }
                         }
-                        snapshot = mOriginalDiskCache.get(diskKey);
+                        snapshot = mOriginalDiskCache.get(uri);
                     }
                     if (snapshot != null) {
                         fileInputStream = (FileInputStream) snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX);
@@ -154,12 +153,11 @@ public class BitmapDownloadProcess {
         initOriginalDiskCache();
     }
 
-    public void clearOriginalDiskCache(String key) {
-        final String diskKey = BitmapCache.DiskCacheKeyGenerator.generate(key);
+    public void clearOriginalDiskCache(String uri) {
         synchronized (mOriginalDiskCacheLock) {
             if (mOriginalDiskCache != null && !mOriginalDiskCache.isClosed()) {
                 try {
-                    mOriginalDiskCache.remove(diskKey);
+                    mOriginalDiskCache.remove(uri);
                 } catch (IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
