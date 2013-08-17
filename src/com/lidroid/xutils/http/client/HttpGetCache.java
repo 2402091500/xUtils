@@ -53,21 +53,25 @@ public class HttpGetCache {
     }
 
     public HttpGetCache(int cacheSize, long defaultExpiryTime) {
-        if (cacheSize > this.cacheSize) {
+        if (cacheSize > DEFAULT_CACHE_SIZE) {
             this.cacheSize = cacheSize;
         }
         HttpGetCache.setDefaultExpiryTime(defaultExpiryTime);
 
-        mMemoryCache = new LruMemoryCache<String, String>(cacheSize);
+        mMemoryCache = new LruMemoryCache<String, String>(this.cacheSize) {
+            @Override
+            protected int sizeOf(String key, String value) {
+                if (value == null) return 0;
+                return value.length();
+            }
+        };
         mUrlExpiryMap = new KeyExpiryMap<String, Long>();
     }
 
     public void setCacheSize(int cacheSize) {
-        this.clear();
-        if (cacheSize > this.cacheSize) {
-            this.cacheSize = cacheSize;
+        if (cacheSize > DEFAULT_CACHE_SIZE) {
+            mMemoryCache.setMaxSize(cacheSize);
         }
-        mMemoryCache = new LruMemoryCache<String, String>(cacheSize);
     }
 
     public static void setDefaultExpiryTime(long defaultExpiryTime) {
