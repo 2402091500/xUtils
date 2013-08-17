@@ -120,8 +120,9 @@ public class BitmapCache {
     /**
      * Adds a bitmap to both memory and disk cache.
      *
-     * @param uri    Unique identifier for the bitmap to store
-     * @param bitmap The bitmap to store
+     * @param uri            Unique identifier for the bitmap to store
+     * @param bitmap         The bitmap to store
+     * @param compressFormat if null, use default value.
      */
     public void addBitmapToCache(String uri, Bitmap bitmap, CompressFormat compressFormat) {
         if (uri == null || bitmap == null) {
