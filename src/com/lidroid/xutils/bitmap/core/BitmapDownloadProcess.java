@@ -46,7 +46,18 @@ public class BitmapDownloadProcess {
         this.originalDiskCacheSize = originalDiskCacheSize;
     }
 
-    public void configCalculateBitmap(boolean neverCalculate) {
+    public void setDownloader(Downloader downloader) {
+        this.downloader = downloader;
+    }
+
+    public void setOriginalDiskCacheSize(int originalDiskCacheSize) {
+        this.originalDiskCacheSize = originalDiskCacheSize;
+        if (mOriginalDiskCache != null) {
+            mOriginalDiskCache.setMaxSize(originalDiskCacheSize);
+        }
+    }
+
+    public void neverCalculate(boolean neverCalculate) {
         this.neverCalculate = neverCalculate;
     }
 

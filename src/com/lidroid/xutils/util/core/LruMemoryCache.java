@@ -46,6 +46,11 @@ public class LruMemoryCache<K, V> {
         this.map = new LinkedHashMap<K, V>(0, 0.75f, true);
     }
 
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
+        trimToSize(maxSize);
+    }
+
     /**
      * Returns the value for {@code key} if it exists in the cache or can be
      * created by {@code #create}. If a value was returned, it is moved to the

@@ -65,7 +65,7 @@ public class BitmapCache {
                 } catch (Exception e) {
                 }
             }
-            mMemoryCache = new LruMemoryCache<String, Bitmap>(mConfig.getMemCacheSize()) {
+            mMemoryCache = new LruMemoryCache<String, Bitmap>(mConfig.getMemoryCacheSize()) {
                 /**
                  * Measure item size in bytes rather than units which is more practical
                  * for a bitmap cache
@@ -104,6 +104,18 @@ public class BitmapCache {
             }
             isDiskCacheReadied = true;
             mDiskCacheLock.notifyAll();
+        }
+    }
+
+    public void setMemoryCacheSize(int maxSize) {
+        if (mMemoryCache != null) {
+            mMemoryCache.setMaxSize(maxSize);
+        }
+    }
+
+    public void setDiskCacheSize(int maxSize) {
+        if (mDiskLruCache != null) {
+            mDiskLruCache.setMaxSize(maxSize);
         }
     }
 

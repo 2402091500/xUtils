@@ -21,22 +21,18 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
-import com.lidroid.xutils.bitmap.BitmapGlobalConfigChangeCallBack;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.Downloader;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
-public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
+public class BitmapUtils {
 
     private static boolean pauseTask = false;
     private static final Object pauseTaskLock = new Object();
@@ -44,109 +40,77 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
     private static Context context;
     private static BitmapUtils instance;
     private static BitmapGlobalConfig globalConfig;
-    private static BitmapCache bitmapCache;
 
     /////////////////////////////////////////////// create ///////////////////////////////////////////////////
-    private BitmapUtils(Context context) {
+    private BitmapUtils(Context context, String diskCachePath) {
         BitmapUtils.context = context;
-        globalConfig = new BitmapGlobalConfig(context, this);
-        bitmapCache = new BitmapCache(globalConfig);
+        globalConfig = new BitmapGlobalConfig(context, diskCachePath);
     }
 
     public static BitmapUtils create(Context ctx) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
+            instance = new BitmapUtils(ctx.getApplicationContext(), null);
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSizePercent(context, memoryCachePercent);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemCacheSizePercent(memoryCachePercent);
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSize(memoryCacheSize);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemoryCacheSize(memoryCacheSize);
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent, int poolSize) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSizePercent(context, memoryCachePercent);
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemCacheSizePercent(memoryCachePercent);
             globalConfig.setPoolSize(poolSize);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize, int poolSize) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSize(memoryCacheSize);
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemoryCacheSize(memoryCacheSize);
             globalConfig.setPoolSize(poolSize);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent, int diskCacheSize, int poolSize) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSizePercent(context, memoryCachePercent);
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemCacheSizePercent(memoryCachePercent);
             globalConfig.setDiskCacheSize(diskCacheSize);
             globalConfig.setPoolSize(poolSize);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
         }
         return instance;
     }
 
     public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize, int diskCacheSize, int poolSize) {
         if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext());
-            globalConfig.setDiskCachePath(diskCachePath);
-            globalConfig.setMemCacheSize(memoryCacheSize);
+            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
+            globalConfig.setMemoryCacheSize(memoryCacheSize);
             globalConfig.setDiskCacheSize(diskCacheSize);
             globalConfig.setPoolSize(poolSize);
-
-            globalConfig.notifyMemoryCacheConfigChanged();
-            globalConfig.notifyDiskCacheConfigChanged();
         }
         return instance;
     }
@@ -200,7 +164,12 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
     }
 
     public BitmapUtils configCalculateBitmap(boolean neverCalculate) {
-        globalConfig.getBitmapDownloadProcess().configCalculateBitmap(neverCalculate);
+        globalConfig.getBitmapDownloadProcess().neverCalculate(neverCalculate);
+        return this;
+    }
+
+    public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
+        BitmapUtils.globalConfig = globalConfig;
         return this;
     }
 
@@ -307,14 +276,12 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
 
         Bitmap bitmap = null;
 
-        if (bitmapCache != null) {
-            bitmap = bitmapCache.getBitmapFromMemCache(uri);
-        }
+        bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
 
-        } else if (!bitmapLoadTaskExist(uri, imageView)) {
+        } else if (!bitmapLoadTaskExist(imageView, uri)) {
 
             final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, displayConfig);
             // set loading image
@@ -333,35 +300,35 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
     /////////////////////////////////////////////// cache /////////////////////////////////////////////////////////////////
 
     public void clearCache() {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR);
+        globalConfig.clearCache();
     }
 
     public void clearCache(String url) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_BY_KEY, url);
+        globalConfig.clearCache(url);
     }
 
     public void clearMemoryCache() {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_MEMORY);
+        globalConfig.clearMemoryCache();
     }
 
     public void clearMemoryCache(String url) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_MEMORY_BY_KEY, url);
+        globalConfig.clearMemoryCache(url);
     }
 
     public void clearDiskCache() {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_DISK);
+        globalConfig.clearDiskCache();
     }
 
     public void clearDiskCache(String url) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_DISK_BY_KEY, url);
+        globalConfig.clearDiskCache(url);
     }
 
     public void flushCache() {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_FLUSH);
+        globalConfig.flushCache();
     }
 
     public void closeCache() {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLOSE);
+        globalConfig.closeCache();
     }
 
     ////////////////////////////////////////// tasks //////////////////////////////////////////////////////////////////////
@@ -395,7 +362,7 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
         return null;
     }
 
-    private static boolean bitmapLoadTaskExist(Object uriData, ImageView imageView) {
+    private static boolean bitmapLoadTaskExist(ImageView imageView, Object uriData) {
         final BitmapLoadTask oldLoadTask = getBitmapTaskFromImageView(imageView);
 
         if (oldLoadTask != null) {
@@ -408,13 +375,6 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
             }
         }
         return false;
-    }
-
-    private Bitmap downloadBitmap(String uri, BitmapDisplayConfig config) {
-        if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-            return globalConfig.getBitmapDownloadProcess().downloadBitmap(uri, config);
-        }
-        return null;
     }
 
     private static class AsyncBitmapDrawable extends BitmapDrawable {
@@ -463,33 +423,36 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
                 }
             }
 
-            if (bitmapCache != null && !isCancelled() && getAttachedImageView() != null && !pauseTask) {
-                bitmap = bitmapCache.getBitmapFromDiskCache(uri);
+            // 从缓存获取图片
+            if (!isCancelled() && getAttachedImageView() != null && !pauseTask) {
+                bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri);
             }
 
+            // 下载图片
             if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !pauseTask) {
-                bitmap = downloadBitmap(uri, displayConfig);
+                bitmap = globalConfig.getBitmapDownloadProcess().downloadBitmap(uri, displayConfig);
             }
 
-            if (bitmap != null && bitmapCache != null) {
+            // 加入缓存
+            if (bitmap != null) {
                 format = format == null ? globalConfig.getDefaultCompressFormat() : format;
-                bitmapCache.addBitmapToCache(uri, bitmap, format);
+                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmap, format);
             }
 
             return bitmap;
         }
 
+        // 获取图片任务完成
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (isCancelled() || pauseTask) {
                 bitmap = null;
             }
 
-            // 判断线程和当前的ImageView是否是匹配
             final ImageView imageView = getAttachedImageView();
-            if (bitmap != null && imageView != null) {
+            if (bitmap != null && imageView != null) {//显示图片
                 globalConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
-            } else if (bitmap == null && imageView != null) {
+            } else if (bitmap == null && imageView != null) {//显示获取错误图片
                 globalConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
             }
         }
@@ -518,153 +481,4 @@ public class BitmapUtils implements BitmapGlobalConfigChangeCallBack {
             return null;
         }
     }
-
-    private class BitmapCacheManagementTask extends AsyncTask<Object, Void, Void> {
-        public static final int MESSAGE_INIT_MEMORY_CACHE = 0;
-        public static final int MESSAGE_INIT_DISK_CACHE = 1;
-        public static final int MESSAGE_FLUSH = 2;
-        public static final int MESSAGE_CLOSE = 3;
-        public static final int MESSAGE_CLEAR = 4;
-        public static final int MESSAGE_CLEAR_MEMORY = 5;
-        public static final int MESSAGE_CLEAR_DISK = 6;
-        public static final int MESSAGE_CLEAR_BY_KEY = 7;
-        public static final int MESSAGE_CLEAR_MEMORY_BY_KEY = 8;
-        public static final int MESSAGE_CLEAR_DISK_BY_KEY = 9;
-
-        @Override
-        protected Void doInBackground(Object... params) {
-            try {
-                switch ((Integer) params[0]) {
-                    case MESSAGE_INIT_MEMORY_CACHE:
-                        initMemoryCacheInBackground();
-                        break;
-                    case MESSAGE_INIT_DISK_CACHE:
-                        initDiskInBackground();
-                        break;
-                    case MESSAGE_FLUSH:
-                        clearMemoryCacheInBackground();
-                        flushCacheInBackground();
-                        break;
-                    case MESSAGE_CLOSE:
-                        clearMemoryCacheInBackground();
-                        closeCacheInBackground();
-                    case MESSAGE_CLEAR:
-                        clearCacheInBackground();
-                        break;
-                    case MESSAGE_CLEAR_MEMORY:
-                        clearMemoryCacheInBackground();
-                        break;
-                    case MESSAGE_CLEAR_DISK:
-                        clearDiskCacheInBackground();
-                        break;
-                    case MESSAGE_CLEAR_BY_KEY:
-                        clearCacheInBackground(String.valueOf(params[1]));
-                        break;
-                    case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                        clearMemoryCacheInBackground(String.valueOf(params[1]));
-                        break;
-                    case MESSAGE_CLEAR_DISK_BY_KEY:
-                        clearDiskCacheInBackground(String.valueOf(params[1]));
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                LogUtils.e(e.getMessage(), e);
-            }
-            return null;
-        }
-
-        private void initMemoryCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.initMemoryCache();
-            }
-        }
-
-        private void initDiskInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.initDiskCache();
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().initOriginalDiskCache();
-            }
-        }
-
-        private void clearCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.clearCache();
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().clearOriginalDiskCache();
-            }
-        }
-
-        private void clearMemoryCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.clearMemoryCache();
-            }
-        }
-
-        private void clearDiskCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.clearDiskCache();
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().clearOriginalDiskCache();
-            }
-        }
-
-        private void clearCacheInBackground(String key) {
-            if (bitmapCache != null) {
-                bitmapCache.clearCache(key);
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().clearOriginalDiskCache(key);
-            }
-        }
-
-        private void clearDiskCacheInBackground(String key) {
-            if (bitmapCache != null) {
-                bitmapCache.clearDiskCache(key);
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().clearOriginalDiskCache(key);
-            }
-        }
-
-        private void clearMemoryCacheInBackground(String key) {
-            if (bitmapCache != null) {
-                bitmapCache.clearMemoryCache(key);
-            }
-        }
-
-        private void flushCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.flush();
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().flushOriginalDiskCache();
-            }
-        }
-
-        private void closeCacheInBackground() {
-            if (bitmapCache != null) {
-                bitmapCache.close();
-            }
-            if (globalConfig != null && globalConfig.getBitmapDownloadProcess() != null) {
-                globalConfig.getBitmapDownloadProcess().closeOriginalDiskCache();
-            }
-        }
-    }
-
-    @Override
-    public void onMemoryCacheConfigChanged(BitmapGlobalConfig config) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_INIT_MEMORY_CACHE);
-    }
-
-    @Override
-    public void onDiskCacheConfigChanged(BitmapGlobalConfig config) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_INIT_DISK_CACHE);
-    }
-
 }
