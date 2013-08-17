@@ -66,9 +66,10 @@ List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("
 * 无需findViewById和setClickListener等。
 
 ```java
-@ViewInject(id=R.id.textView)
+@ViewInject(R.id.textView)
 TextView textView;
 
+// 取消了之前使用方法名绑定事件的方式，使用id绑定不受混淆影响
 @OnClick(R.id.test_button)
 public void testButtonClick(View v) {
     ...
