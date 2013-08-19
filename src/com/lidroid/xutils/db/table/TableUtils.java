@@ -166,7 +166,8 @@ public class TableUtils {
 
         try {
             com.lidroid.xutils.db.table.Id id = getId(entity.getClass());
-            return id.getColumnValue(entity) == null;
+            Object idValue = id.getColumnValue(entity);
+            return idValue != null && !idValue.equals(0) && idValue.toString().length() > 0;
         } catch (Exception e) {
             return false;
         }
