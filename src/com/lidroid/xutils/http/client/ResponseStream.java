@@ -49,10 +49,10 @@ public class ResponseStream extends InputStream {
         this.expiry = expiry;
     }
 
-    private String _redirectResult;
+    private String _directResult;
 
     public ResponseStream(String result) throws IOException {
-        _redirectResult = result;
+        _directResult = result;
     }
 
     public InputStream getBaseStream() {
@@ -60,22 +60,22 @@ public class ResponseStream extends InputStream {
     }
 
     public int getStatusCode() {
-        if (_redirectResult != null) return 200;
+        if (_directResult != null) return 200;
         return baseResponse.getStatusLine().getStatusCode();
     }
 
     public Locale getLocale() {
-        if (_redirectResult != null) return Locale.getDefault();
+        if (_directResult != null) return Locale.getDefault();
         return baseResponse.getLocale();
     }
 
     public String getReasonPhrase() {
-        if (_redirectResult != null) return "";
+        if (_directResult != null) return "";
         return baseResponse.getStatusLine().getReasonPhrase();
     }
 
     public String readString() throws IOException {
-        if (_redirectResult != null) return _redirectResult;
+        if (_directResult != null) return _directResult;
         if (baseStream == null) return null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(baseStream, charset));
@@ -104,7 +104,7 @@ public class ResponseStream extends InputStream {
     }
 
     public void readFile(String savePath) throws IOException {
-        if (_redirectResult != null) return;
+        if (_directResult != null) return;
         if (baseStream == null) return;
         FileOutputStream out = null;
         try {
