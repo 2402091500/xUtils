@@ -22,10 +22,7 @@ import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class BitmapDownloadProcess {
     private boolean isOriginalDiskCacheReadied = false;
@@ -119,6 +116,40 @@ public class BitmapDownloadProcess {
         }
 
         return bitmap;
+    }
+
+    public Bitmap getBitmapFromDiskCache(String uri) {
+        synchronized (mOriginalDiskCacheLock) {
+            while (!isOriginalDiskCacheReadied) {
+                try {
+                    mOriginalDiskCacheLock.wait();
+                } catch (InterruptedException e) {
+                }
+            }
+            if (mOriginalDiskCache != null) {
+                InputStream inputStream = null;
+                try {
+                    final LruDiskCache.Snapshot snapshot = mOriginalDiskCache.get(uri);
+                    if (snapshot != null) {
+                        inputStream = snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX);
+                        if (inputStream != null) {
+                            final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            return bitmap;
+                        }
+                    }
+                } catch (final IOException e) {
+                    LogUtils.e(e.getMessage(), e);
+                } finally {
+                    try {
+                        if (inputStream != null) {
+                            inputStream.close();
+                        }
+                    } catch (IOException e) {
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     public void initOriginalDiskCache() {

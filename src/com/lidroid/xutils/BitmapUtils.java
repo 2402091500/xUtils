@@ -331,6 +331,14 @@ public class BitmapUtils {
         globalConfig.closeCache();
     }
 
+    public Bitmap getBitmapFromMemCache(String uri) {
+        return globalConfig.getBitmapCache().getBitmapFromMemCache(uri);
+    }
+
+    public BitmapGlobalConfig getBitmapGlobalConfig() {
+        return globalConfig;
+    }
+
     ////////////////////////////////////////// tasks //////////////////////////////////////////////////////////////////////
 
     public void resumeTasks() {
