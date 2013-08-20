@@ -92,7 +92,7 @@ public class SyncHttpHandler {
     }
 
     private ResponseStream handleResponse(HttpResponse response) throws HttpException, IOException {
-        if (response != null) return null;
+        if (response == null) return null;
         StatusLine status = response.getStatusLine();
         if (status.getStatusCode() < 300) {
             return new ResponseStream(response, charset, _getRequestUrl, expiry);
