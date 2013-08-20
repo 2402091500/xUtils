@@ -15,10 +15,10 @@
 
 package com.lidroid.xutils.db.table;
 
+import com.lidroid.xutils.db.annotation.*;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
-import com.lidroid.xutils.db.annotation.Transient;
 import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -140,6 +140,27 @@ public class ColumnUtils {
                 columnType.equals(Short.class) ||
                 columnType.equals(CharSequence.class) ||
                 columnType.equals(Character.class);
+    }
+
+    public static boolean isUnique(Field field) {
+        return field.getAnnotation(Unique.class) != null;
+    }
+
+    public static boolean isNotNull(Field field) {
+        return field.getAnnotation(NotNull.class) != null;
+    }
+
+    /**
+     * @param field
+     * @return check.value or null
+     */
+    public static String getCheck(Field field) {
+        Check check = field.getAnnotation(Check.class);
+        if (check != null) {
+            return check.value();
+        } else {
+            return null;
+        }
     }
 
     public static Object valueStr2SimpleTypeFieldValue(Class columnFieldType, String valueStr) {

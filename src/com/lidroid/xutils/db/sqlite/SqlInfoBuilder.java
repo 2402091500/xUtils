@@ -190,7 +190,18 @@ public class SqlInfoBuilder {
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
             sqlBuffer.append("\"").append(column.getColumnName()).append("\"  ");
-            sqlBuffer.append(column.getDbType()).append(",");
+            sqlBuffer.append(column.getDbType());
+            if (ColumnUtils.isUnique(column.getColumnField())) {
+                sqlBuffer.append(" UNIQUE");
+            }
+            if (ColumnUtils.isNotNull(column.getColumnField())) {
+                sqlBuffer.append(" NOT NULL");
+            }
+            String check = ColumnUtils.getCheck(column.getColumnField());
+            if (check != null) {
+                sqlBuffer.append(" CHECK(").append(check).append(")");
+            }
+            sqlBuffer.append(",");
         }
 
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
