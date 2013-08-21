@@ -62,8 +62,6 @@ public class HttpUtils {
 
     public DownloadRedirectHandler downloadRedirectHandler;
 
-    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
-
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
@@ -115,15 +113,17 @@ public class HttpUtils {
 
     private final static int DEFAULT_RETRY_TIMES = 5;
 
-    private static int httpThreadCount = 3;
+    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+
+    private final static int httpThreadCount = 3;
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
-            Thread tread = new Thread(r, "HttpUtils #" + mCount.getAndIncrement());
-            tread.setPriority(Thread.NORM_PRIORITY - 1);
-            return tread;
+            Thread thread = new Thread(r, "HttpUtils #" + mCount.getAndIncrement());
+            thread.setPriority(Thread.NORM_PRIORITY - 1);
+            return thread;
         }
     };
 
