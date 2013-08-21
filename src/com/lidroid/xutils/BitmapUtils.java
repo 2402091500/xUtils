@@ -168,6 +168,16 @@ public class BitmapUtils {
         return this;
     }
 
+    public BitmapUtils configMemoryCacheEnabled(boolean enabled) {
+        globalConfig.setMemoryCacheEnabled(enabled);
+        return this;
+    }
+
+    public BitmapUtils configDiskCacheEnabled(boolean enabled) {
+        globalConfig.setDiskCacheEnabled(enabled);
+        return this;
+    }
+
     public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
         BitmapUtils.globalConfig = globalConfig;
         return this;
