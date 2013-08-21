@@ -1,5 +1,6 @@
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http.client.entity;
 
+import com.lidroid.xutils.http.client.util.URLEncodedUtils;
 import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.AbstractHttpEntity;

@@ -79,12 +79,12 @@ public class ResponseStream extends InputStream {
         if (baseStream == null) return null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(baseStream, charset));
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             String line = "";
             while ((line = reader.readLine()) != null) {
-                buffer.append(line);
+                sb.append(line);
             }
-            String result = buffer.toString();
+            String result = sb.toString();
             if (url != null) {
                 HttpUtils.sHttpGetCache.put(url, result, expiry);
             }

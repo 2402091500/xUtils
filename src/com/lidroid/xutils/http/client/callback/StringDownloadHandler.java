@@ -16,37 +16,50 @@ package com.lidroid.xutils.http.client.callback;
 
 import org.apache.http.HttpEntity;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class StringDownloadHandler {
 
     public Object handleEntity(HttpEntity entity, RequestCallBackHandler callback, String charset) throws IOException {
-        if (entity == null)
+        if (entity == null) return null;
+
+        long total = entity.getContentLength();
+        long current = 0;
+
+        if (callback != null && !callback.updateProgress(total, current, true)) {
             return null;
+        }
 
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-
-        long count = entity.getContentLength();
-        long curCount = 0;
-        int len = -1;
-        InputStream is = entity.getContent();
-        while ((len = is.read(buffer)) != -1) {
-            outStream.write(buffer, 0, len);
-            curCount += len;
+        InputStream ins = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            ins = entity.getContent();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ins, charset));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+                current += line.getBytes(charset).length;
+                if (callback != null) {
+                    if (!callback.updateProgress(total, current, false)) {
+                        throw new IOException("stop");
+                    }
+                }
+            }
             if (callback != null) {
-                callback.updateProgress(count, curCount, false);
+                callback.updateProgress(total, current, true);
+            }
+        } finally {
+            if (ins != null) {
+                try {
+                    ins.close();
+                } catch (Exception e) {
+                }
             }
         }
-        if (callback != null) {
-            callback.updateProgress(count, curCount, true);
-        }
-        byte[] data = outStream.toByteArray();
-        outStream.close();
-        is.close();
-        return new String(data, charset);
+        return sb.toString();
     }
 
 }

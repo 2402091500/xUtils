@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client.callback;
+package com.lidroid.xutils.http.client.entity;
+
+import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 
 /**
  * Created with IntelliJ IDEA.

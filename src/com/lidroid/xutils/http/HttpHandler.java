@@ -232,6 +232,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     @Override
     public void stop() {
         this.mStop = true;
+        this.cancel(true);
     }
 
     public boolean isStop() {

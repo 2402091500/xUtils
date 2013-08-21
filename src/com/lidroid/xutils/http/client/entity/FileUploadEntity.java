@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.UploadEntity;
 import org.apache.http.entity.FileEntity;
 
 import java.io.*;
@@ -27,16 +26,15 @@ import java.io.*;
  * Date: 13-6-24
  * Time: 下午4:45
  */
-public class UploadFileEntity extends FileEntity implements UploadEntity {
+public class FileUploadEntity extends FileEntity implements UploadEntity {
 
-    public UploadFileEntity(File file, String contentType) {
+    public FileUploadEntity(File file, String contentType) {
         super(file, contentType);
         fileSize = file.length();
-        uploadedSize = 0;
     }
 
     private long fileSize;
-    private long uploadedSize;
+    private long uploadedSize = 0;
 
     @Override
     public void writeTo(OutputStream outStream) throws IOException {

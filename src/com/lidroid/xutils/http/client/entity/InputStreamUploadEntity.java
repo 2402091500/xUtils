@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.UploadEntity;
 import org.apache.http.entity.AbstractHttpEntity;
 
 import java.io.IOException;
@@ -29,22 +28,20 @@ import java.io.OutputStream;
  * Date: 13-6-28
  * Time: 上午12:14
  */
-public class UploadInputStreamEntity extends AbstractHttpEntity implements UploadEntity {
+public class InputStreamUploadEntity extends AbstractHttpEntity implements UploadEntity {
 
     private final static int BUFFER_SIZE = 2048;
 
     private final InputStream content;
     private final long length;
 
-    public UploadInputStreamEntity(final InputStream inputStream, long length) {
+    public InputStreamUploadEntity(final InputStream inputStream, long length) {
         super();
         if (inputStream == null) {
             throw new IllegalArgumentException("Source input stream may not be null");
         }
         this.content = inputStream;
         this.length = length;
-
-        uploadedSize = 0;
     }
 
     public boolean isRepeatable() {
@@ -59,7 +56,7 @@ public class UploadInputStreamEntity extends AbstractHttpEntity implements Uploa
         return this.content;
     }
 
-    private long uploadedSize;
+    private long uploadedSize = 0;
 
     public void writeTo(final OutputStream outStream) throws IOException {
         if (outStream == null) {

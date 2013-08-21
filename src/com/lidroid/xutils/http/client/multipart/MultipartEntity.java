@@ -16,7 +16,7 @@
 package com.lidroid.xutils.http.client.multipart;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.UploadEntity;
+import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -130,7 +130,7 @@ public class MultipartEntity implements HttpEntity, UploadEntity {
     /**
      * @param multipartSubtype default "form-data"
      */
-    public void changeMultipartSubtype(String multipartSubtype) {
+    public void setMultipartSubtype(String multipartSubtype) {
         this.multipartSubtype = multipartSubtype;
         this.multipart.setSubType(multipartSubtype);
         this.contentType = new BasicHeader(
@@ -168,6 +168,10 @@ public class MultipartEntity implements HttpEntity, UploadEntity {
 
     public void addPart(final String name, final ContentBody contentBody) {
         addPart(new FormBodyPart(name, contentBody));
+    }
+
+    public void addPart(final String name, final ContentBody contentBody, final String contentDisposition) {
+        addPart(new FormBodyPart(name, contentBody, contentDisposition));
     }
 
     public boolean isRepeatable() {

@@ -17,15 +17,12 @@ package com.lidroid.xutils.http.client.callback;
 import android.text.TextUtils;
 import org.apache.http.HttpEntity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class FileDownloadHandler {
 
     public Object handleEntity(HttpEntity entity, RequestCallBackHandler callback, String target, boolean isResume) throws IOException {
-        if (TextUtils.isEmpty(target) || target.trim().length() == 0) {
+        if (entity == null || TextUtils.isEmpty(target)) {
             return null;
         }
 
@@ -44,21 +41,25 @@ public class FileDownloadHandler {
             fileOutputStream = new FileOutputStream(target);
         }
 
-        InputStream inputStream = entity.getContent();
         long total = entity.getContentLength() + current;
-
-        if (current >= total) {
-            return targetFile;
-        }
 
         if (callback != null && !callback.updateProgress(total, current, true)) {
             return null;
         }
 
+        InputStream ins = null;
         try {
+            ins = entity.getContent();
+            BufferedInputStream bis = null;
+            if (ins instanceof BufferedInputStream) {
+                bis = (BufferedInputStream) ins;
+            } else {
+                bis = new BufferedInputStream(ins);
+            }
+
             byte[] tmp = new byte[4096];
             int len;
-            while ((len = inputStream.read(tmp)) != -1) {
+            while ((len = bis.read(tmp)) != -1) {
                 fileOutputStream.write(tmp, 0, len);
                 current += len;
                 if (callback != null) {
@@ -72,9 +73,9 @@ public class FileDownloadHandler {
                 callback.updateProgress(total, current, true);
             }
         } finally {
-            if (inputStream != null) {
+            if (ins != null) {
                 try {
-                    inputStream.close();
+                    ins.close();
                 } catch (Exception e) {
                 }
             }

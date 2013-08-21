@@ -14,6 +14,7 @@
  */
 package com.lidroid.xutils.http.client;
 
+import com.lidroid.xutils.http.client.entity.BodyParamsEntity;
 import com.lidroid.xutils.http.client.multipart.MultipartEntity;
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
 import com.lidroid.xutils.http.client.multipart.content.FileBody;
@@ -189,7 +190,6 @@ public class RequestParams {
             }
 
             for (ConcurrentHashMap.Entry<String, ContentBody> entry : fileParams.entrySet()) {
-                ContentBody file = entry.getValue();
                 multipartEntity.addPart(entry.getKey(), entry.getValue());
             }
 

@@ -1,7 +1,8 @@
 package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.UploadEntity;
+import com.lidroid.xutils.http.client.entity.UploadEntity;
+import com.lidroid.xutils.http.client.util.URIBuilder;
 import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -129,8 +130,7 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        HttpRequest clone =
-                (HttpRequest) super.clone();
+        HttpRequest clone = (HttpRequest) super.clone();
         if (this.entity != null) {
             clone.entity = (HttpEntity) CloneUtils.clone(this.entity);
         }

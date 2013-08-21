@@ -43,7 +43,28 @@ public class FormBodyPart {
         this.body = body;
         this.header = new MinimalFieldHeader();
 
-        generateContentDisp(body);
+        generateContentDisposition(body);
+        generateContentType(body);
+        generateTransferEncoding(body);
+    }
+
+    public FormBodyPart(final String name, final ContentBody body, final String contentDisposition) {
+        super();
+        if (name == null) {
+            throw new IllegalArgumentException("Name may not be null");
+        }
+        if (body == null) {
+            throw new IllegalArgumentException("Body may not be null");
+        }
+        this.name = name;
+        this.body = body;
+        this.header = new MinimalFieldHeader();
+
+        if (contentDisposition != null) {
+            addField(MIME.CONTENT_DISPOSITION, contentDisposition);
+        } else {
+            generateContentDisposition(body);
+        }
         generateContentType(body);
         generateTransferEncoding(body);
     }
@@ -67,7 +88,7 @@ public class FormBodyPart {
         this.header.addField(new MinimalField(name, value));
     }
 
-    protected void generateContentDisp(final ContentBody body) {
+    protected void generateContentDisposition(final ContentBody body) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("form-data; name=\"");
         buffer.append(getName());

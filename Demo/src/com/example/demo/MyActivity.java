@@ -3,7 +3,6 @@ package com.example.demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.lidroid.xutils.BitmapUtils;
@@ -19,8 +18,8 @@ import com.lidroid.xutils.http.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -65,12 +64,13 @@ public class MyActivity extends Activity {
         //testUpload();
         //testPost();
         //testGet();
+        //testGZip();
     }
 
     private void testDownload() {
         HttpUtils http = new HttpUtils();
-        HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/httpclient/source/httpcomponents-client-4.2.5-src.zip",
-                "/sdcard/httpcomponents-client-4.2.5-src.zip",
+        HttpHandler handler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
+                "/sdcard/fileexplorer.apk",
                 new RequestCallBack<File>() {
 
                     @Override
@@ -88,6 +88,34 @@ public class MyActivity extends Activity {
                         testTextView.setText("downloaded:" + result.getPath());
                     }
 
+
+                    @Override
+                    public void onFailure(Throwable error, String msg) {
+                        testTextView.setText(msg);
+                    }
+                });
+    }
+
+    private void testGZip() {
+        HttpUtils http = new HttpUtils();
+        HttpHandler handler = http.send(HttpRequest.HttpMethod.GET,
+                "http://www.yzznl.cn/",
+                new RequestCallBack<String>() {
+
+                    @Override
+                    public void onStart() {
+                        testTextView.setText("conn...");
+                    }
+
+                    @Override
+                    public void onLoading(long total, long current) {
+                        testTextView.setText(current + "/" + total);
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        testTextView.setText("get:" + result);
+                    }
 
                     @Override
                     public void onFailure(Throwable error, String msg) {

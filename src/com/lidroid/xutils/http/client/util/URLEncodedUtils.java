@@ -25,7 +25,7 @@
  *
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http.client.util;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -48,7 +48,7 @@ import java.util.*;
  *
  * @since 4.0
  */
-class URLEncodedUtils {
+public class URLEncodedUtils {
 
     public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
     private static final String PARAMETER_SEPARATOR = "&";

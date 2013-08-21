@@ -24,7 +24,7 @@
  *
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http.client.util;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.conn.util.InetAddressUtils;
@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @since 4.2
  */
-class URIBuilder {
+public class URIBuilder {
 
     private String scheme;
     private String encodedSchemeSpecificPart;
