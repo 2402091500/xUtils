@@ -60,6 +60,10 @@ public class MyActivity extends Activity {
 
         bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");//"/sdcard/test.jpg");
 
+        if (downloadHandler != null) {
+            downloadHandler.stop();
+        }
+
         testDownload();
         //testUpload();
         //testPost();
@@ -67,33 +71,37 @@ public class MyActivity extends Activity {
         //testGZip();
     }
 
+    HttpHandler downloadHandler = null;
+
     private void testDownload() {
-        HttpUtils http = new HttpUtils();
-        HttpHandler handler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
-                "/sdcard/fileexplorer.apk",
-                new RequestCallBack<File>() {
+        if (downloadHandler == null) {
+            HttpUtils http = new HttpUtils();
+            downloadHandler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
+                    "/sdcard/fileexplorer.apk",
+                    new RequestCallBack<File>() {
 
-                    @Override
-                    public void onStart() {
-                        testTextView.setText("conn...");
-                    }
+                        @Override
+                        public void onStart() {
+                            testTextView.setText("conn...");
+                        }
 
-                    @Override
-                    public void onLoading(long total, long current) {
-                        testTextView.setText(current + "/" + total);
-                    }
+                        @Override
+                        public void onLoading(long total, long current) {
+                            testTextView.setText(current + "/" + total);
+                        }
 
-                    @Override
-                    public void onSuccess(File result) {
-                        testTextView.setText("downloaded:" + result.getPath());
-                    }
+                        @Override
+                        public void onSuccess(File result) {
+                            testTextView.setText("downloaded:" + result.getPath());
+                        }
 
 
-                    @Override
-                    public void onFailure(Throwable error, String msg) {
-                        testTextView.setText(msg);
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable error, String msg) {
+                            testTextView.setText(msg);
+                        }
+                    });
+        }
     }
 
     private void testGZip() {
