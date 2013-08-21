@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.db.annotation.*;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
@@ -78,17 +79,17 @@ public class ColumnUtils {
 
     public static String getColumnNameByField(Field field) {
         Column column = field.getAnnotation(Column.class);
-        if (column != null && column.column().trim().length() > 0) {
+        if (column != null && !TextUtils.isEmpty(column.column())) {
             return column.column();
         }
 
         Id id = field.getAnnotation(Id.class);
-        if (id != null && id.column().trim().length() != 0) {
+        if (id != null && !TextUtils.isEmpty(id.column())) {
             return id.column();
         }
 
         Foreign foreign = field.getAnnotation(Foreign.class);
-        if (foreign != null && foreign.column().trim().length() > 0) {
+        if (foreign != null && !TextUtils.isEmpty(foreign.column())) {
             return foreign.column();
         }
 
@@ -98,7 +99,7 @@ public class ColumnUtils {
     public static String getForeignColumnNameByField(Field field) {
 
         Foreign foreign = field.getAnnotation(Foreign.class);
-        if (foreign != null && foreign.column().trim().length() > 0) {
+        if (foreign != null) {
             return foreign.foreign();
         }
 

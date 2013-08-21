@@ -50,7 +50,7 @@ public class SqlInfoBuilder {
             result.addValue(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
-        sqlBuffer.append(") VALUES ( ");
+        sqlBuffer.append(") VALUES (");
 
         int length = keyValueList.size();
         for (int i = 0; i < length; i++) {

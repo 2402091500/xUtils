@@ -37,30 +37,30 @@ public class SimpleDownloader implements Downloader {
      */
     public boolean downloadToLocalStreamByUri(String uri, OutputStream outputStream) {
         URLConnection urlConnection = null;
-        BufferedInputStream ins = null;
+        BufferedInputStream bis = null;
 
         try {
             if (uri.startsWith("/")) {
                 FileInputStream fileInputStream = new FileInputStream(uri);
-                ins = new BufferedInputStream(fileInputStream);
+                bis = new BufferedInputStream(fileInputStream);
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
-                ins = new BufferedInputStream(urlConnection.getInputStream());
+                bis = new BufferedInputStream(urlConnection.getInputStream());
             }
 
             byte[] buffer = new byte[4096];
             int len = 0;
-            while ((len = ins.read(buffer)) != -1) {
+            while ((len = bis.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
             }
             return true;
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         } finally {
-            if (ins != null) {
+            if (bis != null) {
                 try {
-                    ins.close();
+                    bis.close();
                 } catch (IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 }

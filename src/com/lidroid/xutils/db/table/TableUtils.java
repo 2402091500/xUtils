@@ -151,12 +151,12 @@ public class TableUtils {
         return id;
     }
 
-    public static String getPrimaryKeyFieldName(Class<?> entityType) {
+    private static String getPrimaryKeyFieldName(Class<?> entityType) {
         com.lidroid.xutils.db.table.Id id = getId(entityType);
         return id == null ? null : id.getColumnField().getName();
     }
 
-    public static String getPrimaryKeyColumnName(Class<?> entityType) {
+    private static String getPrimaryKeyColumnName(Class<?> entityType) {
         com.lidroid.xutils.db.table.Id id = getId(entityType);
         return id == null ? null : id.getColumnName();
     }
