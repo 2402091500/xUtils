@@ -1,7 +1,6 @@
 ## xUtils简介
 * xUtils 包含了很多实用的android工具。
-* xUtils 源于Afinal框架，对Afinal进行了大量重构。
-* xUtils 具有Afinal的一些特性如：无需考虑bitmap在android中加载的时候oom的问题和快速滑动的时候图片加载位置错位等问题；简洁，约定大于配置...
+* xUtils 源于Afinal框架，对Afinal进行了大量重构，使得xUtils支持大文件上传，更全面的http请求协议支持，拥有更加灵活的ORM，更多的事件注解支持且不受混淆影响...
 
 
 ## 目前xUtils主要有四大模块：
