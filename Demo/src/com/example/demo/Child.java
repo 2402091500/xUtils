@@ -36,8 +36,12 @@ public class Child extends EntityBase {
     @Foreign(column = "parentId", foreign = "id")
     public Parent parent;
 
+
+    // Transient使这个列被忽略，不存入数据库
     @Transient
     public String willIgnore;
+
+    public static String staticFieldWillIgnore; // 静态字段也不会存入数据库
 
     private String text;
 
