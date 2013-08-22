@@ -277,6 +277,7 @@ public class MyActivity extends Activity {
 
         try {
 
+            //DbUtils db = DbUtils.create(this, "/sdcard/", "test");
             DbUtils db = DbUtils.create(this);
             db.configAllowTransaction(true);
 
