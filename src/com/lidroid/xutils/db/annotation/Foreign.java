@@ -22,7 +22,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Foreign {
-    public String column() default "";
 
-    public String foreign();
+    String column() default "";
+
+    String foreign();
 }
