@@ -92,7 +92,7 @@ public class ViewUtils {
                     for (Annotation annotation : annotations) {
                         if (annotation.annotationType().getCanonicalName().startsWith(prefix)) {
                             try {
-                                // 为了混淆是能使用确保事件注解只有一个用来获取id的方法
+                                // 为了混淆后能使用事件注解，确保事件注解只有一个用来获取id的方法
                                 Method[] getValueMethods = annotation.annotationType().getDeclaredMethods();
                                 if (getValueMethods == null || getValueMethods.length != 1) {
                                     continue;
