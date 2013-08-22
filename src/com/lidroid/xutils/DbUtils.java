@@ -614,6 +614,15 @@ public class DbUtils {
         }
     }
 
+    public void dropTable(Class<?> entityType) throws DbException {
+        try {
+            Table table = Table.get(entityType);
+            execNonQuery("DROP TABLE " + table.getTableName());
+        } catch (Exception e) {
+            throw new DbException(e);
+        }
+    }
+
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
     private void debugSql(String sql) {
         if (config != null && debug) {
