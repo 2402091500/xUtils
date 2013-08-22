@@ -69,6 +69,28 @@ public class MyActivity extends Activity {
         //testPost();
         //testGet();
         //testGZip();
+
+        // 测试同步请求
+        /*new AsyncTask<Object, Object, String>() {
+
+            @Override
+            protected String doInBackground(Object... objects) {
+                HttpUtils httpUtils = new HttpUtils();
+                try {
+                    return httpUtils.sendSync(HttpRequest.HttpMethod.GET, "http://www.baidu.com").readString();
+                } catch (HttpException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                testTextView.setText(result);
+            }
+        }.execute(null);*/
     }
 
     HttpHandler downloadHandler = null;

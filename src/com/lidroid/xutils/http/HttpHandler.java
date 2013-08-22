@@ -71,7 +71,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     }
 
     // 执行请求
-    private void doSendRequest(HttpRequestBase request) throws HttpException {
+    private Object sendRequest(HttpRequestBase request) throws HttpException {
         if (isResume && isDownloadingFile) {
             File downloadFile = new File(fileSavePath);
             long fileLen = 0;
@@ -86,6 +86,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         boolean retry = true;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
+            IOException exception = null;
             try {
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
                     _getRequestUrl = request.getURI().toString();
@@ -95,26 +96,35 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 if (_getRequestUrl != null) {
                     String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
                     if (result != null) { // 未过期的返回字符串的get请求直接返回结果
-                        publishProgress(UPDATE_SUCCESS, result);
-                        return;
+                        return result;
                     }
                 }
+
+                Object responseBody = null;
                 if (!isCancelled()) {
                     HttpResponse response = client.execute(request, context);
-                    handleResponse(response);
+                    responseBody = handleResponse(response);
                 }
-                return;
+                return responseBody;
             } catch (UnknownHostException e) {
-                publishProgress(UPDATE_FAILURE, e, e.getMessage());
-                return;
+                exception = e;
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (IOException e) {
-                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
+                exception = e;
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (NullPointerException e) {
-                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
+                exception = new IOException(e);
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (Exception e) {
-                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
+                exception = new IOException(e);
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+            } finally {
+                if (!retry && exception != null) {
+                    throw new HttpException(exception);
+                }
             }
         }
+        return null;
     }
 
     @Override
@@ -126,7 +136,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         }
         try {
             publishProgress(UPDATE_START);
-            doSendRequest((HttpRequestBase) params[0]);
+            Object responseBody = sendRequest((HttpRequestBase) params[0]);
+            publishProgress(UPDATE_SUCCESS, responseBody);
         } catch (HttpException e) {
             publishProgress(UPDATE_FAILURE, e, e.getMessage());
         }
@@ -172,56 +183,36 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         super.onProgressUpdate(values);
     }
 
-    private void handleResponse(HttpResponse response) {
+    private Object handleResponse(HttpResponse response) throws HttpException, IOException {
         if (response == null) {
-            publishProgress(UPDATE_FAILURE, new HttpException("UNKNOWN ERROR"), "response is null");
-            return;
+            throw new HttpException("response is null");
         }
         StatusLine status = response.getStatusLine();
         if (status.getStatusCode() < 300) {
-            try {
-                HttpEntity entity = response.getEntity();
-                Object responseBody = null;
-                if (entity != null) {
-                    lastUpdateTime = SystemClock.uptimeMillis();
-                    if (isDownloadingFile) {
-                        responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
-                    } else {
-                        responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
-                        HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) responseBody, expiry);
-                    }
-
+            HttpEntity entity = response.getEntity();
+            Object responseBody = null;
+            if (entity != null) {
+                lastUpdateTime = SystemClock.uptimeMillis();
+                if (isDownloadingFile) {
+                    responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
+                } else {
+                    responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
+                    HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) responseBody, expiry);
                 }
-                publishProgress(UPDATE_SUCCESS, responseBody);
-            } catch (IOException e) {
-                publishProgress(UPDATE_FAILURE, e, e.getMessage());
             }
+            return responseBody;
         } else if (status.getStatusCode() == 302) {
             if (downloadRedirectHandler == null) {
                 downloadRedirectHandler = new DefaultDownloadRedirectHandler();
             }
             HttpRequestBase request = downloadRedirectHandler.getDirectRequest(response);
             if (request != null) {
-                try {
-                    response = client.execute(request, context);
-                    if (!isCancelled()) {
-                        handleResponse(response);
-                    }
-                } catch (IOException e) {
-                    publishProgress(UPDATE_FAILURE, e, e.getMessage());
-                }
+                return this.sendRequest(request);
             }
-
         } else {
-            String errorMsg = "response status error code:" + status.getStatusCode();
-            if (status.getStatusCode() == 416 && isResume) {
-                errorMsg += " \n maybe you have download complete.";
-            }
-            publishProgress(
-                    UPDATE_FAILURE,
-                    new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase()),
-                    errorMsg);
+            throw new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase());
         }
+        return null;
     }
 
     private boolean mStop = false;

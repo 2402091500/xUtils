@@ -64,6 +64,7 @@ public class SyncHttpHandler {
         boolean retry = true;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
+            IOException exception = null;
             try {
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
                     _getRequestUrl = request.getURI().toString();
@@ -79,13 +80,21 @@ public class SyncHttpHandler {
                 HttpResponse response = client.execute(request, context);
                 return handleResponse(response);
             } catch (UnknownHostException e) {
-                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
+                exception = e;
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (IOException e) {
-                retry = retryHandler.retryRequest(e, ++retriedTimes, context);
+                exception = e;
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (NullPointerException e) {
-                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
+                exception = new IOException(e);
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (Exception e) {
-                retry = retryHandler.retryRequest(new IOException(e), ++retriedTimes, context);
+                exception = new IOException(e);
+                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+            } finally {
+                if (!retry && exception != null) {
+                    throw new HttpException(exception);
+                }
             }
         }
         return null;

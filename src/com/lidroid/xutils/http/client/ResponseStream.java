@@ -84,11 +84,11 @@ public class ResponseStream extends InputStream {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
-            String result = sb.toString();
+            _directResult = sb.toString();
             if (url != null) {
-                HttpUtils.sHttpGetCache.put(url, result, expiry);
+                HttpUtils.sHttpGetCache.put(url, _directResult, expiry);
             }
-            return result;
+            return _directResult;
         } catch (IOException e) {
             throw e;
         } finally {
