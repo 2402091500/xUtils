@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.util.LogUtils;
@@ -30,7 +31,7 @@ public class TableUtils {
 
     public static String getTableName(Class<?> entityType) {
         Table table = entityType.getAnnotation(Table.class);
-        if (table == null || table.name().trim().length() == 0) {
+        if (table == null || TextUtils.isEmpty(table.name())) {
             //当没有注解的时候默认用类的名称作为表名,并把点（.）替换为下划线(_)
             return entityType.getName().replace('.', '_');
         }
@@ -112,7 +113,9 @@ public class TableUtils {
     private static ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id> entityIdMap = new ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id>();
 
     public static synchronized com.lidroid.xutils.db.table.Id getId(Class<?> entityType) {
-        if (Object.class.equals(entityType)) return null;
+        if (Object.class.equals(entityType)) {
+            throw new RuntimeException("this model[" + entityType + "] has no any field");
+        }
 
         if (entityIdMap.containsKey(entityType.getCanonicalName())) {
             return entityIdMap.get(entityType.getCanonicalName());
@@ -137,13 +140,10 @@ public class TableUtils {
                     }
                 }
             }
+        }
 
-            if (primaryKeyField == null && !Object.class.equals(entityType.getSuperclass())) {
-                return getId(entityType.getSuperclass());
-            }
-
-        } else {
-            throw new RuntimeException("this model[" + entityType + "] has no any field");
+        if (primaryKeyField == null) {
+            return getId(entityType.getSuperclass());
         }
 
         com.lidroid.xutils.db.table.Id id = new com.lidroid.xutils.db.table.Id(entityType, primaryKeyField);
