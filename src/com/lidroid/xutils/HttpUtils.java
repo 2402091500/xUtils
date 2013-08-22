@@ -63,7 +63,7 @@ public class HttpUtils {
     public DownloadRedirectHandler downloadRedirectHandler;
 
     public HttpUtils() {
-        this(HttpUtils.defaultConnTimeout);
+        this(HttpUtils.DEFAULT_CONN_TIMEOUT);
     }
 
     public HttpUtils(int connTimeout) {
@@ -123,11 +123,11 @@ public class HttpUtils {
 
     private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime(); // httpGetCache过期时间
 
-    private final static int defaultConnTimeout = 1000 * 10; // 默认10秒超时
+    private final static int DEFAULT_CONN_TIMEOUT = 1000 * 10; // 默认10秒超时
 
     private final static int DEFAULT_RETRY_TIMES = 5;  // 默认错误重试次数
 
-    private final static int httpThreadCount = 3; // http线程池数量
+    private final static int HTTP_THREAD_POOL_SIZE = 3; // http线程池数量
 
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
@@ -142,7 +142,7 @@ public class HttpUtils {
         }
     };
 
-    private static final Executor executor = Executors.newFixedThreadPool(httpThreadCount, sThreadFactory);
+    private static final Executor executor = Executors.newFixedThreadPool(HTTP_THREAD_POOL_SIZE, sThreadFactory);
 
     public HttpClient getHttpClient() {
         return this.httpClient;
