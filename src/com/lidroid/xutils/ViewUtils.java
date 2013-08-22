@@ -92,8 +92,12 @@ public class ViewUtils {
                     for (Annotation annotation : annotations) {
                         if (annotation.annotationType().getCanonicalName().startsWith(prefix)) {
                             try {
-                                Method getValueMethod = annotation.annotationType().getDeclaredMethod("value");
-                                Object value = getValueMethod.invoke(annotation);
+                                // 为了混淆是能使用确保事件注解只有一个用来获取id的方法
+                                Method[] getValueMethods = annotation.annotationType().getDeclaredMethods();
+                                if (getValueMethods == null || getValueMethods.length != 1) {
+                                    continue;
+                                }
+                                Object value = getValueMethods[0].invoke(annotation);
                                 if (value instanceof String) {
                                     id_annotation_method_map.put(value, annotation, method);
                                 } else {
