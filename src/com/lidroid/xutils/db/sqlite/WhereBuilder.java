@@ -104,7 +104,11 @@ public class WhereBuilder {
         if (value == null) {
             sqlSb.append("NULL");
         } else if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
-            sqlSb.append("'" + value + "'");
+            String valueStr = value.toString();
+            if (valueStr.contains("'")) { // 单引号转义
+                valueStr = valueStr.replace("'", "''");
+            }
+            sqlSb.append("'" + valueStr + "'");
         } else {
             sqlSb.append(value);
         }

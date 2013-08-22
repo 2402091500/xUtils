@@ -164,7 +164,7 @@ public class ColumnUtils {
         }
     }
 
-    public static Object valueStr2SimpleTypeFieldValue(Class columnFieldType, String valueStr) {
+    public static Object valueStr2SimpleTypeFieldValue(Class columnFieldType, final String valueStr) {
         Object value = null;
         if (isSimpleColumnType(columnFieldType) && valueStr != null) {
             if (columnFieldType.equals(String.class) || columnFieldType.equals(CharSequence.class)) {
@@ -247,11 +247,11 @@ public class ColumnUtils {
         return "TEXT";
     }
 
-    private static boolean isStartWithIs(String fieldName) {
+    private static boolean isStartWithIs(final String fieldName) {
         return fieldName != null && fieldName.startsWith("is");
     }
 
-    private static Method getBooleanColumnGetMethod(Class<?> entityType, String fieldName) {
+    private static Method getBooleanColumnGetMethod(Class<?> entityType, final String fieldName) {
         String methodName = "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
         if (isStartWithIs(fieldName)) {
             methodName = fieldName;

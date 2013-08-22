@@ -259,7 +259,7 @@ public class MyActivity extends Activity {
             db.configAllowTransaction(true);
 
             Child child = new Child();
-            child.name = "child name";
+            child.name = "child' name";
             //db.saveBindingId(parent);
             //child.parent = new SQLiteLazyLoader<Parent>(Child.class, "parentId", parent.getId());
             child.parent = parent;
@@ -276,7 +276,7 @@ public class MyActivity extends Activity {
 
             db.saveBindingId(child);//保存对象关联数据库生成的id
 
-            List<Child> children = db.findAll(Selector.from(Child.class));
+            List<Child> children = db.findAll(Selector.from(Child.class));//.where(WhereBuilder.b("name", "=", "child' name")));
             LogUtils.d("wyouflf size:" + children.size());
             if (children.size() > 0) {
                 LogUtils.d("wyouflf child:" + children.get(children.size() - 1).parent);
