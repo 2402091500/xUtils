@@ -62,20 +62,30 @@ public class HttpUtils {
 
     public DownloadRedirectHandler downloadRedirectHandler;
 
-    private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
-    private static final String ENCODING_GZIP = "gzip";
-
     public HttpUtils() {
+        this(HttpUtils.defaultConnTimeout);
+    }
+
+    public HttpUtils(int connTimeout) {
         HttpParams params = new BasicHttpParams();
+
+        ConnManagerParams.setTimeout(params, connTimeout);
+        HttpConnectionParams.setSoTimeout(params, connTimeout);
+        HttpConnectionParams.setConnectionTimeout(params, connTimeout);
+
         ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(10));
         ConnManagerParams.setMaxTotalConnections(params, 10);
+
         HttpConnectionParams.setTcpNoDelay(params, true);
         HttpConnectionParams.setSocketBufferSize(params, 1024 * 8);
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
         httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
+
         httpClient.setHttpRequestRetryHandler(new RetryHandler(DEFAULT_RETRY_TIMES));
 
         httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
@@ -111,11 +121,16 @@ public class HttpUtils {
 
     private String charset = HTTP.UTF_8;
 
-    private final static int DEFAULT_RETRY_TIMES = 5;
+    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime(); // httpGetCache过期时间
 
-    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+    private final static int defaultConnTimeout = 1000 * 10; // 默认10秒超时
 
-    private final static int httpThreadCount = 3;
+    private final static int DEFAULT_RETRY_TIMES = 5;  // 默认错误重试次数
+
+    private final static int httpThreadCount = 3; // http线程池数量
+
+    private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+    private static final String ENCODING_GZIP = "gzip";
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
