@@ -21,6 +21,7 @@ import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,7 +67,7 @@ public class TableUtils {
             Field[] fields = entityType.getDeclaredFields();
             String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
             for (Field field : fields) {
-                if (ColumnUtils.isTransient(field)) {
+                if (ColumnUtils.isTransient(field) || Modifier.isStatic(field.getModifiers())) {
                     continue;
                 }
                 if (ColumnUtils.isSimpleColumnType(field)) {
