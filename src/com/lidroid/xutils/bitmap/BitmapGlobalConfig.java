@@ -56,7 +56,7 @@ public class BitmapGlobalConfig {
     private BitmapDownloadProcess bitmapDownloadProcess;
     private BitmapCache bitmapCache;
 
-    private int poolSize = 5;
+    private int threadPoolSize = 5;
     private boolean _dirty_params_bitmapLoadExecutor = true;
     private ExecutorService bitmapLoadExecutor;
 
@@ -186,14 +186,14 @@ public class BitmapGlobalConfig {
         }
     }
 
-    public int getPoolSize() {
-        return poolSize;
+    public int getThreadPoolSize() {
+        return threadPoolSize;
     }
 
-    public void setPoolSize(int poolSize) {
-        if (poolSize != this.poolSize) {
+    public void setThreadPoolSize(int threadPoolSize) {
+        if (threadPoolSize != this.threadPoolSize) {
             _dirty_params_bitmapLoadExecutor = true;
-            this.poolSize = poolSize;
+            this.threadPoolSize = threadPoolSize;
         }
     }
 
@@ -210,7 +210,7 @@ public class BitmapGlobalConfig {
 
     public ExecutorService getBitmapLoadExecutor() {
         if (_dirty_params_bitmapLoadExecutor || bitmapLoadExecutor == null) {
-            bitmapLoadExecutor = Executors.newFixedThreadPool(getPoolSize(), new ThreadFactory() {
+            bitmapLoadExecutor = Executors.newFixedThreadPool(getThreadPoolSize(), new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
