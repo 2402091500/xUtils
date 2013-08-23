@@ -27,6 +27,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,19 +93,16 @@ public class ViewUtils {
                     for (Annotation annotation : annotations) {
                         if (annotation.annotationType().getCanonicalName().startsWith(prefix)) {
                             try {
-                                // 为了混淆后能使用事件注解，确保事件注解只有一个用来获取id的方法
-                                Method[] getValueMethods = annotation.annotationType().getDeclaredMethods();
-                                if (getValueMethods == null || getValueMethods.length != 1) {
-                                    continue;
-                                }
-                                Object value = getValueMethods[0].invoke(annotation);
-                                if (value instanceof String) {
-                                    id_annotation_method_map.put(value, annotation, method);
-                                } else {
-                                    int[] ids = (int[]) value;
-                                    for (int id : ids) {
-                                        id_annotation_method_map.put(id, annotation, method);
+                                // ProGuard：-keep class * extends java.lang.annotation.Annotation { *; }
+                                Method valueMethod = annotation.annotationType().getDeclaredMethod("value");
+                                Object value = valueMethod.invoke(annotation);
+                                if (value.getClass().isArray()) {
+                                    int len = Array.getLength(value);
+                                    for (int i = 0; i < len; i++) {
+                                        id_annotation_method_map.put(Array.get(value, i), annotation, method);
                                     }
+                                } else {
+                                    id_annotation_method_map.put(value, annotation, method);
                                 }
                             } catch (Exception e) {
                                 LogUtils.e(e.getMessage(), e);
