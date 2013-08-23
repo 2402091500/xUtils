@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
@@ -119,7 +120,8 @@ public class HttpUtils {
 
     // ************************************    default settings & fields ****************************
 
-    private String charset = HTTP.UTF_8;
+    // 文本返回内容的默认charset
+    private String defaultResponseTextCharset = HTTP.UTF_8;
 
     private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime(); // httpGetCache过期时间
 
@@ -150,9 +152,14 @@ public class HttpUtils {
 
     // ***************************************** config *******************************************
 
-    public void configCharset(String charSet) {
-        if (charSet != null && charSet.trim().length() != 0) {
-            this.charset = charSet;
+    /**
+     * 文本返回内容的默认charset，如果response的Content-Type中包含charset则使用Content-Type中的charset。
+     *
+     * @param charSet
+     */
+    public void configDefaultResponseTextCharset(String charSet) {
+        if (!TextUtils.isEmpty(charSet)) {
+            this.defaultResponseTextCharset = charSet;
         }
     }
 
@@ -250,7 +257,7 @@ public class HttpUtils {
 
         HttpRequest request = new HttpRequest(HttpRequest.HttpMethod.GET, url);
 
-        HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, charset, callback);
+        HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, defaultResponseTextCharset, callback);
 
         handler.setExpiry(currRequestExpiry);
         handler.setDownloadRedirectHandler(downloadRedirectHandler);
@@ -266,7 +273,7 @@ public class HttpUtils {
             request.addHeader("Content-Type", contentType);
         }
 
-        HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, charset, callBack);
+        HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, defaultResponseTextCharset, callBack);
 
         handler.setExpiry(currRequestExpiry);
         handler.setDownloadRedirectHandler(downloadRedirectHandler);
@@ -281,7 +288,7 @@ public class HttpUtils {
             request.addHeader("Content-Type", contentType);
         }
 
-        SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, charset);
+        SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, defaultResponseTextCharset);
 
         handler.setExpiry(currRequestExpiry);
         handler.setDownloadRedirectHandler(downloadRedirectHandler);

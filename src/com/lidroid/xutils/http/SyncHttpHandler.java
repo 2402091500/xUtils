@@ -14,6 +14,7 @@
  */
 package com.lidroid.xutils.http;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
@@ -21,8 +22,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -38,7 +38,7 @@ public class SyncHttpHandler {
 
     private int retriedTimes = 0;
 
-    private String charset;
+    private String charset; // 文本返回内容的默认charset
 
     private DownloadRedirectHandler downloadRedirectHandler;
 
@@ -104,6 +104,22 @@ public class SyncHttpHandler {
         if (response == null) return null;
         StatusLine status = response.getStatusLine();
         if (status.getStatusCode() < 300) {
+
+            // 自适应charset
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                Header header = entity.getContentType();
+                if (header != null) {
+                    HeaderElement[] values = header.getElements();
+                    if (values != null && values.length > 0) {
+                        NameValuePair param = values[0].getParameterByName("charset");
+                        if (param != null) {
+                            charset = TextUtils.isEmpty(param.getValue()) ? charset : param.getValue();
+                        }
+                    }
+                }
+            }
+
             return new ResponseStream(response, charset, _getRequestUrl, expiry);
         } else if (status.getStatusCode() == 302) {
             if (downloadRedirectHandler == null) {

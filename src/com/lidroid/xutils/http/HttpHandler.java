@@ -15,15 +15,14 @@
 package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.callback.*;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -54,7 +53,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private String fileSavePath = null; // 下载的路径
     private boolean isDownloadingFile; // fileSavePath != null;
     private boolean isResume = false; // 是否断点续传
-    private String charset;
+    private String charset; // 文本返回内容的默认charset
 
     public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack callback) {
         this.client = client;
@@ -196,6 +195,19 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 if (isDownloadingFile) {
                     responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
                 } else {
+
+                    // 自适应charset
+                    Header header = entity.getContentType();
+                    if (header != null) {
+                        HeaderElement[] values = header.getElements();
+                        if (values != null && values.length > 0) {
+                            NameValuePair param = values[0].getParameterByName("charset");
+                            if (param != null) {
+                                charset = TextUtils.isEmpty(param.getValue()) ? charset : param.getValue();
+                            }
+                        }
+                    }
+
                     responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
                     HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) responseBody, expiry);
                 }
