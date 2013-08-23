@@ -157,4 +157,14 @@ public class Foreign extends Column {
             return "TEXT";
         }
     }
+
+    /**
+     * 外键没有默认值，返回null
+     *
+     * @return null
+     */
+    @Override
+    public Object getDefaultValue() {
+        return null;
+    }
 }

@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 public class Column {
 
     protected String columnName;
-    private String defaultValue;
+    private Object defaultValue;
 
     protected Method getMethod;
     protected Method setMethod;
@@ -89,7 +89,7 @@ public class Column {
         return columnName;
     }
 
-    public String getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 

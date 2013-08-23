@@ -106,10 +106,10 @@ public class ColumnUtils {
         return field.getName();
     }
 
-    public static String getColumnDefaultValue(Field field) {
+    public static Object getColumnDefaultValue(Field field) {
         Column column = field.getAnnotation(Column.class);
-        if (column != null && column.defaultValue() != null && column.defaultValue().trim().length() > 0) {
-            return column.defaultValue();
+        if (column != null && !TextUtils.isEmpty(column.defaultValue())) {
+            return valueStr2SimpleTypeFieldValue(field.getType(), column.defaultValue());
         }
         return null;
     }
