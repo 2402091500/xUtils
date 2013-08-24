@@ -97,7 +97,7 @@ public class Column {
         return columnField;
     }
 
-    public String getDbType() {
+    public String getColumnDbType() {
         return ColumnUtils.fieldType2DbType(columnField.getType());
     }
 }

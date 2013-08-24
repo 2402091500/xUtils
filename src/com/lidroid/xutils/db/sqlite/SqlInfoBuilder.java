@@ -190,7 +190,7 @@ public class SqlInfoBuilder {
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
             sqlBuffer.append("\"").append(column.getColumnName()).append("\"  ");
-            sqlBuffer.append(column.getDbType());
+            sqlBuffer.append(column.getColumnDbType());
             if (ColumnUtils.isUnique(column.getColumnField())) {
                 sqlBuffer.append(" UNIQUE");
             }

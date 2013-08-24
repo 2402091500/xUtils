@@ -19,47 +19,34 @@ import com.lidroid.xutils.db.table.ColumnUtils;
 import com.lidroid.xutils.db.table.Foreign;
 import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
-import com.lidroid.xutils.util.LogUtils;
 
 import java.util.List;
 
 public class SQLiteLazyLoader<T> {
-
-    private Class<T> foreignEntityType;
-
-    private String foreignColumnName;
     private Foreign foreignColumn;
-
-    private String valueStr;
+    private Object value;
 
     @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Class<?> entityType, String columnName, Object value) {
-
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
-        this.foreignColumnName = this.foreignColumn.getForeignColumnName();
-
-        if (value != null) {
-            this.valueStr = String.valueOf(value);
-        }
-
-        foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
+        this.value = value;
     }
 
     @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Foreign foreignColumn, String valueStr) {
 
         this.foreignColumn = foreignColumn;
-        this.foreignColumnName = foreignColumn.getForeignColumnName();
-        this.valueStr = valueStr;
 
-        foreignEntityType = (Class<T>) ColumnUtils.getForeignEntityType(foreignColumn);
+        // 用外键列类型获取外键值
+        this.value = ColumnUtils.valueStr2SimpleTypeFieldValue(foreignColumn.getForeignColumnType(), valueStr);
     }
 
     public List<T> getAllFromDb() throws DbException {
         List<T> entities = null;
         if (foreignColumn != null && foreignColumn.db != null) {
-            Object columnValue = this.getColumnValue();
-            entities = foreignColumn.db.findAll(Selector.from(foreignEntityType).where(WhereBuilder.b(foreignColumnName, "=", columnValue)));
+            entities = foreignColumn.db.findAll(
+                    Selector.from(foreignColumn.getForeignEntityType()).
+                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", value)));
         }
         return entities;
     }
@@ -67,22 +54,14 @@ public class SQLiteLazyLoader<T> {
     public T getFirstFromDb() throws DbException {
         T entity = null;
         if (foreignColumn != null && foreignColumn.db != null) {
-            Object columnValue = this.getColumnValue();
-            entity = foreignColumn.db.findFirst(Selector.from(foreignEntityType).where(WhereBuilder.b(foreignColumnName, "=", columnValue)));
+            entity = foreignColumn.db.findFirst(
+                    Selector.from(foreignColumn.getForeignEntityType()).
+                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", value)));
         }
         return entity;
     }
 
     public Object getColumnValue() {
-        if (foreignColumn != null) {
-            try {
-                return ColumnUtils.valueStr2SimpleTypeFieldValue(
-                        TableUtils.getColumnOrId(foreignEntityType, foreignColumnName).getColumnField().getType(),
-                        valueStr);
-            } catch (Exception e) {
-                LogUtils.d(e.getMessage(), e);
-            }
-        }
-        return null;
+        return value;
     }
 }

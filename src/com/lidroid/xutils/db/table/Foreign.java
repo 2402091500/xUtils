@@ -40,6 +40,14 @@ public class Foreign extends Column {
         return foreignColumnName;
     }
 
+    public Class<?> getForeignEntityType() {
+        return ColumnUtils.getForeignEntityType(this);
+    }
+
+    public Class<?> getForeignColumnType() {
+        return TableUtils.getColumnOrId(getForeignEntityType(), foreignColumnName).columnField.getType();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void setValue2Entity(Object entity, String valueStr) {
@@ -110,13 +118,15 @@ public class Foreign extends Column {
             } else if (columnType.equals(List.class)) {
                 try {
                     List foreignValues = (List) resultObj;
-                    if (foreignValues.size() > 0 && this.db != null) {
+                    if (foreignValues.size() > 0) {
 
-                        for (Object item : foreignValues) {
-                            try {
-                                this.db.saveOrUpdate(item);
-                            } catch (DbException e) {
-                                LogUtils.e(e.getMessage(), e);
+                        if (this.db != null) {
+                            for (Object item : foreignValues) {
+                                try {
+                                    this.db.saveOrUpdate(item);
+                                } catch (DbException e) {
+                                    LogUtils.e(e.getMessage(), e);
+                                }
                             }
                         }
 
@@ -150,12 +160,8 @@ public class Foreign extends Column {
     }
 
     @Override
-    public String getDbType() {
-        try {
-            return ColumnUtils.fieldType2DbType(TableUtils.getColumnOrId(ColumnUtils.getForeignEntityType(this), foreignColumnName).columnField.getType());
-        } catch (Exception e) {
-            return "TEXT";
-        }
+    public String getColumnDbType() {
+        return ColumnUtils.fieldType2DbType(getForeignColumnType());
     }
 
     /**
