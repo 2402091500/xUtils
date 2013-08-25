@@ -25,13 +25,11 @@ public class SQLiteLazyLoader<T> {
     private Foreign foreignColumn;
     private Object columnValue;
 
-    @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
         this.columnValue = columnValue;
     }
 
-    @SuppressWarnings("unchecked")
     public SQLiteLazyLoader(Foreign foreignColumn, Object columnValue) {
         this.foreignColumn = foreignColumn;
         this.columnValue = columnValue;
