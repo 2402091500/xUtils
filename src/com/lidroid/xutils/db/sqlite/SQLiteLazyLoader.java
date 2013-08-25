@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils.db.sqlite;
 
-import com.lidroid.xutils.db.table.ColumnUtils;
 import com.lidroid.xutils.db.table.Foreign;
 import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
@@ -24,21 +23,18 @@ import java.util.List;
 
 public class SQLiteLazyLoader<T> {
     private Foreign foreignColumn;
-    private Object value;
+    private Object columnValue;
 
     @SuppressWarnings("unchecked")
-    public SQLiteLazyLoader(Class<?> entityType, String columnName, Object value) {
+    public SQLiteLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
-        this.value = value;
+        this.columnValue = columnValue;
     }
 
     @SuppressWarnings("unchecked")
-    public SQLiteLazyLoader(Foreign foreignColumn, String valueStr) {
-
+    public SQLiteLazyLoader(Foreign foreignColumn, Object columnValue) {
         this.foreignColumn = foreignColumn;
-
-        // 用外键列类型获取外键值
-        this.value = ColumnUtils.valueStr2SimpleTypeFieldValue(foreignColumn.getForeignColumnType(), valueStr);
+        this.columnValue = columnValue;
     }
 
     public List<T> getAllFromDb() throws DbException {
@@ -46,7 +42,7 @@ public class SQLiteLazyLoader<T> {
         if (foreignColumn != null && foreignColumn.db != null) {
             entities = foreignColumn.db.findAll(
                     Selector.from(foreignColumn.getForeignEntityType()).
-                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", value)));
+                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", columnValue)));
         }
         return entities;
     }
@@ -56,12 +52,12 @@ public class SQLiteLazyLoader<T> {
         if (foreignColumn != null && foreignColumn.db != null) {
             entity = foreignColumn.db.findFirst(
                     Selector.from(foreignColumn.getForeignEntityType()).
-                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", value)));
+                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", columnValue)));
         }
         return entity;
     }
 
     public Object getColumnValue() {
-        return value;
+        return columnValue;
     }
 }

@@ -51,23 +51,23 @@ public class Foreign extends Column {
     @SuppressWarnings("unchecked")
     @Override
     public void setValue2Entity(Object entity, String valueStr) {
-
         Object value = null;
         if (valueStr != null) {
             Class columnType = columnField.getType();
+            Object columnValue = ColumnUtils.valueStr2SimpleTypeFieldValue(getForeignColumnType(), valueStr);
             if (ColumnUtils.isSimpleColumnType(columnField)) {
-                value = ColumnUtils.valueStr2SimpleTypeFieldValue(columnType, valueStr);
+                value = columnValue;
             } else if (columnType.equals(SQLiteLazyLoader.class)) {
-                value = new SQLiteLazyLoader(this, valueStr);
+                value = new SQLiteLazyLoader(this, columnValue);
             } else if (columnType.equals(List.class)) {
                 try {
-                    value = new SQLiteLazyLoader(this, valueStr).getAllFromDb();
+                    value = new SQLiteLazyLoader(this, columnValue).getAllFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
-                    value = new SQLiteLazyLoader(this, valueStr).getFirstFromDb();
+                    value = new SQLiteLazyLoader(this, columnValue).getFirstFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
