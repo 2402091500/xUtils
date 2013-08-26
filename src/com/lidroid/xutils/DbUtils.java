@@ -110,12 +110,14 @@ public class DbUtils {
         return getInstance(daoConfig);
     }
 
-    public void configDebug(boolean debug) {
+    public DbUtils configDebug(boolean debug) {
         this.debug = debug;
+        return this;
     }
 
-    public void configAllowTransaction(boolean allowTransaction) {
+    public DbUtils configAllowTransaction(boolean allowTransaction) {
         this.allowTransaction = allowTransaction;
+        return this;
     }
 
     public SQLiteDatabase getDatabase() {

@@ -157,51 +157,61 @@ public class HttpUtils {
      *
      * @param charSet
      */
-    public void configDefaultResponseTextCharset(String charSet) {
+    public HttpUtils configDefaultResponseTextCharset(String charSet) {
         if (!TextUtils.isEmpty(charSet)) {
             this.defaultResponseTextCharset = charSet;
         }
+        return this;
     }
 
-    public void configHttpGetCacheSize(int httpGetCacheSize) {
+    public HttpUtils configHttpGetCacheSize(int httpGetCacheSize) {
         sHttpGetCache.setCacheSize(httpGetCacheSize);
+        return this;
     }
 
-    public void configDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
+    public HttpUtils configDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
         this.downloadRedirectHandler = downloadRedirectHandler;
+        return this;
     }
 
-    public void configHttpGetCacheDefaultExpiry(long defaultExpiry) {
+    public HttpUtils configHttpGetCacheDefaultExpiry(long defaultExpiry) {
         HttpGetCache.setDefaultExpiryTime(defaultExpiry);
         currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+        return this;
     }
 
-    public void configCurrRequestExpiry(long currRequestExpiry) {
+    public HttpUtils configCurrRequestExpiry(long currRequestExpiry) {
         this.currRequestExpiry = currRequestExpiry;
+        return this;
     }
 
-    public void configCookieStore(CookieStore cookieStore) {
+    public HttpUtils configCookieStore(CookieStore cookieStore) {
         httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        return this;
     }
 
-    public void configUserAgent(String userAgent) {
+    public HttpUtils configUserAgent(String userAgent) {
         HttpProtocolParams.setUserAgent(this.httpClient.getParams(), userAgent);
+        return this;
     }
 
-    public void configTimeout(int timeout) {
+    public HttpUtils configTimeout(int timeout) {
         final HttpParams httpParams = this.httpClient.getParams();
         ConnManagerParams.setTimeout(httpParams, timeout);
         HttpConnectionParams.setSoTimeout(httpParams, timeout);
         HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+        return this;
     }
 
-    public void configSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
+    public HttpUtils configSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
         Scheme scheme = new Scheme("https", sslSocketFactory, 443);
         this.httpClient.getConnectionManager().getSchemeRegistry().register(scheme);
+        return this;
     }
 
-    public void configRequestExecutionRetryCount(int count) {
+    public HttpUtils configRequestExecutionRetryCount(int count) {
         this.httpClient.setHttpRequestRetryHandler(new RetryHandler(count));
+        return this;
     }
 
     // ***************************************** send request *******************************************
