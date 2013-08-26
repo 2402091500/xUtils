@@ -27,6 +27,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
+    @Override
     public void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config) {
         switch (config.getAnimationType()) {
             case BitmapDisplayConfig.AnimationType.fadeIn:
@@ -41,6 +42,7 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
     }
 
 
+    @Override
     public void loadFailed(ImageView imageView, Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
     }
@@ -62,5 +64,4 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
         imageView.setImageBitmap(bitmap);
         imageView.startAnimation(animation);
     }
-
 }

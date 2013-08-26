@@ -101,7 +101,7 @@ public class BitmapDownloadProcess {
                 if (neverCalculate) {
                     bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 } else {
-                    bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapWidth(), config.getBitmapHeight());
+                    bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
                 }
             } catch (Exception e) {
                 LogUtils.e(e.getMessage(), e);

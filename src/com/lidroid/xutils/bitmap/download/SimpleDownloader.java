@@ -35,6 +35,7 @@ public class SimpleDownloader implements Downloader {
      * @param outputStream
      * @return
      */
+    @Override
     public boolean downloadToLocalStreamByUri(String uri, OutputStream outputStream) {
         URLConnection urlConnection = null;
         BufferedInputStream bis = null;

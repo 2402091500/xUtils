@@ -19,9 +19,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.DisplayMetrics;
-import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.core.BitmapDownloadProcess;
@@ -51,7 +48,6 @@ public class BitmapGlobalConfig {
     private boolean memoryCacheEnabled = true;
     private boolean diskCacheEnabled = true;
 
-    private ImageLoadCallBack imageLoadCallBack;
     private Downloader downloader;
     private BitmapDownloadProcess bitmapDownloadProcess;
     private BitmapCache bitmapCache;
@@ -61,7 +57,6 @@ public class BitmapGlobalConfig {
     private ExecutorService bitmapLoadExecutor;
 
     private Context mContext;
-    private BitmapDisplayConfig defaultDisplayConfig;
 
     /**
      * @param context
@@ -70,7 +65,6 @@ public class BitmapGlobalConfig {
     public BitmapGlobalConfig(Context context, String diskCachePath) {
         this.mContext = context;
         this.diskCachePath = diskCachePath;
-        initDefaultDisplayConfig();
         initBitmapCache();
     }
 
@@ -79,33 +73,11 @@ public class BitmapGlobalConfig {
         new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_INIT_DISK_CACHE);
     }
 
-    private void initDefaultDisplayConfig() {
-        defaultDisplayConfig = new BitmapDisplayConfig();
-        defaultDisplayConfig.setAnimation(null);
-        defaultDisplayConfig.setAnimationType(BitmapDisplayConfig.AnimationType.fadeIn);
-        //设置图片的显示最大尺寸（为屏幕的大小,默认为屏幕宽度的1/2）
-        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-        int defaultWidth = (int) Math.floor(displayMetrics.widthPixels / 2);
-        defaultDisplayConfig.setBitmapHeight(defaultWidth);
-        defaultDisplayConfig.setBitmapWidth(defaultWidth);
-    }
-
     public String getDiskCachePath() {
         if (diskCachePath == null) {
             diskCachePath = BitmapCommonUtils.getDiskCacheDir(mContext, "xBitmapCache").getAbsolutePath();
         }
         return diskCachePath;
-    }
-
-    public ImageLoadCallBack getImageLoadCallBack() {
-        if (imageLoadCallBack == null) {
-            imageLoadCallBack = new SimpleImageLoadCallBack();
-        }
-        return imageLoadCallBack;
-    }
-
-    public void setImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
-        this.imageLoadCallBack = imageLoadCallBack;
     }
 
     public Downloader getDownloader() {
@@ -135,14 +107,6 @@ public class BitmapGlobalConfig {
             bitmapCache = new BitmapCache(this);
         }
         return bitmapCache;
-    }
-
-    public BitmapDisplayConfig getDefaultDisplayConfig() {
-        return defaultDisplayConfig;
-    }
-
-    public void setDefaultDisplayConfig(BitmapDisplayConfig defaultDisplayConfig) {
-        this.defaultDisplayConfig = defaultDisplayConfig;
     }
 
     public int getMemoryCacheSize() {

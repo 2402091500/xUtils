@@ -30,7 +30,6 @@ import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 
 public class BitmapUtils {
 
@@ -40,11 +39,13 @@ public class BitmapUtils {
     private static Context context;
     private static BitmapUtils instance;
     private static BitmapGlobalConfig globalConfig;
+    private static BitmapDisplayConfig defaultDisplayConfig;
 
     /////////////////////////////////////////////// create ///////////////////////////////////////////////////
     private BitmapUtils(Context context, String diskCachePath) {
         BitmapUtils.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
+        defaultDisplayConfig = new BitmapDisplayConfig(context);
     }
 
     public static BitmapUtils create(Context ctx) {
@@ -97,43 +98,48 @@ public class BitmapUtils {
 
     //////////////////////////////////////// config ////////////////////////////////////////////////////////////////////
 
-    public BitmapUtils configLoadingImage(Bitmap bitmap) {
-        globalConfig.getDefaultDisplayConfig().setLoadingBitmap(bitmap);
+    public BitmapUtils configDefaultLoadingImage(Bitmap bitmap) {
+        defaultDisplayConfig.setLoadingBitmap(bitmap);
         return this;
     }
 
-    public BitmapUtils configLoadingImage(int resId) {
-        globalConfig.getDefaultDisplayConfig().setLoadingBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
+    public BitmapUtils configDefaultLoadingImage(int resId) {
+        defaultDisplayConfig.setLoadingBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
         return this;
     }
 
-    public BitmapUtils configLoadFailedImage(Bitmap bitmap) {
-        globalConfig.getDefaultDisplayConfig().setLoadFailedBitmap(bitmap);
+    public BitmapUtils configDefaultLoadFailedImage(Bitmap bitmap) {
+        defaultDisplayConfig.setLoadFailedBitmap(bitmap);
         return this;
     }
 
-    public BitmapUtils configLoadFailedImage(int resId) {
-        globalConfig.getDefaultDisplayConfig().setLoadFailedBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
+    public BitmapUtils configDefaultLoadFailedImage(int resId) {
+        defaultDisplayConfig.setLoadFailedBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
         return this;
     }
 
-    public BitmapUtils configBitmapMaxHeight(int bitmapHeight) {
-        globalConfig.getDefaultDisplayConfig().setBitmapHeight(bitmapHeight);
+    public BitmapUtils configDefaultBitmapMaxWidth(int bitmapWidth) {
+        defaultDisplayConfig.setBitmapMaxWidth(bitmapWidth);
         return this;
     }
 
-    public BitmapUtils configBitmapMaxWidth(int bitmapWidth) {
-        globalConfig.getDefaultDisplayConfig().setBitmapWidth(bitmapWidth);
+    public BitmapUtils configDefaultBitmapMaxHeight(int bitmapHeight) {
+        defaultDisplayConfig.setBitmapMaxHeight(bitmapHeight);
+        return this;
+    }
+
+    public BitmapUtils configDefaultImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
+        defaultDisplayConfig.setImageLoadCallBack(imageLoadCallBack);
+        return this;
+    }
+
+    public BitmapUtils configDefaultDisplayConfig(BitmapDisplayConfig displayConfig) {
+        defaultDisplayConfig = displayConfig;
         return this;
     }
 
     public BitmapUtils configDownloader(Downloader downloader) {
         globalConfig.setDownloader(downloader);
-        return this;
-    }
-
-    public BitmapUtils configImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
-        globalConfig.setImageLoadCallBack(imageLoadCallBack);
         return this;
     }
 
@@ -168,104 +174,22 @@ public class BitmapUtils {
     }
 
     ////////////////////////// display ////////////////////////////////////
-    private HashMap<String, BitmapDisplayConfig> displayConfigMap = new HashMap<String, BitmapDisplayConfig>();
-
 
     public void display(ImageView imageView, String uri) {
-        doDisplay(imageView, uri, null, null);
+        display(imageView, uri, null, null);
     }
 
-    public void display(ImageView imageView, String uri,
-                        CompressFormat compressFormat) {
-        doDisplay(imageView, uri, null, compressFormat);
+    public void display(ImageView imageView, String uri, CompressFormat compressFormat) {
+        display(imageView, uri, compressFormat, null);
     }
 
-    public void display(ImageView imageView, String uri, int imageWidth, int imageHeight) {
-        display(imageView, uri, imageWidth, imageHeight, null);
-    }
-
-    public void display(ImageView imageView, String uri, int imageWidth, int imageHeight,
-                        CompressFormat compressFormat) {
-        BitmapDisplayConfig displayConfig = displayConfigMap.get(imageWidth + "_" + imageHeight);
-        if (displayConfig == null) {
-            displayConfig = globalConfig.getDefaultDisplayConfig();
-            displayConfig.setBitmapHeight(imageHeight);
-            displayConfig.setBitmapWidth(imageWidth);
-            displayConfigMap.put(imageWidth + "_" + imageHeight, displayConfig);
-        }
-
-        doDisplay(imageView, uri, displayConfig, compressFormat);
-    }
-
-    public void display(ImageView imageView, String uri, Bitmap loadingBitmap) {
-        display(imageView, uri, loadingBitmap, (CompressFormat) null);
-    }
-
-    public void display(ImageView imageView, String uri, Bitmap loadingBitmap,
-                        CompressFormat compressFormat) {
-        BitmapDisplayConfig displayConfig = displayConfigMap.get(String.valueOf(loadingBitmap));
-        if (displayConfig == null) {
-            displayConfig = globalConfig.getDefaultDisplayConfig();
-            displayConfig.setLoadingBitmap(loadingBitmap);
-            displayConfigMap.put(String.valueOf(loadingBitmap), displayConfig);
-        }
-
-        doDisplay(imageView, uri, displayConfig, compressFormat);
-    }
-
-    public void display(ImageView imageView, String uri, Bitmap loadingBitmap, Bitmap loadFailedBitmap) {
-        display(imageView, uri, loadingBitmap, loadFailedBitmap, null);
-    }
-
-    public void display(ImageView imageView, String uri, Bitmap loadingBitmap, Bitmap loadFailedBitmap,
-                        CompressFormat compressFormat) {
-        BitmapDisplayConfig displayConfig = displayConfigMap.get(String.valueOf(loadingBitmap) + "_" + String.valueOf(loadFailedBitmap));
-        if (displayConfig == null) {
-            displayConfig = globalConfig.getDefaultDisplayConfig();
-            displayConfig.setLoadingBitmap(loadingBitmap);
-            displayConfig.setLoadFailedBitmap(loadFailedBitmap);
-            displayConfigMap.put(String.valueOf(loadingBitmap) + "_" + String.valueOf(loadFailedBitmap), displayConfig);
-        }
-
-        doDisplay(imageView, uri, displayConfig, compressFormat);
-    }
-
-    public void display(ImageView imageView, String uri, int imageWidth, int imageHeight, Bitmap loadingBitmap, Bitmap loadFailedBitmap) {
-        display(imageView, uri, imageWidth, imageHeight, loadingBitmap, loadFailedBitmap, null);
-    }
-
-    public void display(ImageView imageView, String uri, int imageWidth, int imageHeight, Bitmap loadingBitmap, Bitmap loadFailedBitmap,
-                        CompressFormat compressFormat) {
-        BitmapDisplayConfig displayConfig = displayConfigMap.get(imageWidth + "_" + imageHeight + "_" + String.valueOf(loadingBitmap) + "_" + String.valueOf(loadFailedBitmap));
-        if (displayConfig == null) {
-            displayConfig = globalConfig.getDefaultDisplayConfig();
-            displayConfig.setBitmapHeight(imageHeight);
-            displayConfig.setBitmapWidth(imageWidth);
-            displayConfig.setLoadingBitmap(loadingBitmap);
-            displayConfig.setLoadFailedBitmap(loadFailedBitmap);
-            displayConfigMap.put(imageWidth + "_" + imageHeight + "_" + String.valueOf(loadingBitmap) + "_" + String.valueOf(loadFailedBitmap), displayConfig);
-        }
-
-        doDisplay(imageView, uri, displayConfig, compressFormat);
-    }
-
-    public void display(ImageView imageView, String uri, BitmapDisplayConfig displayConfig) {
-        doDisplay(imageView, uri, displayConfig, null);
-    }
-
-    public void display(ImageView imageView, String uri, BitmapDisplayConfig displayConfig,
-                        CompressFormat compressFormat) {
-        doDisplay(imageView, uri, displayConfig, compressFormat);
-    }
-
-
-    private void doDisplay(ImageView imageView, String uri, BitmapDisplayConfig displayConfig, CompressFormat compressFormat) {
-        if (TextUtils.isEmpty(uri) || imageView == null) {
+    public void display(ImageView imageView, String uri, CompressFormat compressFormat, BitmapDisplayConfig displayConfig) {
+        if (imageView == null || TextUtils.isEmpty(uri)) {
             return;
         }
 
         if (displayConfig == null) {
-            displayConfig = globalConfig.getDefaultDisplayConfig();
+            displayConfig = defaultDisplayConfig;
         }
 
         Bitmap bitmap = null;
@@ -289,7 +213,6 @@ public class BitmapUtils {
             loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor(), uri, compressFormat);
         }
     }
-
 
     /////////////////////////////////////////////// cache /////////////////////////////////////////////////////////////////
 
@@ -453,9 +376,9 @@ public class BitmapUtils {
 
             final ImageView imageView = getAttachedImageView();
             if (bitmap != null && imageView != null) {//显示图片
-                globalConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
+                displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
             } else if (bitmap == null && imageView != null) {//显示获取错误图片
-                globalConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+                displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
             }
         }
 

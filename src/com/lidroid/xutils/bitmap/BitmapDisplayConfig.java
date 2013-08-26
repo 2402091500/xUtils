@@ -15,36 +15,56 @@
 
 package com.lidroid.xutils.bitmap;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.view.animation.Animation;
+import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 
 public class BitmapDisplayConfig {
 
+    private int bitmapMaxWidth = 0;
+    private int bitmapMaxHeight = 0;
 
-    private int bitmapWidth;
-    private int bitmapHeight;
-
+    private int animationType = BitmapDisplayConfig.AnimationType.fadeIn;
     private Animation animation;
 
-    private int animationType;
     private Bitmap loadingBitmap;
     private Bitmap loadFailedBitmap;
 
+    private ImageLoadCallBack imageLoadCallBack;
 
-    public int getBitmapWidth() {
-        return bitmapWidth;
+    private Context mContext;
+
+    public BitmapDisplayConfig(Context context) {
+        mContext = context;
     }
 
-    public void setBitmapWidth(int bitmapWidth) {
-        this.bitmapWidth = bitmapWidth;
+    public int getBitmapMaxWidth() {
+        if (bitmapMaxWidth == 0) {//图片的显示最大尺寸（为屏幕的大小,默认为屏幕宽度的1/2）
+            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+            bitmapMaxWidth = (int) Math.floor(displayMetrics.widthPixels / 2);
+            bitmapMaxHeight = bitmapMaxHeight == 0 ? bitmapMaxWidth : bitmapMaxHeight;
+        }
+        return bitmapMaxWidth;
     }
 
-    public int getBitmapHeight() {
-        return bitmapHeight;
+    public void setBitmapMaxWidth(int bitmapMaxWidth) {
+        this.bitmapMaxWidth = bitmapMaxWidth;
     }
 
-    public void setBitmapHeight(int bitmapHeight) {
-        this.bitmapHeight = bitmapHeight;
+    public int getBitmapMaxHeight() {
+        if (bitmapMaxHeight == 0) {//图片的显示最大尺寸（为屏幕的大小,默认为屏幕宽度的1/2）
+            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+            bitmapMaxHeight = (int) Math.floor(displayMetrics.widthPixels / 2);
+            bitmapMaxWidth = bitmapMaxWidth == 0 ? bitmapMaxHeight : bitmapMaxWidth;
+        }
+        return bitmapMaxHeight;
+    }
+
+    public void setBitmapMaxHeight(int bitmapMaxHeight) {
+        this.bitmapMaxHeight = bitmapMaxHeight;
     }
 
     public Animation getAnimation() {
@@ -79,6 +99,16 @@ public class BitmapDisplayConfig {
         this.loadFailedBitmap = loadFailedBitmap;
     }
 
+    public ImageLoadCallBack getImageLoadCallBack() {
+        if (imageLoadCallBack == null) {
+            imageLoadCallBack = new SimpleImageLoadCallBack();
+        }
+        return imageLoadCallBack;
+    }
+
+    public void setImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
+        this.imageLoadCallBack = imageLoadCallBack;
+    }
 
     public class AnimationType {
         public static final int userDefined = 0;
