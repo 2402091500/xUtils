@@ -27,7 +27,6 @@ public class BitmapDisplayConfig {
     private int bitmapMaxWidth = 0;
     private int bitmapMaxHeight = 0;
 
-    private int animationType = BitmapDisplayConfig.AnimationType.fadeIn;
     private Animation animation;
 
     private Bitmap loadingBitmap;
@@ -75,14 +74,6 @@ public class BitmapDisplayConfig {
         this.animation = animation;
     }
 
-    public int getAnimationType() {
-        return animationType;
-    }
-
-    public void setAnimationType(int animationType) {
-        this.animationType = animationType;
-    }
-
     public Bitmap getLoadingBitmap() {
         return loadingBitmap;
     }
@@ -108,11 +99,6 @@ public class BitmapDisplayConfig {
 
     public void setImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
         this.imageLoadCallBack = imageLoadCallBack;
-    }
-
-    public class AnimationType {
-        public static final int userDefined = 0;
-        public static final int fadeIn = 1;
     }
 
 }

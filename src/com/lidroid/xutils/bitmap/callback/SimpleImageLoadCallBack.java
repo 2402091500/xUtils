@@ -29,24 +29,18 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     @Override
     public void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config) {
-        switch (config.getAnimationType()) {
-            case BitmapDisplayConfig.AnimationType.fadeIn:
-                fadeInDisplay(imageView, bitmap);
-                break;
-            case BitmapDisplayConfig.AnimationType.userDefined:
-                animationDisplay(imageView, bitmap, config.getAnimation());
-                break;
-            default:
-                break;
+        Animation animation = config.getAnimation();
+        if (animation == null) {
+            fadeInDisplay(imageView, bitmap);
+        } else {
+            animationDisplay(imageView, bitmap, animation);
         }
     }
-
 
     @Override
     public void loadFailed(ImageView imageView, Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
     }
-
 
     private void fadeInDisplay(ImageView imageView, Bitmap bitmap) {
         final TransitionDrawable td =
@@ -57,7 +51,6 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
         imageView.setImageDrawable(td);
         td.startTransition(300);
     }
-
 
     private void animationDisplay(ImageView imageView, Bitmap bitmap, Animation animation) {
         animation.setStartTime(AnimationUtils.currentAnimationTimeMillis());

@@ -22,6 +22,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
@@ -125,6 +126,11 @@ public class BitmapUtils {
 
     public BitmapUtils configDefaultBitmapMaxHeight(int bitmapHeight) {
         defaultDisplayConfig.setBitmapMaxHeight(bitmapHeight);
+        return this;
+    }
+
+    public BitmapUtils configDefaultImageLoadAnimation(Animation animation) {
+        defaultDisplayConfig.setAnimation(animation);
         return this;
     }
 
