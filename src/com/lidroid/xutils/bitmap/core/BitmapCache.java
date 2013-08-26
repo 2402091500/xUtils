@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
+import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
@@ -118,20 +119,20 @@ public class BitmapCache {
     }
 
     /**
-     * Adds a bitmap to both memory and disk cache.
+     * Adds a bitmap to both memory and disk cache, if the cache not contains the uri.
      *
      * @param uri            Unique identifier for the bitmap to store
-     * @param bitmap         The bitmap to store
+     * @param bitmapResult   The bitmap and expiry timestamp to store
      * @param compressFormat if null, use default value.
      */
-    public void addBitmapToCache(String uri, Bitmap bitmap, CompressFormat compressFormat) {
-        if (uri == null || bitmap == null) {
+    public void addBitmapToCache(String uri, BitmapResult bitmapResult, CompressFormat compressFormat) {
+        if (uri == null || bitmapResult == null || bitmapResult.bitmap == null) {
             return;
         }
 
         // add to memory cache
         if (mMemoryCache != null && mMemoryCache.get(uri) == null) {
-            mMemoryCache.put(uri, bitmap);
+            mMemoryCache.put(uri, bitmapResult.bitmap, bitmapResult.expiryTimestamp);
         }
 
         // add to disk cache
@@ -143,31 +144,24 @@ public class BitmapCache {
                 }
 
                 OutputStream out = null;
+                LruDiskCache.Snapshot snapshot = null;
                 try {
-                    LruDiskCache.Snapshot snapshot = mDiskLruCache.get(uri);
+                    snapshot = mDiskLruCache.get(uri);
                     if (snapshot == null) {
                         final LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
                         if (editor != null) {
                             out = editor.newOutputStream(DISK_CACHE_INDEX);
                             CompressFormat format = compressFormat == null ? mConfig.getDefaultCompressFormat() : compressFormat;
-                            bitmap.compress(format, mConfig.getDefaultCompressQuality(), out);
+                            bitmapResult.bitmap.compress(format, mConfig.getDefaultCompressQuality(), out);
+                            editor.setEntryExpiryTimestamp(bitmapResult.expiryTimestamp);
                             editor.commit();
-                            out.close();
                         }
-                    } else {
-                        snapshot.getInputStream(DISK_CACHE_INDEX).close();
                     }
-                } catch (final IOException e) {
-                    LogUtils.e(e.getMessage(), e);
                 } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
-                    try {
-                        if (out != null) {
-                            out.close();
-                        }
-                    } catch (IOException e) {
-                    }
+                    IOUtils.closeQuietly(out);
+                    IOUtils.closeQuietly(snapshot);
                 }
             }
         }

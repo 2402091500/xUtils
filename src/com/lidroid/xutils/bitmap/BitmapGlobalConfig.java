@@ -56,6 +56,8 @@ public class BitmapGlobalConfig {
     private boolean _dirty_params_bitmapLoadExecutor = true;
     private ExecutorService bitmapLoadExecutor;
 
+    private long defaultCacheExpiry = 1000 * 60 * 60 * 24 * 30; // 默认30天过期
+
     private Context mContext;
 
     /**
@@ -83,15 +85,25 @@ public class BitmapGlobalConfig {
     public Downloader getDownloader() {
         if (downloader == null) {
             downloader = new SimpleDownloader();
+            downloader.setDefaultExpiry(defaultCacheExpiry);
         }
         return downloader;
     }
 
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
+        this.downloader.setDefaultExpiry(defaultCacheExpiry);
         if (bitmapDownloadProcess != null) {
             bitmapDownloadProcess.setDownloader(downloader);
         }
+    }
+
+    public long getDefaultCacheExpiry() {
+        return defaultCacheExpiry;
+    }
+
+    public void setDefaultCacheExpiry(long defaultCacheExpiry) {
+        this.defaultCacheExpiry = defaultCacheExpiry;
     }
 
     public BitmapDownloadProcess getBitmapDownloadProcess() {

@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
+import com.lidroid.xutils.bitmap.core.BitmapResult;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
@@ -146,6 +147,17 @@ public class BitmapUtils {
 
     public BitmapUtils configDownloader(Downloader downloader) {
         globalConfig.setDownloader(downloader);
+        return this;
+    }
+
+    /**
+     * 设置默认的缓存过期时间。如果http请求返回了过期时间，使用请求返回的时间。
+     *
+     * @param defaultExpiry
+     * @return
+     */
+    public BitmapUtils configDefaultCacheExpiry(long defaultExpiry) {
+        globalConfig.setDefaultCacheExpiry(defaultExpiry);
         return this;
     }
 
@@ -354,20 +366,21 @@ public class BitmapUtils {
                 }
             }
 
-            // 从缓存获取图片
+            // 从磁盘缓存获取图片
             if (!isCancelled() && getAttachedImageView() != null && !pauseTask) {
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri);
             }
 
             // 下载图片
+            BitmapResult bitmapResult = null;
             if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !pauseTask) {
-                bitmap = globalConfig.getBitmapDownloadProcess().downloadBitmap(uri, displayConfig);
+                bitmapResult = globalConfig.getBitmapDownloadProcess().downloadBitmap(uri, displayConfig);
             }
 
             // 加入缓存
-            if (bitmap != null) {
+            if (bitmapResult != null) {
                 format = format == null ? globalConfig.getDefaultCompressFormat() : format;
-                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmap, format);
+                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmapResult, format);
             }
 
             return bitmap;

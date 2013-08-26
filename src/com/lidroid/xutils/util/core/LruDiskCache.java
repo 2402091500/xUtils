@@ -16,6 +16,7 @@
 
 package com.lidroid.xutils.util.core;
 
+import com.lidroid.xutils.util.IOUtils;
 import org.apache.http.protocol.HTTP;
 
 import java.io.*;
@@ -265,7 +266,7 @@ public final class LruDiskCache implements Closeable {
             }
             redundantOpCount = lineCount - lruEntries.size();
         } finally {
-            closeQuietly(reader);
+            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -295,10 +296,22 @@ public final class LruDiskCache implements Closeable {
         }
 
         if (secondSpace != -1 && firstSpace == CLEAN.length() && line.startsWith(CLEAN)) {
-            String[] parts = line.substring(secondSpace + 1).split(" ");
             entry.readable = true;
             entry.currentEditor = null;
-            entry.setLengths(parts);
+            String[] parts = line.substring(secondSpace + 1).split(" ");
+            if (parts.length > 0) {
+                try {
+                    if (parts[0].startsWith("t_")) {
+                        entry.expiryTimestamp = Long.valueOf(parts[0].substring(2));
+                        entry.setLengths(parts, 1);
+                    } else {
+                        entry.expiryTimestamp = Long.MAX_VALUE;
+                        entry.setLengths(parts, 0);
+                    }
+                } catch (Exception e) {
+                    throw new IOException("unexpected journal line: " + line);
+                }
+            }
         } else if (secondSpace == -1 && firstSpace == DIRTY.length() && line.startsWith(DIRTY)) {
             entry.currentEditor = new Editor(entry);
         } else if (secondSpace == -1 && firstSpace == READ.length() && line.startsWith(READ)) {
@@ -357,7 +370,7 @@ public final class LruDiskCache implements Closeable {
                 if (entry.currentEditor != null) {
                     writer.write(DIRTY + ' ' + entry.diskKey + '\n');
                 } else {
-                    writer.write(CLEAN + ' ' + entry.diskKey + entry.getLengths() + '\n');
+                    writer.write(CLEAN + ' ' + entry.diskKey + " t_" + entry.expiryTimestamp + entry.getLengths() + '\n');
                 }
             }
         } finally {
@@ -412,10 +425,29 @@ public final class LruDiskCache implements Closeable {
             return null;
         }
 
+        // If expired, delete the entry.
+        if (entry.expiryTimestamp < System.currentTimeMillis()) {
+            for (int i = 0; i < valueCount; i++) {
+                File file = entry.getCleanFile(i);
+                if (file.exists() && !file.delete()) {
+                    throw new IOException("failed to delete " + file);
+                }
+                size -= entry.lengths[i];
+                entry.lengths[i] = 0;
+            }
+            redundantOpCount++;
+            journalWriter.append(REMOVE + ' ' + diskKey + '\n');
+            lruEntries.remove(diskKey);
+            if (journalRebuildRequired()) {
+                executorService.submit(cleanupCallable);
+            }
+            return null;
+        }
+
         // Open all streams eagerly to guarantee that we see a single published
         // snapshot. If we opened streams lazily then the streams could come
         // from different edits.
-        InputStream[] ins = new InputStream[valueCount];
+        FileInputStream[] ins = new FileInputStream[valueCount];
         try {
             for (int i = 0; i < valueCount; i++) {
                 ins[i] = new FileInputStream(entry.getCleanFile(i));
@@ -424,7 +456,7 @@ public final class LruDiskCache implements Closeable {
             // A file must have been deleted manually!
             for (int i = 0; i < valueCount; i++) {
                 if (ins[i] != null) {
-                    closeQuietly(ins[i]);
+                    IOUtils.closeQuietly(ins[i]);
                 } else {
                     break;
                 }
@@ -454,8 +486,8 @@ public final class LruDiskCache implements Closeable {
         checkNotClosed();
         validateKey(diskKey);
         Entry entry = lruEntries.get(diskKey);
-        if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER && (entry == null
-                || entry.sequenceNumber != expectedSequenceNumber)) {
+        if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER &&
+                (entry == null || entry.sequenceNumber != expectedSequenceNumber)) {
             return null; // Snapshot is stale.
         }
         if (entry == null) {
@@ -547,7 +579,7 @@ public final class LruDiskCache implements Closeable {
         entry.currentEditor = null;
         if (entry.readable | success) {
             entry.readable = true;
-            journalWriter.write(CLEAN + ' ' + entry.diskKey + entry.getLengths() + '\n');
+            journalWriter.write(CLEAN + ' ' + entry.diskKey + " t_" + entry.expiryTimestamp + entry.getLengths() + '\n');
             if (success) {
                 entry.sequenceNumber = nextSequenceNumber++;
             }
@@ -684,10 +716,10 @@ public final class LruDiskCache implements Closeable {
     public final class Snapshot implements Closeable {
         private final String diskKey;
         private final long sequenceNumber;
-        private final InputStream[] ins;
+        private final FileInputStream[] ins;
         private final long[] lengths;
 
-        private Snapshot(String diskKey, long sequenceNumber, InputStream[] ins, long[] lengths) {
+        private Snapshot(String diskKey, long sequenceNumber, FileInputStream[] ins, long[] lengths) {
             this.diskKey = diskKey;
             this.sequenceNumber = sequenceNumber;
             this.ins = ins;
@@ -706,7 +738,7 @@ public final class LruDiskCache implements Closeable {
         /**
          * Returns the unbuffered stream with the value for {@code index}.
          */
-        public InputStream getInputStream(int index) {
+        public FileInputStream getInputStream(int index) {
             return ins[index];
         }
 
@@ -726,7 +758,7 @@ public final class LruDiskCache implements Closeable {
 
         public void close() {
             for (InputStream in : ins) {
-                closeQuietly(in);
+                IOUtils.closeQuietly(in);
             }
         }
     }
@@ -750,6 +782,10 @@ public final class LruDiskCache implements Closeable {
         private Editor(Entry entry) {
             this.entry = entry;
             this.written = (entry.readable) ? null : new boolean[valueCount];
+        }
+
+        public void setEntryExpiryTimestamp(long timestamp) {
+            entry.expiryTimestamp = timestamp;
         }
 
         /**
@@ -823,7 +859,7 @@ public final class LruDiskCache implements Closeable {
                 writer = new OutputStreamWriter(newOutputStream(index), HTTP.UTF_8);
                 writer.write(value);
             } finally {
-                closeQuietly(writer);
+                IOUtils.closeQuietly(writer);
             }
         }
 
@@ -904,6 +940,8 @@ public final class LruDiskCache implements Closeable {
     private final class Entry {
         private final String diskKey;
 
+        private long expiryTimestamp = Long.MAX_VALUE;
+
         /**
          * Lengths of this entry's files.
          */
@@ -940,13 +978,13 @@ public final class LruDiskCache implements Closeable {
         /**
          * Set lengths using decimal numbers like "10123".
          */
-        private void setLengths(String[] strings) throws IOException {
+        private void setLengths(String[] strings, int startIndex) throws IOException {
             if (strings.length != valueCount) {
                 throw invalidLengths(strings);
             }
 
             try {
-                for (int i = 0; i < strings.length; i++) {
+                for (int i = startIndex; i < strings.length; i++) {
                     lengths[i] = Long.parseLong(strings[i]);
                 }
             } catch (NumberFormatException e) {
@@ -997,17 +1035,6 @@ public final class LruDiskCache implements Closeable {
             }
             if (!file.delete()) {
                 throw new IOException("failed to delete file: " + file);
-            }
-        }
-    }
-
-    private static void closeQuietly(/*Auto*/Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
             }
         }
     }

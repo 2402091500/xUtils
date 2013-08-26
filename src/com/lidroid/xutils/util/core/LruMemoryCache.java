@@ -34,6 +34,12 @@ public class LruMemoryCache<K, V> {
     private int missCount;
 
     /**
+     * key: K
+     * value: expiry time
+     */
+    private KeyExpiryMap<K, Long> keyExpiryMap;
+
+    /**
      * @param maxSize for caches that do not override {@link #sizeOf}, this is
      *                the maximum number of entries in the cache. For all other caches,
      *                this is the maximum sum of the sizes of the entries in this cache.
@@ -44,6 +50,7 @@ public class LruMemoryCache<K, V> {
         }
         this.maxSize = maxSize;
         this.map = new LinkedHashMap<K, V>(0, 0.75f, true);
+        this.keyExpiryMap = new KeyExpiryMap<K, Long>(0, 0.75f);
     }
 
     public void setMaxSize(int maxSize) {
@@ -60,6 +67,12 @@ public class LruMemoryCache<K, V> {
     public final V get(K key) {
         if (key == null) {
             throw new NullPointerException("key == null");
+        }
+
+        // If expired, remove the entry.
+        if (!keyExpiryMap.containsKey(key)) {
+            this.remove(key);
+            return null;
         }
 
         V mapValue;
@@ -108,10 +121,21 @@ public class LruMemoryCache<K, V> {
     /**
      * Caches {@code value} for {@code key}. The value is moved to the head of
      * the queue.
+     * Default expiry: Long.MAX_VALUE.
      *
      * @return the previous value mapped by {@code key}.
      */
     public final V put(K key, V value) {
+        return put(key, value, Long.MAX_VALUE);
+    }
+
+    /**
+     * Caches {@code value} for {@code key}. The value is moved to the head of
+     * the queue.
+     *
+     * @return the previous value mapped by {@code key}.
+     */
+    public final V put(K key, V value, long expiryTimestamp) {
         if (key == null || value == null) {
             throw new NullPointerException("key == null || value == null");
         }
@@ -121,6 +145,7 @@ public class LruMemoryCache<K, V> {
             putCount++;
             size += safeSizeOf(key, value);
             previous = map.put(key, value);
+            keyExpiryMap.put(key, expiryTimestamp);
             if (previous != null) {
                 size -= safeSizeOf(key, previous);
             }
@@ -156,6 +181,7 @@ public class LruMemoryCache<K, V> {
                 key = toEvict.getKey();
                 value = toEvict.getValue();
                 map.remove(key);
+                keyExpiryMap.remove(key);
                 size -= safeSizeOf(key, value);
                 evictionCount++;
             }
@@ -177,6 +203,7 @@ public class LruMemoryCache<K, V> {
         V previous;
         synchronized (this) {
             previous = map.remove(key);
+            keyExpiryMap.remove(key);
             if (previous != null) {
                 size -= safeSizeOf(key, previous);
             }
@@ -250,6 +277,7 @@ public class LruMemoryCache<K, V> {
      */
     public final void evictAll() {
         trimToSize(-1); // -1 will evict 0-sized elements
+        keyExpiryMap.clear();
     }
 
     /**

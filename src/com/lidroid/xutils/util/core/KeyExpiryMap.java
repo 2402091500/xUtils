@@ -27,6 +27,10 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
 
+    public KeyExpiryMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
     public KeyExpiryMap(int initialCapacity) {
         super(initialCapacity);
     }
@@ -45,19 +49,18 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
     }
 
     @Override
-    public Long put(K key, Long value) {
+    public Long put(K key, Long expiryTimestamp) {
         if (this.containsKey(key)) {
             this.remove(key);
         }
-        putTimeStamps.put(key, System.currentTimeMillis());
-        return super.put(key, value);
+        return super.put(key, expiryTimestamp);
     }
 
     @Override
     public boolean containsKey(Object key) {
         boolean result = false;
-        if (super.containsKey(key) && putTimeStamps.containsKey(key)) {
-            if (System.currentTimeMillis() - putTimeStamps.get(key) < super.get(key)) {
+        if (super.containsKey(key)) {
+            if (System.currentTimeMillis() < super.get(key)) {
                 result = true;
             } else {
                 this.remove(key);
@@ -68,15 +71,11 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
 
     @Override
     public Long remove(Object key) {
-        putTimeStamps.remove(key);
         return super.remove(key);
     }
 
     @Override
     public void clear() {
-        putTimeStamps.clear();
         super.clear();
     }
-
-    private ConcurrentHashMap<K, Long> putTimeStamps = new ConcurrentHashMap<K, Long>();
 }

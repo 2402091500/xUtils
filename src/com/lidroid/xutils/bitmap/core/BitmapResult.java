@@ -13,33 +13,16 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.bitmap.download;
+package com.lidroid.xutils.bitmap.core;
 
-import java.io.OutputStream;
+import android.graphics.Bitmap;
 
-public interface Downloader {
-
-    /**
-     * 把网络或本地图片下载到文件的 outputStream
-     *
-     * @param uri
-     * @param outputStream
-     * @return 图片过期时间点； 小于零，下载失败。
-     */
-    long downloadToOutStreamByUri(String uri, OutputStream outputStream);
-
-
-    /**
-     * 设置图片过期时长
-     *
-     * @param expiry
-     */
-    void setDefaultExpiry(long expiry);
-
-    /**
-     * 获取图片过期时长
-     *
-     * @return
-     */
-    long getDefaultExpiry();
+/**
+ * Author: wyouflf
+ * Date: 13-8-26
+ * Time: 下午10:06
+ */
+public class BitmapResult {
+    public Bitmap bitmap;
+    public long expiryTimestamp;
 }

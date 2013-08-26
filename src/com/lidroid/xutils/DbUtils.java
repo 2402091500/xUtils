@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import com.lidroid.xutils.db.sqlite.*;
 import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
@@ -310,10 +311,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return null;
     }
@@ -354,10 +352,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return null;
     }
@@ -373,10 +368,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return result;
     }
@@ -390,10 +382,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return null;
     }
@@ -407,10 +396,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return null;
     }
@@ -425,10 +411,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return dbModelList;
     }
@@ -443,10 +426,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
         return dbModelList;
     }
@@ -629,10 +609,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
 
         return false;
@@ -654,10 +631,7 @@ public class DbUtils {
         } catch (Exception e) {
             throw new DbException(e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
+            IOUtils.closeQuietly(cursor);
         }
     }
 

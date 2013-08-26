@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.download.Downloader;
+import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
@@ -58,10 +59,13 @@ public class BitmapDownloadProcess {
         this.neverCalculate = neverCalculate;
     }
 
-    public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config) {
+    public BitmapResult downloadBitmap(String uri, BitmapDisplayConfig config) {
+
+        BitmapResult result = new BitmapResult();
+
         FileDescriptor fileDescriptor = null;
-        FileInputStream fileInputStream = null;
-        LruDiskCache.Snapshot snapshot;
+        OutputStream outputStream = null;
+        LruDiskCache.Snapshot snapshot = null;
         synchronized (mOriginalDiskCacheLock) {
             // Wait for disk cache to initialize
             while (!isOriginalDiskCacheReadied) {
@@ -73,21 +77,19 @@ public class BitmapDownloadProcess {
 
             if (mOriginalDiskCache != null) {
                 try {
-                    snapshot = mOriginalDiskCache.get(uri);
-                    if (snapshot == null) {
-                        LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
-                        if (editor != null) {
-                            if (downloader.downloadToLocalStreamByUri(uri, editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX))) {
-                                editor.commit();
-                            } else {
-                                editor.abort();
-                            }
+                    LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
+                    if (editor != null) {
+                        outputStream = editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX);
+                        result.expiryTimestamp = downloader.downloadToOutStreamByUri(uri, outputStream);
+                        if (result.expiryTimestamp < 0) {
+                            editor.abort();
+                        } else {
+                            editor.commit();
                         }
                         snapshot = mOriginalDiskCache.get(uri);
                     }
                     if (snapshot != null) {
-                        fileInputStream = (FileInputStream) snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX);
-                        fileDescriptor = fileInputStream.getFD();
+                        fileDescriptor = snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX).getFD();
                     }
                 } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
@@ -95,27 +97,23 @@ public class BitmapDownloadProcess {
             }
         }
 
-        Bitmap bitmap = null;
+
         if (fileDescriptor != null) {
             try {
                 if (neverCalculate) {
-                    bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                    result.bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 } else {
-                    bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+                    result.bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
                 }
             } catch (Exception e) {
                 LogUtils.e(e.getMessage(), e);
             }
         }
 
-        if (fileInputStream != null) {
-            try {
-                fileInputStream.close();
-            } catch (IOException e) {
-            }
-        }
+        IOUtils.closeQuietly(outputStream);
+        IOUtils.closeQuietly(snapshot);
 
-        return bitmap;
+        return result;
     }
 
     public Bitmap getBitmapFromDiskCache(String uri) {

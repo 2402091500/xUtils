@@ -15,11 +15,11 @@
 
 package com.lidroid.xutils.bitmap.download;
 
+import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -33,21 +33,24 @@ public class SimpleDownloader implements Downloader {
      *
      * @param uri
      * @param outputStream
-     * @return
+     * @return expiryTimestamp 图片过期时间点； 小于零，下载失败。
      */
     @Override
-    public boolean downloadToLocalStreamByUri(String uri, OutputStream outputStream) {
+    public long downloadToOutStreamByUri(String uri, OutputStream outputStream) {
         URLConnection urlConnection = null;
         BufferedInputStream bis = null;
 
+        long result = -1;
         try {
             if (uri.startsWith("/")) {
                 FileInputStream fileInputStream = new FileInputStream(uri);
                 bis = new BufferedInputStream(fileInputStream);
+                result = System.currentTimeMillis() + getDefaultExpiry();
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
                 bis = new BufferedInputStream(urlConnection.getInputStream());
+                result = urlConnection.getExpiration();
             }
 
             byte[] buffer = new byte[4096];
@@ -55,23 +58,42 @@ public class SimpleDownloader implements Downloader {
             while ((len = bis.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
             }
-            return true;
         } catch (Exception e) {
+            result = -1;
             LogUtils.e(e.getMessage(), e);
         } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
+            IOUtils.closeQuietly(bis);
             if (urlConnection != null) {
                 if (urlConnection instanceof HttpURLConnection) {
                     ((HttpURLConnection) urlConnection).disconnect();
                 }
             }
         }
-        return false;
+        if (result == 0) {
+            result = System.currentTimeMillis() + getDefaultExpiry();
+        }
+        return result;
+    }
+
+    private long defaultExpiry;
+
+    /**
+     * 设置图片过期时长
+     *
+     * @param expiry
+     */
+    @Override
+    public void setDefaultExpiry(long expiry) {
+        this.defaultExpiry = expiry;
+    }
+
+    /**
+     * 获取图片过期时长
+     *
+     * @return
+     */
+    @Override
+    public long getDefaultExpiry() {
+        return this.defaultExpiry;
     }
 }

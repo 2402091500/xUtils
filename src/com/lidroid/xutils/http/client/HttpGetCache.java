@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils.http.client;
 
-import com.lidroid.xutils.util.core.KeyExpiryMap;
 import com.lidroid.xutils.util.core.LruMemoryCache;
 
 /**
@@ -34,12 +33,6 @@ public class HttpGetCache {
     private final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
     private final static long MIN_EXPIRY_TIME = 500;
-
-    /**
-     * key: url
-     * value: expiry time
-     */
-    private KeyExpiryMap<String, Long> mUrlExpiryMap;
 
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
@@ -65,7 +58,6 @@ public class HttpGetCache {
                 return value.length();
             }
         };
-        mUrlExpiryMap = new KeyExpiryMap<String, Long>();
     }
 
     public void setCacheSize(int cacheSize) {
@@ -96,24 +88,15 @@ public class HttpGetCache {
         }
 
         if (mMemoryCache != null) {
-            mMemoryCache.remove(url);
-            mMemoryCache.put(url, result);
-            mUrlExpiryMap.put(url, expiry);
+            mMemoryCache.put(url, result, System.currentTimeMillis() + expiry);
         }
     }
 
     public String get(String url) {
-        if (mUrlExpiryMap.containsKey(url)) {
-            return mMemoryCache.get(url);
-        } else {
-            mMemoryCache.remove(url);
-        }
-        return null;
+        return mMemoryCache.get(url);
     }
 
     public void clear() {
         mMemoryCache.evictAll();
-        mUrlExpiryMap.clear();
     }
-
 }
