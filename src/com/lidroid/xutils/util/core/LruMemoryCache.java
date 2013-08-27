@@ -121,7 +121,7 @@ public class LruMemoryCache<K, V> {
     /**
      * Caches {@code value} for {@code key}. The value is moved to the head of
      * the queue.
-     * Default expiry: Long.MAX_VALUE.
+     * Default expiryTimestamp: Long.MAX_VALUE.
      *
      * @return the previous value mapped by {@code key}.
      */
