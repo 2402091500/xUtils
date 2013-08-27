@@ -103,7 +103,8 @@ public class SyncHttpHandler {
     private ResponseStream handleResponse(HttpResponse response) throws HttpException, IOException {
         if (response == null) return null;
         StatusLine status = response.getStatusLine();
-        if (status.getStatusCode() < 300) {
+        int statusCode = status.getStatusCode();
+        if (statusCode < 300) {
 
             // 自适应charset
             HttpEntity entity = response.getEntity();
@@ -121,7 +122,7 @@ public class SyncHttpHandler {
             }
 
             return new ResponseStream(response, charset, _getRequestUrl, expiry);
-        } else if (status.getStatusCode() == 302) {
+        } else if (statusCode == 301 || statusCode == 302) {
             if (downloadRedirectHandler == null) {
                 downloadRedirectHandler = new DefaultDownloadRedirectHandler();
             }

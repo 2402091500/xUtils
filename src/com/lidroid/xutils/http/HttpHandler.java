@@ -187,7 +187,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             throw new HttpException("response is null");
         }
         StatusLine status = response.getStatusLine();
-        if (status.getStatusCode() < 300) {
+        int statusCode = status.getStatusCode();
+        if (statusCode < 300) {
             HttpEntity entity = response.getEntity();
             Object responseBody = null;
             if (entity != null) {
@@ -213,7 +214,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 }
             }
             return responseBody;
-        } else if (status.getStatusCode() == 302) {
+        } else if (statusCode == 301 || statusCode == 302) {
             if (downloadRedirectHandler == null) {
                 downloadRedirectHandler = new DefaultDownloadRedirectHandler();
             }
