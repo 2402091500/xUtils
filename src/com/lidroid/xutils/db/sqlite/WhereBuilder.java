@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.db.sqlite;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.db.table.ColumnUtils;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class WhereBuilder {
 
     private void appendCondition(String conj, String columnName, String op, Object value) {
         StringBuilder sqlSb = new StringBuilder();
-        if (conj != null && conj.length() > 0) {
+        if (!TextUtils.isEmpty(conj)) {
             sqlSb.append(" " + conj + " ");
         }
         sqlSb.append(columnName).append(" " + op + " ");

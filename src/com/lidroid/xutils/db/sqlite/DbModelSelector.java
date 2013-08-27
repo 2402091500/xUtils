@@ -15,6 +15,8 @@
 
 package com.lidroid.xutils.db.sqlite;
 
+import android.text.TextUtils;
+
 /**
  * Author: wyouflf
  * Date: 13-8-10
@@ -97,7 +99,7 @@ public class DbModelSelector {
             }
             result.deleteCharAt(result.length() - 1);
         } else {
-            if (groupByColumnName != null && groupByColumnName.length() > 0) {
+            if (!TextUtils.isEmpty(groupByColumnName)) {
                 result.append(groupByColumnName);
             } else {
                 result.append("*");
@@ -107,7 +109,7 @@ public class DbModelSelector {
         if (selector.whereBuilder != null) {
             result.append(" WHERE ").append(selector.whereBuilder.toString());
         }
-        if (groupByColumnName != null && groupByColumnName.length() > 0) {
+        if (!TextUtils.isEmpty(groupByColumnName)) {
             result.append(" GROUP BY ").append(groupByColumnName);
             if (having != null) {
                 result.append(" HAVING ").append(having.toString());

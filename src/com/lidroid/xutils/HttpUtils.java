@@ -125,7 +125,7 @@ public class HttpUtils {
 
     private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime(); // httpGetCache过期时间
 
-    private final static int DEFAULT_CONN_TIMEOUT = 1000 * 10; // 默认10秒超时
+    private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 默认15秒超时
 
     private final static int DEFAULT_RETRY_TIMES = 5;  // 默认错误重试次数
 

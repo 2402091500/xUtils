@@ -26,6 +26,7 @@
 
 package com.lidroid.xutils.http.client.util;
 
+import android.text.TextUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -89,7 +90,7 @@ public class URIBuilder {
     }
 
     private List<NameValuePair> parseQuery(final String query, final Charset charset) {
-        if (query != null && query.length() > 0) {
+        if (!TextUtils.isEmpty(query)) {
             return URLEncodedUtils.parse(query, charset);
         }
         return null;

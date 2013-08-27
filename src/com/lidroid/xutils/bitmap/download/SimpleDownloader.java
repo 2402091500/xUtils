@@ -21,7 +21,6 @@ import com.lidroid.xutils.util.LogUtils;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -49,6 +48,7 @@ public class SimpleDownloader implements Downloader {
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
+                urlConnection.setConnectTimeout(1000 * 15);
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration();
             }
@@ -63,11 +63,6 @@ public class SimpleDownloader implements Downloader {
             LogUtils.e(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(bis);
-            if (urlConnection != null) {
-                if (urlConnection instanceof HttpURLConnection) {
-                    ((HttpURLConnection) urlConnection).disconnect();
-                }
-            }
         }
         if (result == 0) {
             result = System.currentTimeMillis() + getDefaultExpiry();

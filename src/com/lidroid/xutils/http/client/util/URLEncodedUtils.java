@@ -27,6 +27,7 @@
 
 package com.lidroid.xutils.http.client.util;
 
+import android.text.TextUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -67,7 +68,7 @@ public class URLEncodedUtils {
      */
     public static List<NameValuePair> parse(final URI uri, final String encoding) {
         final String query = uri.getRawQuery();
-        if (query != null && query.length() > 0) {
+        if (!TextUtils.isEmpty(query)) {
             List<NameValuePair> result = new ArrayList<NameValuePair>();
             Scanner scanner = new Scanner(query);
             parse(result, scanner, encoding);
