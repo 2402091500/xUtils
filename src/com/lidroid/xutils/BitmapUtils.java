@@ -381,6 +381,7 @@ public class BitmapUtils {
             if (bitmapResult != null) {
                 format = format == null ? globalConfig.getDefaultCompressFormat() : format;
                 globalConfig.getBitmapCache().addBitmapToCache(uri, bitmapResult, format);
+                bitmap = bitmapResult.bitmap;
             }
 
             return bitmap;
