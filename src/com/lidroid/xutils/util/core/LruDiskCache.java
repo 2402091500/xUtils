@@ -979,13 +979,13 @@ public final class LruDiskCache implements Closeable {
          * Set lengths using decimal numbers like "10123".
          */
         private void setLengths(String[] strings, int startIndex) throws IOException {
-            if (strings.length != valueCount) {
+            if ((strings.length - startIndex) != valueCount) {
                 throw invalidLengths(strings);
             }
 
             try {
-                for (int i = startIndex; i < strings.length; i++) {
-                    lengths[i] = Long.parseLong(strings[i]);
+                for (int i = 0; i < valueCount; i++) {
+                    lengths[i] = Long.parseLong(strings[i + startIndex]);
                 }
             } catch (NumberFormatException e) {
                 throw invalidLengths(strings);
