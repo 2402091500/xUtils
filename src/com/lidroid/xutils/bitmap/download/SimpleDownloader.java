@@ -49,6 +49,7 @@ public class SimpleDownloader implements Downloader {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
                 urlConnection.setConnectTimeout(1000 * 15);
+                urlConnection.setReadTimeout(1000 * 30);
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration();
             }
