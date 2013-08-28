@@ -257,8 +257,9 @@ public final class LruDiskCache implements Closeable {
     }
 
     private void readJournal() throws IOException {
-        StrictLineReader reader = new StrictLineReader(new FileInputStream(journalFile));
+        StrictLineReader reader = null;
         try {
+            reader = new StrictLineReader(new FileInputStream(journalFile));
             String magic = reader.readLine();
             String version = reader.readLine();
             String appVersionString = reader.readLine();
@@ -368,12 +369,13 @@ public final class LruDiskCache implements Closeable {
      */
     private synchronized void rebuildJournal() throws IOException {
         if (journalWriter != null) {
-            journalWriter.close();
+            IOUtils.closeQuietly(journalWriter);
         }
 
-        Writer writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(journalFileTmp), HTTP.US_ASCII));
+        Writer writer = null;
         try {
+            writer = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(journalFileTmp), HTTP.US_ASCII));
             writer.write(MAGIC);
             writer.write("\n");
             writer.write(VERSION_1);
@@ -392,7 +394,7 @@ public final class LruDiskCache implements Closeable {
                 }
             }
         } finally {
-            writer.close();
+            IOUtils.closeQuietly(writer);
         }
 
         if (journalFile.exists()) {
@@ -686,6 +688,7 @@ public final class LruDiskCache implements Closeable {
     /**
      * Closes this cache. Stored values will remain on the filesystem.
      */
+    @Override
     public synchronized void close() throws IOException {
         if (journalWriter == null) {
             return; // Already closed.
@@ -713,7 +716,7 @@ public final class LruDiskCache implements Closeable {
      * the cache.
      */
     public void delete() throws IOException {
-        close();
+        IOUtils.closeQuietly(this);
         deleteContents(directory);
     }
 
@@ -774,6 +777,7 @@ public final class LruDiskCache implements Closeable {
             return lengths[index];
         }
 
+        @Override
         public void close() {
             for (InputStream in : ins) {
                 IOUtils.closeQuietly(in);
@@ -1034,7 +1038,7 @@ public final class LruDiskCache implements Closeable {
             }
             return writer.toString();
         } finally {
-            reader.close();
+            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -1113,6 +1117,7 @@ public final class LruDiskCache implements Closeable {
          *
          * @throws IOException for errors when closing the underlying {@code InputStream}.
          */
+        @Override
         public void close() throws IOException {
             synchronized (in) {
                 if (buf != null) {

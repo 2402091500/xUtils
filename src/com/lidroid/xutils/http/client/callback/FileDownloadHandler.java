@@ -16,6 +16,8 @@ package com.lidroid.xutils.http.client.callback;
 
 import android.text.TextUtils;
 
+import com.lidroid.xutils.util.IOUtils;
+
 import org.apache.http.HttpEntity;
 
 import java.io.BufferedInputStream;
@@ -38,29 +40,27 @@ public class FileDownloadHandler {
         }
 
         long current = 0;
+        InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
-        if (isResume) {
-            current = targetFile.length();
-            fileOutputStream = new FileOutputStream(target, true);
-        } else {
-            fileOutputStream = new FileOutputStream(target);
-        }
 
-        long total = entity.getContentLength() + current;
-
-        if (callback != null && !callback.updateProgress(total, current, true)) {
-            return null;
-        }
-
-        InputStream ins = null;
         try {
-            ins = entity.getContent();
-            BufferedInputStream bis = null;
-            if (ins instanceof BufferedInputStream) {
-                bis = (BufferedInputStream) ins;
+
+            if (isResume) {
+                current = targetFile.length();
+                fileOutputStream = new FileOutputStream(target, true);
             } else {
-                bis = new BufferedInputStream(ins);
+                fileOutputStream = new FileOutputStream(target);
             }
+
+            long total = entity.getContentLength() + current;
+
+            if (callback != null && !callback.updateProgress(total, current, true)) {
+                return null;
+            }
+
+
+            inputStream = entity.getContent();
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
 
             byte[] tmp = new byte[4096];
             int len;
@@ -78,18 +78,8 @@ public class FileDownloadHandler {
                 callback.updateProgress(total, current, true);
             }
         } finally {
-            if (ins != null) {
-                try {
-                    ins.close();
-                } catch (Exception e) {
-                }
-            }
-            if (fileOutputStream != null) {
-                try {
-                    fileOutputStream.close();
-                } catch (Exception e) {
-                }
-            }
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(fileOutputStream);
         }
 
         return targetFile;

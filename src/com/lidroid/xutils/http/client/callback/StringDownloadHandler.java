@@ -14,6 +14,8 @@
  */
 package com.lidroid.xutils.http.client.callback;
 
+import com.lidroid.xutils.util.IOUtils;
+
 import org.apache.http.HttpEntity;
 
 import java.io.BufferedReader;
@@ -26,18 +28,18 @@ public class StringDownloadHandler {
     public Object handleEntity(HttpEntity entity, RequestCallBackHandler callback, String charset) throws IOException {
         if (entity == null) return null;
 
-        long total = entity.getContentLength();
         long current = 0;
+        long total = entity.getContentLength();
 
         if (callback != null && !callback.updateProgress(total, current, true)) {
             return null;
         }
 
-        InputStream ins = null;
+        InputStream inputStream = null;
         StringBuilder sb = new StringBuilder();
         try {
-            ins = entity.getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ins, charset));
+            inputStream = entity.getContent();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
             String line = "";
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
@@ -52,12 +54,7 @@ public class StringDownloadHandler {
                 callback.updateProgress(total, current, true);
             }
         } finally {
-            if (ins != null) {
-                try {
-                    ins.close();
-                } catch (Exception e) {
-                }
-            }
+            IOUtils.closeQuietly(inputStream);
         }
         return sb.toString();
     }

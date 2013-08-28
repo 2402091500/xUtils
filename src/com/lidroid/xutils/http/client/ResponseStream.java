@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.util.IOUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HTTP;
@@ -98,14 +99,7 @@ public class ResponseStream extends InputStream {
         } catch (IOException e) {
             throw e;
         } finally {
-            if (baseStream != null) {
-                try {
-                    baseStream.close();
-                } catch (IOException e) {
-                } finally {
-                    baseStream = null;
-                }
-            }
+            IOUtils.closeQuietly(baseStream);
         }
     }
 
@@ -124,20 +118,8 @@ public class ResponseStream extends InputStream {
         } catch (IOException e) {
             throw e;
         } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                }
-            }
-            if (baseStream != null) {
-                try {
-                    baseStream.close();
-                } catch (IOException e) {
-                } finally {
-                    baseStream = null;
-                }
-            }
+            IOUtils.closeQuietly(out);
+            IOUtils.closeQuietly(baseStream);
         }
     }
 

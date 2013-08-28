@@ -35,6 +35,8 @@ public class BitmapDisplayConfig {
 
     private ImageLoadCallBack imageLoadCallBack;
 
+    private int compressQuality = 70;
+
     private Context mContext;
 
     public BitmapDisplayConfig(Context context) {
@@ -100,6 +102,14 @@ public class BitmapDisplayConfig {
 
     public void setImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
         this.imageLoadCallBack = imageLoadCallBack;
+    }
+
+    public int getCompressQuality() {
+        return compressQuality;
+    }
+
+    public void setCompressQuality(int compressQuality) {
+        this.compressQuality = compressQuality;
     }
 
 }

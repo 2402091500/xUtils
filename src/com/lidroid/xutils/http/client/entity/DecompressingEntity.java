@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+import com.lidroid.xutils.util.IOUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.HttpEntityWrapper;
@@ -50,11 +51,12 @@ abstract class DecompressingEntity extends HttpEntityWrapper implements UploadEn
     abstract InputStream decorate(final InputStream wrapped) throws IOException;
 
     private InputStream getDecompressingStream() throws IOException {
-        InputStream in = wrappedEntity.getContent();
+        InputStream in = null;
         try {
+            in = wrappedEntity.getContent();
             return decorate(in);
         } catch (IOException ex) {
-            in.close();
+            IOUtils.closeQuietly(in);
             throw ex;
         }
     }
@@ -92,8 +94,10 @@ abstract class DecompressingEntity extends HttpEntityWrapper implements UploadEn
         if (outStream == null) {
             throw new IllegalArgumentException("Output stream may not be null");
         }
-        InputStream inStream = getContent();
+        InputStream inStream = null;
         try {
+            inStream = getContent();
+
             byte[] tmp = new byte[4096];
             int len;
             while ((len = inStream.read(tmp)) != -1) {
@@ -110,7 +114,7 @@ abstract class DecompressingEntity extends HttpEntityWrapper implements UploadEn
                 callback.updateProgress(uncompressedLength, uploadedSize, true);
             }
         } finally {
-            inStream.close();
+            IOUtils.closeQuietly(inStream);
         }
     }
 

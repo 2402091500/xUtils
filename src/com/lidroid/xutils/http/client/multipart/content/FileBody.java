@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.multipart.content;
 
 import com.lidroid.xutils.http.client.multipart.MIME;
+import com.lidroid.xutils.util.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,8 +77,9 @@ public class FileBody extends AbstractContentBody {
         if (out == null) {
             throw new IllegalArgumentException("Output stream may not be null");
         }
-        InputStream in = new FileInputStream(this.file);
+        InputStream in = null;
         try {
+            in = new FileInputStream(this.file);
             byte[] tmp = new byte[4096];
             int l;
             while ((l = in.read(tmp)) != -1) {
@@ -89,7 +91,7 @@ public class FileBody extends AbstractContentBody {
             }
             out.flush();
         } finally {
-            in.close();
+            IOUtils.closeQuietly(in);
         }
     }
 

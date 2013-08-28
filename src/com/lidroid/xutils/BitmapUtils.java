@@ -187,6 +187,11 @@ public class BitmapUtils {
         return this;
     }
 
+    public BitmapUtils configOriginalDiskCacheSize(int originalDiskCacheSize) {
+        globalConfig.setOriginalDiskCacheSize(originalDiskCacheSize);
+        return this;
+    }
+
     public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
         BitmapUtils.globalConfig = globalConfig;
         return this;
@@ -381,7 +386,7 @@ public class BitmapUtils {
             // 加入缓存
             if (bitmapResult != null) {
                 format = format == null ? globalConfig.getDefaultCompressFormat() : format;
-                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmapResult, format);
+                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmapResult, displayConfig, format);
                 bitmap = bitmapResult.bitmap;
             }
 

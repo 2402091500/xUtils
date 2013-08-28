@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 
+import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
@@ -41,7 +42,7 @@ public class BitmapCache {
     private final Object mDiskCacheLock = new Object();
     private boolean isDiskCacheReadied = false;
 
-    private BitmapGlobalConfig mConfig;
+    private BitmapGlobalConfig globalConfig;
 
     /**
      * Creating a new ImageCache object using the specified parameters.
@@ -49,7 +50,7 @@ public class BitmapCache {
      * @param config The cache parameters to use to initialize the cache
      */
     public BitmapCache(BitmapGlobalConfig config) {
-        this.mConfig = config;
+        this.globalConfig = config;
     }
 
 
@@ -58,14 +59,14 @@ public class BitmapCache {
      */
     public void initMemoryCache() {
         // Set up memory cache
-        if (mConfig.isMemoryCacheEnabled()) {
+        if (globalConfig.isMemoryCacheEnabled()) {
             if (mMemoryCache != null) {
                 try {
                     clearMemoryCache();
                 } catch (Exception e) {
                 }
             }
-            mMemoryCache = new LruMemoryCache<String, Bitmap>(mConfig.getMemoryCacheSize()) {
+            mMemoryCache = new LruMemoryCache<String, Bitmap>(globalConfig.getMemoryCacheSize()) {
                 /**
                  * Measure item size in bytes rather than units which is more practical
                  * for a bitmap cache
@@ -88,14 +89,14 @@ public class BitmapCache {
         // Set up disk cache
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
-                File diskCacheDir = new File(mConfig.getDiskCachePath());
-                if (mConfig.isDiskCacheEnabled() && diskCacheDir != null) {
+                File diskCacheDir = new File(globalConfig.getDiskCachePath());
+                if (globalConfig.isDiskCacheEnabled() && diskCacheDir != null) {
                     if (!diskCacheDir.exists()) {
                         diskCacheDir.mkdirs();
                     }
-                    if (BitmapCommonUtils.getAvailableSpace(diskCacheDir) > mConfig.getDiskCacheSize()) {
+                    if (BitmapCommonUtils.getAvailableSpace(diskCacheDir) > globalConfig.getDiskCacheSize()) {
                         try {
-                            mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, mConfig.getDiskCacheSize());
+                            mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, globalConfig.getDiskCacheSize());
                         } catch (final IOException e) {
                             LogUtils.e(e.getMessage(), e);
                         }
@@ -126,7 +127,7 @@ public class BitmapCache {
      * @param bitmapResult   The bitmap and expiry timestamp to store
      * @param compressFormat if null, use default value.
      */
-    public void addBitmapToCache(String uri, BitmapResult bitmapResult, CompressFormat compressFormat) {
+    public void addBitmapToCache(String uri, BitmapResult bitmapResult, BitmapDisplayConfig config, CompressFormat compressFormat) {
         if (uri == null || bitmapResult == null || bitmapResult.bitmap == null) {
             return;
         }
@@ -152,8 +153,8 @@ public class BitmapCache {
                         final LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
                         if (editor != null) {
                             out = editor.newOutputStream(DISK_CACHE_INDEX);
-                            CompressFormat format = compressFormat == null ? mConfig.getDefaultCompressFormat() : compressFormat;
-                            bitmapResult.bitmap.compress(format, mConfig.getDefaultCompressQuality(), out);
+                            CompressFormat format = compressFormat == null ? globalConfig.getDefaultCompressFormat() : compressFormat;
+                            bitmapResult.bitmap.compress(format, config.getCompressQuality(), out);
                             editor.setEntryExpiryTimestamp(bitmapResult.expiryTimestamp);
                             editor.commit();
                         }
@@ -213,12 +214,7 @@ public class BitmapCache {
                 } catch (final IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
-                    try {
-                        if (inputStream != null) {
-                            inputStream.close();
-                        }
-                    } catch (IOException e) {
-                    }
+                    IOUtils.closeQuietly(inputStream);
                 }
             }
             return null;

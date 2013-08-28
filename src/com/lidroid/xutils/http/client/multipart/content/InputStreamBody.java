@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.multipart.content;
 
 import com.lidroid.xutils.http.client.multipart.MIME;
+import com.lidroid.xutils.util.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +69,7 @@ public class InputStreamBody extends AbstractContentBody {
             }
             out.flush();
         } finally {
-            this.in.close();
+            IOUtils.closeQuietly(this.in);
         }
     }
 

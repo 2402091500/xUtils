@@ -43,7 +43,6 @@ public class BitmapGlobalConfig {
     private int diskCacheSize = 1024 * 1024 * 20;  // 20M
     private int originalDiskCacheSize = 1024 * 1024 * 50; // 50M
 
-    private int defaultCompressQuality = 70;
     private Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG;
 
     private boolean memoryCacheEnabled = true;
@@ -86,14 +85,14 @@ public class BitmapGlobalConfig {
     public Downloader getDownloader() {
         if (downloader == null) {
             downloader = new SimpleDownloader();
-            downloader.setDefaultExpiry(defaultCacheExpiry);
+            downloader.setDefaultExpiry(getDefaultCacheExpiry());
         }
         return downloader;
     }
 
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
-        this.downloader.setDefaultExpiry(defaultCacheExpiry);
+        this.downloader.setDefaultExpiry(getDefaultCacheExpiry());
         if (bitmapDownloadProcess != null) {
             bitmapDownloadProcess.setDownloader(downloader);
         }
@@ -198,14 +197,6 @@ public class BitmapGlobalConfig {
             _dirty_params_bitmapLoadExecutor = false;
         }
         return bitmapLoadExecutor;
-    }
-
-    public int getDefaultCompressQuality() {
-        return defaultCompressQuality;
-    }
-
-    public void setDefaultCompressQuality(int defaultCompressQuality) {
-        this.defaultCompressQuality = defaultCompressQuality;
     }
 
     public boolean isMemoryCacheEnabled() {

@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+import com.lidroid.xutils.util.IOUtils;
 
 import org.apache.http.entity.AbstractHttpEntity;
 
@@ -101,7 +102,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                 callback.updateProgress(length, uploadedSize, true);
             }
         } finally {
-            inStream.close();
+            IOUtils.closeQuietly(inStream);
         }
     }
 

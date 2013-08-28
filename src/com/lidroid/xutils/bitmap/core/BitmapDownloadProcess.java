@@ -147,12 +147,7 @@ public class BitmapDownloadProcess {
                 } catch (final IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
-                    try {
-                        if (inputStream != null) {
-                            inputStream.close();
-                        }
-                    } catch (IOException e) {
-                    }
+                    IOUtils.closeQuietly(inputStream);
                 }
             }
             return null;
