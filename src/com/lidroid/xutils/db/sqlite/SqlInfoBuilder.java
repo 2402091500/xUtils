@@ -16,7 +16,13 @@
 package com.lidroid.xutils.db.sqlite;
 
 import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.db.table.*;
+import com.lidroid.xutils.db.table.Column;
+import com.lidroid.xutils.db.table.ColumnUtils;
+import com.lidroid.xutils.db.table.Foreign;
+import com.lidroid.xutils.db.table.Id;
+import com.lidroid.xutils.db.table.KeyValue;
+import com.lidroid.xutils.db.table.Table;
+import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
 
 import java.util.ArrayList;
@@ -43,6 +49,38 @@ public class SqlInfoBuilder {
         StringBuffer sqlBuffer = new StringBuffer();
 
         sqlBuffer.append("INSERT INTO ");
+        sqlBuffer.append(Table.get(entity.getClass()).getTableName());
+        sqlBuffer.append(" (");
+        for (KeyValue kv : keyValueList) {
+            sqlBuffer.append(kv.getKey()).append(",");
+            result.addValue(kv.getValue());
+        }
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(") VALUES (");
+
+        int length = keyValueList.size();
+        for (int i = 0; i < length; i++) {
+            sqlBuffer.append("?,");
+        }
+        sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
+        sqlBuffer.append(")");
+
+        result.setSql(sqlBuffer.toString());
+
+        return result;
+    }
+
+    //*********************************************** replace sql ***********************************************
+
+    public static SqlInfo buildReplaceSqlInfo(DbUtils db, Object entity) throws DbException {
+
+        List<KeyValue> keyValueList = entity2KeyValueListForReplace(db, entity);
+        if (keyValueList.size() == 0) return null;
+
+        SqlInfo result = new SqlInfo();
+        StringBuffer sqlBuffer = new StringBuffer();
+
+        sqlBuffer.append("REPLACE INTO ");
         sqlBuffer.append(Table.get(entity.getClass()).getTableName());
         sqlBuffer.append(" (");
         for (KeyValue kv : keyValueList) {
@@ -218,6 +256,33 @@ public class SqlInfoBuilder {
             kv = new KeyValue(key, value);
         }
         return kv;
+    }
+
+    private static List<KeyValue> entity2KeyValueListForReplace(DbUtils db, Object entity) {
+
+        List<KeyValue> keyValueList = new ArrayList<KeyValue>();
+
+        Table table = Table.get(entity.getClass());
+        Id id = table.getId();
+        Object idValue = TableUtils.getIdValue(entity);
+
+        if (id != null && idValue != null) {
+            KeyValue kv = new KeyValue(table.getId().getColumnName(), idValue);
+            keyValueList.add(kv);
+        }
+
+        Collection<Column> columns = table.columnMap.values();
+        for (Column column : columns) {
+            if (column instanceof Foreign) {
+                ((Foreign) column).db = db;
+            }
+            KeyValue kv = column2KeyValue(entity, column);
+            if (kv != null) {
+                keyValueList.add(kv);
+            }
+        }
+
+        return keyValueList;
     }
 
     public static List<KeyValue> entity2KeyValueList(DbUtils db, Object entity) {

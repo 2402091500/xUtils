@@ -16,13 +16,24 @@ package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
 import android.text.TextUtils;
+
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.lidroid.xutils.http.client.callback.*;
+import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
+import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
+import com.lidroid.xutils.http.client.callback.FileDownloadHandler;
+import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import org.apache.http.*;
+
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;

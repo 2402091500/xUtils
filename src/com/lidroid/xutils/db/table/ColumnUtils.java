@@ -16,10 +16,14 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
-import com.lidroid.xutils.db.annotation.*;
+
+import com.lidroid.xutils.db.annotation.Check;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
+import com.lidroid.xutils.db.annotation.NotNull;
+import com.lidroid.xutils.db.annotation.Transient;
+import com.lidroid.xutils.db.annotation.Unique;
 import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
 import com.lidroid.xutils.util.LogUtils;
 

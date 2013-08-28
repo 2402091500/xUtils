@@ -16,10 +16,16 @@
 package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.HttpUtils;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HTTP;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 /**

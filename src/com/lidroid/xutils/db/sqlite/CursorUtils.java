@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.sqlite;
 
 import android.database.Cursor;
+
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.table.Column;
 import com.lidroid.xutils.db.table.DbModel;

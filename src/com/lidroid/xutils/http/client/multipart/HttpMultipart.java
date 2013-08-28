@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.multipart;
 
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
+
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.ByteArrayOutputStream;
@@ -258,7 +259,7 @@ class HttpMultipart {
      * buffered.
      *
      * @return total length of the multipart entity if known, <code>-1</code>
-     *         otherwise.
+     * otherwise.
      */
     public long getTotalLength() {
         long contentLen = 0;

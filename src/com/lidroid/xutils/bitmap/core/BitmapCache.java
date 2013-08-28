@@ -18,6 +18,7 @@ package com.lidroid.xutils.bitmap.core;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;

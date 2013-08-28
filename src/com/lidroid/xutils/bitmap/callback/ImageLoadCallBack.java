@@ -17,6 +17,7 @@ package com.lidroid.xutils.bitmap.callback;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 public interface ImageLoadCallBack {

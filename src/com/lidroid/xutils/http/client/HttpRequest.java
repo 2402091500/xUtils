@@ -4,6 +4,7 @@ import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.util.URIBuilder;
 import com.lidroid.xutils.util.LogUtils;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;

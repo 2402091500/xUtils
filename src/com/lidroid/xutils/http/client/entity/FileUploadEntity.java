@@ -16,9 +16,14 @@
 package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+
 import org.apache.http.entity.FileEntity;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created with IntelliJ IDEA.

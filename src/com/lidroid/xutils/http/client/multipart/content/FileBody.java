@@ -17,7 +17,11 @@ package com.lidroid.xutils.http.client.multipart.content;
 
 import com.lidroid.xutils.http.client.multipart.MIME;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @since 4.0

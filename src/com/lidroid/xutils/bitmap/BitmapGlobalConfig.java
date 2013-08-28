@@ -19,6 +19,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.core.BitmapDownloadProcess;

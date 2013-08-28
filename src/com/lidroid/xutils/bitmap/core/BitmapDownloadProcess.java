@@ -17,13 +17,18 @@ package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class BitmapDownloadProcess {
     private boolean isOriginalDiskCacheReadied = false;
@@ -77,16 +82,20 @@ public class BitmapDownloadProcess {
 
             if (mOriginalDiskCache != null) {
                 try {
-                    LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
-                    if (editor != null) {
-                        outputStream = editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX);
-                        result.expiryTimestamp = downloader.downloadToOutStreamByUri(uri, outputStream);
-                        if (result.expiryTimestamp < 0) {
-                            editor.abort();
-                        } else {
-                            editor.commit();
+                    snapshot = mOriginalDiskCache.get(uri);
+                    if (snapshot == null) {
+                        LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
+                        if (editor != null) {
+                            outputStream = editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX);
+                            result.expiryTimestamp = downloader.downloadToOutStreamByUri(uri, outputStream);
+                            if (result.expiryTimestamp < 0) {
+                                editor.abort();
+                            } else {
+                                editor.setEntryExpiryTimestamp(result.expiryTimestamp);
+                                editor.commit();
+                            }
+                            snapshot = mOriginalDiskCache.get(uri);
                         }
-                        snapshot = mOriginalDiskCache.get(uri);
                     }
                     if (snapshot != null) {
                         fileDescriptor = snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX).getFD();

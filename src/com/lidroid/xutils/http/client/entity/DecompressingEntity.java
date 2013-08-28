@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.HttpEntityWrapper;
 

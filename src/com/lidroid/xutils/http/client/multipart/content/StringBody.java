@@ -16,9 +16,16 @@
 package com.lidroid.xutils.http.client.multipart.content;
 
 import com.lidroid.xutils.http.client.multipart.MIME;
+
 import org.apache.http.protocol.HTTP;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 /**
@@ -65,8 +72,7 @@ public class StringBody extends AbstractContentBody {
      * @param mimeType the mime type, not {@code null}
      * @param charset  the character set, may be {@code null}, in which case the UTF-8 charset is used
      * @throws java.io.UnsupportedEncodingException
-     *
-     * @throws IllegalArgumentException if the {@code text} parameter is null
+     * @throws IllegalArgumentException             if the {@code text} parameter is null
      */
     public StringBody(
             final String text,
@@ -90,8 +96,7 @@ public class StringBody extends AbstractContentBody {
      * @param text    to be used for the body, not {@code null}
      * @param charset the character set, may be {@code null}, in which case the UTF-8 charset is used
      * @throws java.io.UnsupportedEncodingException
-     *
-     * @throws IllegalArgumentException if the {@code text} parameter is null
+     * @throws IllegalArgumentException             if the {@code text} parameter is null
      */
     public StringBody(final String text, final Charset charset) throws UnsupportedEncodingException {
         this(text, "text/plain", charset);
@@ -104,8 +109,7 @@ public class StringBody extends AbstractContentBody {
      *
      * @param text to be used for the body, not {@code null}
      * @throws java.io.UnsupportedEncodingException
-     *
-     * @throws IllegalArgumentException if the {@code text} parameter is null
+     * @throws IllegalArgumentException             if the {@code text} parameter is null
      */
     public StringBody(final String text) throws UnsupportedEncodingException {
         this(text, "text/plain", null);

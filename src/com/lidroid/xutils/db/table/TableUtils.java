@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
+
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.util.LogUtils;
@@ -162,15 +163,20 @@ public class TableUtils {
         return id == null ? null : id.getColumnName();
     }
 
-    public static boolean hasPrimaryKeyValue(Object entity) {
-        if (entity == null) return false;
+    public static Object getIdValue(Object entity) {
+        if (entity == null) return null;
 
         try {
             com.lidroid.xutils.db.table.Id id = getId(entity.getClass());
+            if (id == null) return null;
             Object idValue = id.getColumnValue(entity);
-            return idValue != null && !idValue.equals(0) && idValue.toString().length() > 0;
+            if (idValue != null && !idValue.equals(0) && idValue.toString().length() > 0) {
+                return idValue;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 }

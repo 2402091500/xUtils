@@ -28,6 +28,7 @@
 package com.lidroid.xutils.http.client.util;
 
 import android.text.TextUtils;
+
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -42,7 +43,11 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * A collection of utilities for encoding URLs.

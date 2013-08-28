@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.view.animation.Animation;
+
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 

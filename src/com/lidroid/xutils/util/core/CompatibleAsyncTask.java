@@ -18,10 +18,21 @@ package com.lidroid.xutils.util.core;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
+
 import com.lidroid.xutils.util.LogUtils;
 
 import java.util.ArrayDeque;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -443,8 +454,8 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      *                              task should be interrupted; otherwise, in-progress tasks are allowed
      *                              to complete.
      * @return <tt>false</tt> if the task could not be cancelled,
-     *         typically because it has already completed normally;
-     *         <tt>true</tt> otherwise
+     * typically because it has already completed normally;
+     * <tt>true</tt> otherwise
      * @see #isCancelled()
      * @see #onCancelled(Object)
      */
@@ -458,12 +469,10 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * retrieves its result.
      *
      * @return The computed result.
-     * @throws java.util.concurrent.CancellationException
-     *                              If the computation was cancelled.
-     * @throws java.util.concurrent.ExecutionException
-     *                              If the computation threw an exception.
-     * @throws InterruptedException If the current thread was interrupted
-     *                              while waiting.
+     * @throws java.util.concurrent.CancellationException If the computation was cancelled.
+     * @throws java.util.concurrent.ExecutionException    If the computation threw an exception.
+     * @throws InterruptedException                       If the current thread was interrupted
+     *                                                    while waiting.
      */
     public final Result get() throws InterruptedException, ExecutionException {
         return mFuture.get();
@@ -476,14 +485,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param timeout Time to wait before cancelling the operation.
      * @param unit    The time unit for the timeout.
      * @return The computed result.
-     * @throws java.util.concurrent.CancellationException
-     *                              If the computation was cancelled.
-     * @throws java.util.concurrent.ExecutionException
-     *                              If the computation threw an exception.
-     * @throws InterruptedException If the current thread was interrupted
-     *                              while waiting.
-     * @throws java.util.concurrent.TimeoutException
-     *                              If the wait timed out.
+     * @throws java.util.concurrent.CancellationException If the computation was cancelled.
+     * @throws java.util.concurrent.ExecutionException    If the computation threw an exception.
+     * @throws InterruptedException                       If the current thread was interrupted
+     *                                                    while waiting.
+     * @throws java.util.concurrent.TimeoutException      If the wait timed out.
      */
     public final Result get(long timeout, TimeUnit unit) throws InterruptedException,
             ExecutionException, TimeoutException {

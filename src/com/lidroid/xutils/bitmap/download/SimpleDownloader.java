@@ -51,7 +51,8 @@ public class SimpleDownloader implements Downloader {
                 urlConnection.setConnectTimeout(1000 * 15);
                 urlConnection.setReadTimeout(1000 * 30);
                 bis = new BufferedInputStream(urlConnection.getInputStream());
-                result = urlConnection.getExpiration();
+                result = urlConnection.getExpiration(); // 如果header中不包含expires返回0
+                result = result == 0 ? System.currentTimeMillis() + getDefaultExpiry() : result;
             }
 
             byte[] buffer = new byte[4096];
@@ -64,9 +65,6 @@ public class SimpleDownloader implements Downloader {
             LogUtils.e(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(bis);
-        }
-        if (result == 0) {
-            result = System.currentTimeMillis() + getDefaultExpiry();
         }
         return result;
     }

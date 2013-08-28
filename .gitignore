@@ -25,3 +25,4 @@ local.properties
 # others
 ant.properties
 build.xml
+META-INF
