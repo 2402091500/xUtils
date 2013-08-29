@@ -288,7 +288,7 @@ public class HttpUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, String contentType, RequestCallBack<T> callBack) {
         if (contentType != null) {
-            request.addHeader("Content-Type", contentType);
+            request.setHeader("Content-Type", contentType);
         }
 
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, defaultResponseTextCharset, callBack);
@@ -303,7 +303,7 @@ public class HttpUtils {
 
     private ResponseStream sendSyncRequest(HttpRequest request, RequestParams params, String contentType) throws HttpException {
         if (contentType != null) {
-            request.addHeader("Content-Type", contentType);
+            request.setHeader("Content-Type", contentType);
         }
 
         SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, defaultResponseTextCharset);
