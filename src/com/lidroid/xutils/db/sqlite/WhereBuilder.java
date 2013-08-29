@@ -107,7 +107,7 @@ public class WhereBuilder {
             sqlSb.append("NULL");
         } else if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
             String valueStr = value.toString();
-            if (valueStr.contains("'")) { // 单引号转义
+            if (valueStr.indexOf('\'') != -1) { // 单引号转义
                 valueStr = valueStr.replace("'", "''");
             }
             sqlSb.append("'" + valueStr + "'");
