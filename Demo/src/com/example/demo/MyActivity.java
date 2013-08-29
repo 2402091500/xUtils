@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -100,6 +101,7 @@ public class MyActivity extends Activity {
             HttpUtils http = new HttpUtils();
             downloadHandler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
                     "/sdcard/fileexplorer.apk",
+                    true,
                     new RequestCallBack<File>() {
 
                         @Override

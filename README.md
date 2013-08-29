@@ -11,7 +11,7 @@
   > * 可通过注解自定义表名，列名，外键，唯一性约束，NOT NULL约束，CHECK约束等（需要混淆的时候请注解表名和列名）；
   > * 支持绑定外键，保存实体时外键关联实体自动保存或更新；
   > * 自动加载外键关联实体，支持延时加载；
-  > * 支持链式表达查询，参考下面的介绍或Demo中的例子。
+  > * 支持链式表达查询，更直观的查询语义，参考下面的介绍或Demo中的例子。
 
 * ViewUtils模块：
   > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定；
@@ -22,7 +22,7 @@
   > * 支持同步，异步方式的请求；
   > * 支持大文件上传，上传大文件不会oom；
   > * 支持GET，POST，PUT，MOVE，COPY，DELETE，HEAD请求；
-  > * 下载支持302重定向；
+  > * 下载支持301/302重定向；
   > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
 
 * BitmapUtils模块：
@@ -62,7 +62,12 @@ Parent entity = db.findById(Parent.class, parent.getId());
 Parent entity = db.findFirst(entity);//通过entity的属性查找
 List<Parent> list = db.findAll(entity);//通过entity的属性查找
 Parent Parent = db.findFirst(Selector.from(Parent.class).where(WhereBuilder.b("name","=","test")));
-List<Parent> list = db.findAll(Selector.from(Parent.class).where(WhereBuilder.b("id","<",54)).orderBy("id").limit(10));
+List<Parent> list = db.findAll(Selector.from(Parent.class)
+                                   .where(WhereBuilder.b("id","<",54)
+                                       .append("age",">",30)
+                                       .appendOR("age","<",20))
+                                   .orderBy("id")
+                                   .limit(10));
 DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
 ...
@@ -181,6 +186,7 @@ http.send(HttpRequest.HttpMethod.POST,
 HttpUtils http = new HttpUtils();
 HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/httpclient/source/httpcomponents-client-4.2.5-src.zip",
     "/sdcard/httpcomponents-client-4.2.5-src.zip",
+    true, // 如果目标文件存在，接着未完成的部分继续下载。
     new RequestCallBack<File>() {
 
         @Override
