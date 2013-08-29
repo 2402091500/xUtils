@@ -24,6 +24,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class MyActivity extends Activity {
             HttpUtils http = new HttpUtils();
             downloadHandler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
                     "/sdcard/fileexplorer.apk",
-                    true,
+                    //true,
                     new RequestCallBack<File>() {
 
                         @Override
@@ -282,6 +283,7 @@ public class MyActivity extends Activity {
             //DbUtils db = DbUtils.create(this, "/sdcard/", "test");
             DbUtils db = DbUtils.create(this);
             db.configAllowTransaction(true);
+            db.configDebug(true);
 
             Child child = new Child();
             child.name = "child' name";
@@ -307,7 +309,18 @@ public class MyActivity extends Activity {
                 LogUtils.d("wyouflf child:" + children.get(children.size() - 1).parent);
             }
 
-            List<Parent> list = db.findAll(Selector.from(Parent.class).where(WhereBuilder.b("id", "<", 54)).orderBy("id").limit(10));
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -1);
+            calendar.add(Calendar.HOUR, 3);
+
+            List<Parent> list = db.findAll(
+                    Selector.from(Parent.class)
+                            .where(WhereBuilder.b("id", "<", 54)
+                                    .append("time", ">", calendar.getTime())
+                                    .appendOR("isVIP", "=", true)
+                            )
+                            .orderBy("id")
+                            .limit(10));
             LogUtils.d("wyouflf size:" + list.size());
             if (list.size() > 0) {
                 LogUtils.d("wyouflf parent:" + list.get(list.size() - 1).toString());
