@@ -56,17 +56,17 @@ public class TableUtils {
         }
 
         HashMap<String, Column> columnMap = new HashMap<String, Column>();
-        addColumns2Map(entityType, columnMap);
+        String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
+        addColumns2Map(entityType, primaryKeyFieldName, columnMap);
         entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
 
         return columnMap;
     }
 
-    private static void addColumns2Map(Class<?> entityType, HashMap<String, Column> columnMap) {
+    private static void addColumns2Map(Class<?> entityType, String primaryKeyFieldName, HashMap<String, Column> columnMap) {
         if (Object.class.equals(entityType)) return;
         try {
             Field[] fields = entityType.getDeclaredFields();
-            String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
             for (Field field : fields) {
                 if (ColumnUtils.isTransient(field) || Modifier.isStatic(field.getModifiers())) {
                     continue;
@@ -87,7 +87,7 @@ public class TableUtils {
             }
 
             if (!Object.class.equals(entityType.getSuperclass())) {
-                addColumns2Map(entityType.getSuperclass(), columnMap);
+                addColumns2Map(entityType.getSuperclass(), primaryKeyFieldName, columnMap);
             }
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
