@@ -344,8 +344,6 @@ public class DbUtils {
             if (cursor.moveToNext()) {
                 return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -385,8 +383,6 @@ public class DbUtils {
             if (cursor.moveToNext()) {
                 return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -401,8 +397,6 @@ public class DbUtils {
             while (cursor.moveToNext()) {
                 result.add((T) CursorUtils.getEntity(this, cursor, selector.getEntityType()));
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -415,8 +409,6 @@ public class DbUtils {
             if (cursor.moveToNext()) {
                 return CursorUtils.getDbModel(cursor);
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -429,8 +421,6 @@ public class DbUtils {
             if (cursor.moveToNext()) {
                 return CursorUtils.getDbModel(cursor);
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -444,8 +434,6 @@ public class DbUtils {
             while (cursor.moveToNext()) {
                 dbModelList.add(CursorUtils.getDbModel(cursor));
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -459,8 +447,6 @@ public class DbUtils {
             while (cursor.moveToNext()) {
                 dbModelList.add(CursorUtils.getDbModel(cursor));
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -646,9 +632,6 @@ public class DbUtils {
                     return true;
                 }
             }
-
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
@@ -669,20 +652,14 @@ public class DbUtils {
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new DbException(e);
         } finally {
             IOUtils.closeQuietly(cursor);
         }
     }
 
     public void dropTable(Class<?> entityType) throws DbException {
-        try {
-            Table table = Table.get(entityType);
-            execNonQuery("DROP TABLE " + table.getTableName());
-        } catch (Exception e) {
-            throw new DbException(e);
-        }
+        Table table = Table.get(entityType);
+        execNonQuery("DROP TABLE " + table.getTableName());
     }
 
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
