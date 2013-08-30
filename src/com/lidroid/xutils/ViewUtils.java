@@ -185,7 +185,7 @@ public class ViewUtils {
                         ConcurrentHashMap<Annotation, Method> a_m_map = id_annotation_method_map.get(id);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a.annotationType().equals(OnProgressChanged.class)) {
-                                listener.preferenceChange(a_m_map.get(a));
+                                listener.progressChanged(a_m_map.get(a));
                             } else if (a.annotationType().equals(OnStartTrackingTouch.class)) {
                                 listener.startTrackingTouch(a_m_map.get(a));
                             } else if (a.annotationType().equals(OnStopTrackingTouch.class)) {
