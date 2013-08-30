@@ -126,7 +126,7 @@ http.send(HttpRequest.HttpMethod.GET,
         }
 
         @Override
-        public void onFailure((Throwable error, String msg) {
+        public void onFailure((HttpException error, String msg) {
         }
 });
 ```
@@ -172,8 +172,8 @@ http.send(HttpRequest.HttpMethod.POST,
         }
 
         @Override
-        public void onFailure(Throwable error, String msg) {
-            testTextView.setText(msg);
+        public void onFailure(HttpException error, String msg) {
+            testTextView.setText(error.getExceptionCode() + ":" + msg);
         }
 });
 ```
@@ -187,6 +187,7 @@ HttpUtils http = new HttpUtils();
 HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/httpclient/source/httpcomponents-client-4.2.5-src.zip",
     "/sdcard/httpcomponents-client-4.2.5-src.zip",
     true, // 如果目标文件存在，接着未完成的部分继续下载。
+    true, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
     new RequestCallBack<File>() {
 
         @Override
@@ -206,7 +207,7 @@ HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/ht
 
 
         @Override
-        public void onFailure(Throwable error, String msg) {
+        public void onFailure(HttpException error, String msg) {
             testTextView.setText(msg);
         }
 });

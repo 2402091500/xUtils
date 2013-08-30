@@ -66,6 +66,10 @@ public class ResponseStream extends InputStream {
         return baseStream;
     }
 
+    public HttpResponse getBaseResponse() {
+        return baseResponse;
+    }
+
     public int getStatusCode() {
         if (_directResult != null) return 200;
         return baseResponse.getStatusLine().getStatusCode();

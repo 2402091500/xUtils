@@ -24,5 +24,5 @@ import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
  * Time: 下午1:40
  */
 public interface UploadEntity {
-    void setCallBack(RequestCallBackHandler callBack);
+    void setCallBackHandler(RequestCallBackHandler callBackHandler);
 }

@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
@@ -26,13 +27,11 @@ import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import com.lidroid.xutils.http.client.callback.FileDownloadHandler;
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
+import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -63,7 +62,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private int retriedTimes = 0;
     private String fileSavePath = null; // 下载的路径
     private boolean isDownloadingFile; // fileSavePath != null;
-    private boolean isResume = false; // 是否断点续传
+    private boolean autoResume = false; // 是否断点续传
+    private boolean autoRename = false; // 是否自动重命名
     private String charset; // 文本返回内容的默认charset
 
     public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack callback) {
@@ -82,7 +82,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
 
     // 执行请求
     private Object sendRequest(HttpRequestBase request) throws HttpException {
-        if (isResume && isDownloadingFile) {
+        if (autoResume && isDownloadingFile) {
             File downloadFile = new File(fileSavePath);
             long fileLen = 0;
             if (downloadFile.isFile() && downloadFile.exists()) {
@@ -125,6 +125,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             } catch (NullPointerException e) {
                 exception = new IOException(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+            } catch (HttpException e) {
+                throw e;
             } catch (Exception e) {
                 exception = new IOException(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
@@ -139,10 +141,11 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
 
     @Override
     protected Object doInBackground(Object... params) {
-        if (params != null && params.length == 3) {
+        if (params != null && params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
             isDownloadingFile = fileSavePath != null;
-            isResume = (Boolean) params[2];
+            autoResume = (Boolean) params[2];
+            autoRename = (Boolean) params[3];
         }
         try {
             publishProgress(UPDATE_START);
@@ -179,7 +182,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 break;
             case UPDATE_FAILURE:
                 if (callback != null) {
-                    callback.onFailure((Throwable) values[1], (String) values[2]);
+                    callback.onFailure((HttpException) values[1], (String) values[2]);
                 }
                 break;
             case UPDATE_SUCCESS:
@@ -205,20 +208,13 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             if (entity != null) {
                 lastUpdateTime = SystemClock.uptimeMillis();
                 if (isDownloadingFile) {
-                    responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, isResume);
+                    String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
+                    responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
                 } else {
 
                     // 自适应charset
-                    Header header = entity.getContentType();
-                    if (header != null) {
-                        HeaderElement[] values = header.getElements();
-                        if (values != null && values.length > 0) {
-                            NameValuePair param = values[0].getParameterByName("charset");
-                            if (param != null) {
-                                charset = TextUtils.isEmpty(param.getValue()) ? charset : param.getValue();
-                            }
-                        }
-                    }
+                    String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
+                    charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
                     responseBody = mStringDownloadHandler.handleEntity(entity, this, charset);
                     HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) responseBody, expiry);
@@ -233,8 +229,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             if (request != null) {
                 return this.sendRequest(request);
             }
+        } else if (statusCode == 416) {
+            throw new HttpException(statusCode, "maybe the file has downloaded completely");
         } else {
-            throw new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase());
+            throw new HttpException(statusCode, status.getReasonPhrase());
         }
         return null;
     }

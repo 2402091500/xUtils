@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.lidroid.xutils.http.client.callback;
 
 import com.lidroid.xutils.util.IOUtils;
@@ -25,13 +26,13 @@ import java.io.InputStreamReader;
 
 public class StringDownloadHandler {
 
-    public Object handleEntity(HttpEntity entity, RequestCallBackHandler callback, String charset) throws IOException {
+    public String handleEntity(HttpEntity entity, RequestCallBackHandler callBackHandler, String charset) throws IOException {
         if (entity == null) return null;
 
         long current = 0;
         long total = entity.getContentLength();
 
-        if (callback != null && !callback.updateProgress(total, current, true)) {
+        if (callBackHandler != null && !callBackHandler.updateProgress(total, current, true)) {
             return null;
         }
 
@@ -44,14 +45,14 @@ public class StringDownloadHandler {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 current += line.getBytes(charset).length;
-                if (callback != null) {
-                    if (!callback.updateProgress(total, current, false)) {
-                        throw new IOException("stop");
+                if (callBackHandler != null) {
+                    if (!callBackHandler.updateProgress(total, current, false)) {
+                        return sb.toString();
                     }
                 }
             }
-            if (callback != null) {
-                callback.updateProgress(total, current, true);
+            if (callBackHandler != null) {
+                callBackHandler.updateProgress(total, current, true);
             }
         } finally {
             IOUtils.closeQuietly(inputStream);

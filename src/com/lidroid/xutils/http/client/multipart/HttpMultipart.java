@@ -180,7 +180,7 @@ class HttpMultipart {
         ByteArrayBuffer boundary = encode(this.charset, getBoundary());
         for (FormBodyPart part : this.parts) {
             if (!callBackInfo.doCallBack(true)) {
-                throw new IOException("stop");
+                return;
             }
             writeBytes(TWO_DASHES, out);
             callBackInfo.pos += TWO_DASHES.length();

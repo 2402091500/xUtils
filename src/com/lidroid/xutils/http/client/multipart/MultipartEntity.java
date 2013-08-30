@@ -40,14 +40,14 @@ public class MultipartEntity implements HttpEntity, UploadEntity {
     private CallBackInfo callBackInfo = new CallBackInfo();
 
     @Override
-    public void setCallBack(RequestCallBackHandler callBack) {
-        callBackInfo.callback = callBack;
+    public void setCallBackHandler(RequestCallBackHandler callBackHandler) {
+        callBackInfo.callBackHandler = callBackHandler;
     }
 
-    // wyouflf add： upload callback
+    // wyouflf add： upload callBackHandler
     public static class CallBackInfo {
         public final static CallBackInfo DEFAULT = new CallBackInfo();
-        public RequestCallBackHandler callback = null;
+        public RequestCallBackHandler callBackHandler = null;
         public long totalLength = 0;
         public long pos = 0;
 
@@ -56,8 +56,8 @@ public class MultipartEntity implements HttpEntity, UploadEntity {
          * @return 是否继续上传
          */
         public boolean doCallBack(boolean forceUpdateUI) {
-            if (callback != null) {
-                return callback.updateProgress(totalLength, pos, forceUpdateUI);
+            if (callBackHandler != null) {
+                return callBackHandler.updateProgress(totalLength, pos, forceUpdateUI);
             }
             return true;
         }

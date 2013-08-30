@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.lidroid.xutils.http;
 
 import android.text.TextUtils;
@@ -23,12 +24,9 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
+import com.lidroid.xutils.util.OtherUtils;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -95,6 +93,8 @@ public class SyncHttpHandler {
             } catch (NullPointerException e) {
                 exception = new IOException(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+            } catch (HttpException e) {
+                throw e;
             } catch (Exception e) {
                 exception = new IOException(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
@@ -108,25 +108,16 @@ public class SyncHttpHandler {
     }
 
     private ResponseStream handleResponse(HttpResponse response) throws HttpException, IOException {
-        if (response == null) return null;
+        if (response == null) {
+            throw new HttpException("response is null");
+        }
         StatusLine status = response.getStatusLine();
         int statusCode = status.getStatusCode();
         if (statusCode < 300) {
 
             // 自适应charset
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                Header header = entity.getContentType();
-                if (header != null) {
-                    HeaderElement[] values = header.getElements();
-                    if (values != null && values.length > 0) {
-                        NameValuePair param = values[0].getParameterByName("charset");
-                        if (param != null) {
-                            charset = TextUtils.isEmpty(param.getValue()) ? charset : param.getValue();
-                        }
-                    }
-                }
-            }
+            String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
+            charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
             return new ResponseStream(response, charset, _getRequestUrl, expiry);
         } else if (statusCode == 301 || statusCode == 302) {
@@ -137,8 +128,10 @@ public class SyncHttpHandler {
             if (request != null) {
                 return this.sendRequest(request);
             }
+        } else if (statusCode == 416) {
+            throw new HttpException(statusCode, "maybe the file has downloaded completely");
         } else {
-            throw new HttpException(status.getStatusCode() + ": " + status.getReasonPhrase());
+            throw new HttpException(statusCode, status.getReasonPhrase());
         }
         return null;
     }

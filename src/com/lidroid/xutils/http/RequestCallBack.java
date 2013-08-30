@@ -12,8 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.lidroid.xutils.http;
 
+
+import com.lidroid.xutils.exception.HttpException;
 
 public abstract class RequestCallBack<T> {
 
@@ -56,6 +59,6 @@ public abstract class RequestCallBack<T> {
     public void onSuccess(T result) {
     }
 
-    public void onFailure(Throwable error, String msg) {
+    public void onFailure(HttpException error, String msg) {
     }
 }

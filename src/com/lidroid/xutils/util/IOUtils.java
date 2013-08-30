@@ -27,6 +27,9 @@ import java.io.IOException;
  */
 public class IOUtils {
 
+    private IOUtils() {
+    }
+
     public static void closeQuietly(Closeable closeable) {
         if (closeable != null) {
             try {

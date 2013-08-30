@@ -73,9 +73,9 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                 while ((l = inStream.read(buffer)) != -1) {
                     outStream.write(buffer, 0, l);
                     uploadedSize += l;
-                    if (callback != null) {
-                        if (!callback.updateProgress(uploadedSize + 1, uploadedSize, false)) {
-                            throw new IOException("stop");
+                    if (callBackHandler != null) {
+                        if (!callBackHandler.updateProgress(uploadedSize + 1, uploadedSize, false)) {
+                            return;
                         }
                     }
                 }
@@ -90,16 +90,16 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                     outStream.write(buffer, 0, l);
                     remaining -= l;
                     uploadedSize += l;
-                    if (callback != null) {
-                        if (!callback.updateProgress(length, uploadedSize, false)) {
-                            throw new IOException("stop");
+                    if (callBackHandler != null) {
+                        if (!callBackHandler.updateProgress(length, uploadedSize, false)) {
+                            return;
                         }
                     }
                 }
             }
             outStream.flush();
-            if (callback != null) {
-                callback.updateProgress(length, uploadedSize, true);
+            if (callBackHandler != null) {
+                callBackHandler.updateProgress(length, uploadedSize, true);
             }
         } finally {
             IOUtils.closeQuietly(inStream);
@@ -120,10 +120,10 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
         this.content.close();
     }
 
-    private RequestCallBackHandler callback = null;
+    private RequestCallBackHandler callBackHandler = null;
 
     @Override
-    public void setCallBack(RequestCallBackHandler callBack) {
-        this.callback = callBack;
+    public void setCallBackHandler(RequestCallBackHandler callBackHandler) {
+        this.callBackHandler = callBackHandler;
     }
 }

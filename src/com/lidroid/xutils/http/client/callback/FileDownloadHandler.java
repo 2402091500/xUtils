@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.lidroid.xutils.http.client.callback;
 
 import android.text.TextUtils;
@@ -28,7 +29,11 @@ import java.io.InputStream;
 
 public class FileDownloadHandler {
 
-    public Object handleEntity(HttpEntity entity, RequestCallBackHandler callback, String target, boolean isResume) throws IOException {
+    public File handleEntity(HttpEntity entity,
+                             RequestCallBackHandler callBackHandler,
+                             String target,
+                             boolean isResume,
+                             String responseFileName) throws IOException {
         if (entity == null || TextUtils.isEmpty(target)) {
             return null;
         }
@@ -54,7 +59,7 @@ public class FileDownloadHandler {
 
             long total = entity.getContentLength() + current;
 
-            if (callback != null && !callback.updateProgress(total, current, true)) {
+            if (callBackHandler != null && !callBackHandler.updateProgress(total, current, true)) {
                 return null;
             }
 
@@ -67,22 +72,28 @@ public class FileDownloadHandler {
             while ((len = bis.read(tmp)) != -1) {
                 fileOutputStream.write(tmp, 0, len);
                 current += len;
-                if (callback != null) {
-                    if (!callback.updateProgress(total, current, false)) {
-                        throw new IOException("stop");
+                if (callBackHandler != null) {
+                    if (!callBackHandler.updateProgress(total, current, false)) {
+                        return targetFile;
                     }
                 }
             }
             fileOutputStream.flush();
-            if (callback != null) {
-                callback.updateProgress(total, current, true);
+            if (callBackHandler != null) {
+                callBackHandler.updateProgress(total, current, true);
             }
         } finally {
             IOUtils.closeQuietly(inputStream);
             IOUtils.closeQuietly(fileOutputStream);
         }
 
-        return targetFile;
+        if (targetFile.exists() && !TextUtils.isEmpty(responseFileName)) {
+            File newFile = new File(targetFile.getParent(), responseFileName);
+            targetFile.renameTo(newFile);
+            return newFile;
+        } else {
+            return targetFile;
+        }
     }
 
 }

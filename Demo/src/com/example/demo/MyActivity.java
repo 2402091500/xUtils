@@ -14,6 +14,7 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
 import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
@@ -100,9 +101,11 @@ public class MyActivity extends Activity {
     private void testDownload() {
         if (downloadHandler == null) {
             HttpUtils http = new HttpUtils();
-            downloadHandler = http.download("http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
+            downloadHandler = http.download(
+                    "http://apps.lidroid.com/apiv2/dl/0000000/com.lidroid.fileexplorer",
                     "/sdcard/fileexplorer.apk",
-                    //true,
+                    true, // 如果目标文件存在，接着未完成的部分继续下载。
+                    true, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                     new RequestCallBack<File>() {
 
                         @Override
@@ -122,8 +125,8 @@ public class MyActivity extends Activity {
 
 
                         @Override
-                        public void onFailure(Throwable error, String msg) {
-                            testTextView.setText(msg);
+                        public void onFailure(HttpException error, String msg) {
+                            testTextView.setText(error.getExceptionCode() + ":" + msg);
                         }
                     });
         }
@@ -151,8 +154,8 @@ public class MyActivity extends Activity {
                     }
 
                     @Override
-                    public void onFailure(Throwable error, String msg) {
-                        testTextView.setText(msg);
+                    public void onFailure(HttpException error, String msg) {
+                        testTextView.setText(error.getExceptionCode() + ":" + msg);
                     }
                 });
     }
@@ -187,7 +190,7 @@ public class MyActivity extends Activity {
 
 
                     @Override
-                    public void onFailure(Throwable error, String msg) {
+                    public void onFailure(HttpException error, String msg) {
                         testTextView.setText(msg);
                     }
                 });
@@ -223,7 +226,7 @@ public class MyActivity extends Activity {
 
 
                     @Override
-                    public void onFailure(Throwable error, String msg) {
+                    public void onFailure(HttpException error, String msg) {
                         testTextView.setText(msg);
                     }
                 });
@@ -258,7 +261,7 @@ public class MyActivity extends Activity {
 
 
                     @Override
-                    public void onFailure(Throwable error, String msg) {
+                    public void onFailure(HttpException error, String msg) {
                         testTextView.setText(msg);
                     }
                 });

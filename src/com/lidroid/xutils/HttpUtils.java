@@ -257,21 +257,31 @@ public class HttpUtils {
 
     public HttpHandler<File> download(String url, String target,
                                       RequestCallBack<File> callback) {
-        return download(url, target, null, false, callback);
+        return download(url, target, null, false, false, callback);
+    }
+
+    public HttpHandler<File> download(String url, String target,
+                                      boolean autoResume, RequestCallBack<File> callback) {
+        return download(url, target, null, autoResume, false, callback);
+    }
+
+    public HttpHandler<File> download(String url, String target,
+                                      boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
+        return download(url, target, null, autoResume, autoRename, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
                                       RequestParams params, RequestCallBack<File> callback) {
-        return download(url, target, params, false, callback);
+        return download(url, target, params, false, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
-                                      boolean isResume, RequestCallBack<File> callback) {
-        return download(url, target, null, isResume, callback);
+                                      RequestParams params, boolean autoResume, RequestCallBack<File> callback) {
+        return download(url, target, params, autoResume, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
-                                      RequestParams params, boolean isResume, RequestCallBack<File> callback) {
+                                      RequestParams params, boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
 
         HttpRequest request = new HttpRequest(HttpRequest.HttpMethod.GET, url);
 
@@ -281,7 +291,7 @@ public class HttpUtils {
         handler.setDownloadRedirectHandler(downloadRedirectHandler);
         request.setRequestParams(params, handler);
 
-        handler.executeOnExecutor(executor, request, target, isResume);
+        handler.executeOnExecutor(executor, request, target, autoResume, autoRename);
         return handler;
     }
 

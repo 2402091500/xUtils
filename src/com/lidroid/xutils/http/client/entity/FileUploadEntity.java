@@ -55,25 +55,25 @@ public class FileUploadEntity extends FileEntity implements UploadEntity {
             while ((len = inStream.read(tmp)) != -1) {
                 outStream.write(tmp, 0, len);
                 uploadedSize += len;
-                if (callback != null) {
-                    if (!callback.updateProgress(fileSize, uploadedSize, false)) {
-                        throw new IOException("stop");
+                if (callBackHandler != null) {
+                    if (!callBackHandler.updateProgress(fileSize, uploadedSize, false)) {
+                        return;
                     }
                 }
             }
             outStream.flush();
-            if (callback != null) {
-                callback.updateProgress(fileSize, uploadedSize, true);
+            if (callBackHandler != null) {
+                callBackHandler.updateProgress(fileSize, uploadedSize, true);
             }
         } finally {
             IOUtils.closeQuietly(inStream);
         }
     }
 
-    private RequestCallBackHandler callback = null;
+    private RequestCallBackHandler callBackHandler = null;
 
     @Override
-    public void setCallBack(RequestCallBackHandler callBack) {
-        this.callback = callBack;
+    public void setCallBackHandler(RequestCallBackHandler callBackHandler) {
+        this.callBackHandler = callBackHandler;
     }
 }

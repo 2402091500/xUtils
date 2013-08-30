@@ -103,25 +103,25 @@ abstract class DecompressingEntity extends HttpEntityWrapper implements UploadEn
             while ((len = inStream.read(tmp)) != -1) {
                 outStream.write(tmp, 0, len);
                 uploadedSize += len;
-                if (callback != null) {
-                    if (!callback.updateProgress(uncompressedLength, uploadedSize, false)) {
-                        throw new IOException("stop");
+                if (callBackHandler != null) {
+                    if (!callBackHandler.updateProgress(uncompressedLength, uploadedSize, false)) {
+                        return;
                     }
                 }
             }
             outStream.flush();
-            if (callback != null) {
-                callback.updateProgress(uncompressedLength, uploadedSize, true);
+            if (callBackHandler != null) {
+                callBackHandler.updateProgress(uncompressedLength, uploadedSize, true);
             }
         } finally {
             IOUtils.closeQuietly(inStream);
         }
     }
 
-    private RequestCallBackHandler callback = null;
+    private RequestCallBackHandler callBackHandler = null;
 
     @Override
-    public void setCallBack(RequestCallBackHandler callBack) {
-        this.callback = callBack;
+    public void setCallBackHandler(RequestCallBackHandler callBackHandler) {
+        this.callBackHandler = callBackHandler;
     }
 }
