@@ -53,7 +53,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" (");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append(",");
-            result.addValue(kv.getValue());
+            result.addBindArg(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         sqlBuffer.append(") VALUES (");
@@ -85,7 +85,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" (");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append(",");
-            result.addValue(kv.getValue());
+            result.addBindArg(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         sqlBuffer.append(") VALUES (");
@@ -175,7 +175,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append("=?,");
-            result.addValue(kv.getValue());
+            result.addBindArg(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         sqlBuffer.append(" WHERE ").append(WhereBuilder.b(id.getColumnName(), "=", idValue));
@@ -197,7 +197,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append("=?,");
-            result.addValue(kv.getValue());
+            result.addBindArg(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         if (whereBuilder != null) {

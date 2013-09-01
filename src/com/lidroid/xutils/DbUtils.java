@@ -691,8 +691,8 @@ public class DbUtils {
     public void execNonQuery(SqlInfo sqlInfo) throws DbException {
         debugSql(sqlInfo.getSql());
         try {
-            if (sqlInfo.getBindingArgs() != null) {
-                database.execSQL(sqlInfo.getSql(), sqlInfo.getBindingArgsAsArray());
+            if (sqlInfo.getBindArgs() != null) {
+                database.execSQL(sqlInfo.getSql(), sqlInfo.getBindArgsAsArray());
             } else {
                 database.execSQL(sqlInfo.getSql());
             }
@@ -713,7 +713,7 @@ public class DbUtils {
     public Cursor execQuery(SqlInfo sqlInfo) throws DbException {
         debugSql(sqlInfo.getSql());
         try {
-            return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindingArgsAsStringArray());
+            return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindArgsAsStrArray());
         } catch (Exception e) {
             throw new DbException(e);
         }

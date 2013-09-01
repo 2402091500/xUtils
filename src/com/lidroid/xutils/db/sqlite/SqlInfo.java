@@ -22,13 +22,18 @@ import java.util.LinkedList;
 public class SqlInfo {
 
     private String sql;
-    private LinkedList<Object> bindingArgs;
+    private LinkedList<Object> bindArgs;
 
     public SqlInfo() {
     }
 
     public SqlInfo(String sql) {
         this.sql = sql;
+    }
+
+    public SqlInfo(String sql, Object... bindArgs) {
+        this.sql = sql;
+        addBindArgs(bindArgs);
     }
 
     public String getSql() {
@@ -39,34 +44,42 @@ public class SqlInfo {
         this.sql = sql;
     }
 
-    public LinkedList<Object> getBindingArgs() {
-        return bindingArgs;
+    public LinkedList<Object> getBindArgs() {
+        return bindArgs;
     }
 
-    public Object[] getBindingArgsAsArray() {
-        if (bindingArgs != null) {
-            return bindingArgs.toArray();
+    public Object[] getBindArgsAsArray() {
+        if (bindArgs != null) {
+            return bindArgs.toArray();
         }
         return null;
     }
 
-    public String[] getBindingArgsAsStringArray() {
-        if (bindingArgs != null) {
-            String[] strings = new String[bindingArgs.size()];
-            for (int i = 0; i < bindingArgs.size(); i++) {
-                strings[i] = bindingArgs.get(i).toString();
+    public String[] getBindArgsAsStrArray() {
+        if (bindArgs != null) {
+            String[] strings = new String[bindArgs.size()];
+            for (int i = 0; i < bindArgs.size(); i++) {
+                strings[i] = bindArgs.get(i).toString();
             }
             return strings;
         }
         return null;
     }
 
-    public void addValue(Object value) {
-        if (bindingArgs == null) {
-            bindingArgs = new LinkedList<Object>();
+    public void addBindArg(Object arg) {
+        if (bindArgs == null) {
+            bindArgs = new LinkedList<Object>();
         }
 
-        bindingArgs.add(ColumnUtils.convert2DbColumnValueIfNeeded(value));
+        bindArgs.add(ColumnUtils.convert2DbColumnValueIfNeeded(arg));
+    }
+
+    public void addBindArgs(Object... bindArgs) {
+        if (bindArgs != null) {
+            for (Object arg : bindArgs) {
+                addBindArg(arg);
+            }
+        }
     }
 
 }
