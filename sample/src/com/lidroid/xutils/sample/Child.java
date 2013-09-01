@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.example.demo;
+package com.lidroid.xutils.sample;
 
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Transient;

@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.lidroid.xutils.sample;
 
 import java.util.Date;
 

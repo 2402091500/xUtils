@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.lidroid.xutils.sample;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,10 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.*;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
