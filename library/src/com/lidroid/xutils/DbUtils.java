@@ -21,18 +21,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-
-import com.lidroid.xutils.db.sqlite.CursorUtils;
-import com.lidroid.xutils.db.sqlite.DbModelSelector;
-import com.lidroid.xutils.db.sqlite.Selector;
-import com.lidroid.xutils.db.sqlite.SqlInfo;
-import com.lidroid.xutils.db.sqlite.SqlInfoBuilder;
-import com.lidroid.xutils.db.sqlite.WhereBuilder;
-import com.lidroid.xutils.db.table.DbModel;
-import com.lidroid.xutils.db.table.Id;
-import com.lidroid.xutils.db.table.KeyValue;
-import com.lidroid.xutils.db.table.Table;
-import com.lidroid.xutils.db.table.TableUtils;
+import com.lidroid.xutils.db.sqlite.*;
+import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
@@ -555,9 +545,9 @@ public class DbUtils {
     //***************************** private operations with out transaction *****************************
     private void saveOrUpdateWithoutTransaction(Object entity) throws DbException {
         if (TableUtils.getIdValue(entity) != null) {
-            update(entity);
+            updateWithoutTransaction(entity);
         } else {
-            saveBindingId(entity);
+            saveBindingIdWithoutTransaction(entity);
         }
     }
 
