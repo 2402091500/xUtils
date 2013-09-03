@@ -29,15 +29,11 @@ public class ReflectUtils {
     }
 
     public static StackTraceElement getCurrentMethodName() {
-        StackTraceElement callerTraceElement = null;
-        StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-        return stacks[3];
+        return Thread.currentThread().getStackTrace()[3];
     }
 
     public static StackTraceElement getCallerMethodName() {
-        StackTraceElement callerTraceElement = null;
-        StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-        return stacks[4];
+        return Thread.currentThread().getStackTrace()[4];
     }
 
 
