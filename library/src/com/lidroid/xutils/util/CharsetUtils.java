@@ -33,7 +33,7 @@ public class CharsetUtils {
             String oldCharset = getEncoding(str, judgeCharsetLength);
             return new String(str.getBytes(oldCharset), charset);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LogUtils.w(ex);
             return str;
         }
     }
