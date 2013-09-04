@@ -88,6 +88,10 @@ public class DbModelSelector {
         return this;
     }
 
+    public Class<?> getEntityType() {
+        return selector.getEntityType();
+    }
+
     @Override
     public String toString() {
         StringBuffer result = new StringBuffer();

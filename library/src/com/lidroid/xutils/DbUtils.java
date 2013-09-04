@@ -237,6 +237,7 @@ public class DbUtils {
 
 
     public void delete(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
@@ -249,6 +250,7 @@ public class DbUtils {
     }
 
     public void delete(List<Object> entities) throws DbException {
+        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
@@ -263,6 +265,7 @@ public class DbUtils {
     }
 
     public void deleteById(Class<?> entityType, Object idValue) throws DbException {
+        if (!tableIsExist(entityType)) return;
         try {
             beginTransaction();
 
@@ -275,6 +278,7 @@ public class DbUtils {
     }
 
     public void delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
+        if (!tableIsExist(entityType)) return;
         try {
             beginTransaction();
 
@@ -288,6 +292,7 @@ public class DbUtils {
     }
 
     public void update(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
@@ -300,6 +305,7 @@ public class DbUtils {
     }
 
     public void update(List<Object> entities) throws DbException {
+        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
@@ -314,6 +320,7 @@ public class DbUtils {
     }
 
     public void update(Object entity, WhereBuilder whereBuilder) throws DbException {
+        if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
@@ -327,6 +334,7 @@ public class DbUtils {
 
     @SuppressWarnings("unchecked")
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
+        if (!tableIsExist(entityType)) return null;
         Id id = Table.get(entityType).getId();
         Selector selector = Selector.from(entityType).where(WhereBuilder.b(id.getColumnName(), "=", idValue));
         Cursor cursor = execQuery(selector.limit(1).toString());
@@ -340,7 +348,22 @@ public class DbUtils {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T findFirst(Selector selector) throws DbException {
+        if (!tableIsExist(selector.getEntityType())) return null;
+        Cursor cursor = execQuery(selector.limit(1).toString());
+        try {
+            if (cursor.moveToNext()) {
+                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
+            }
+        } finally {
+            IOUtils.closeQuietly(cursor);
+        }
+        return null;
+    }
+
     public <T> T findFirst(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return null;
         Selector selector = Selector.from(entity.getClass());
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
@@ -353,34 +376,9 @@ public class DbUtils {
         return findFirst(selector);
     }
 
-    public <T> List<T> findAll(Object entity) throws DbException {
-        Selector selector = Selector.from(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null) {
-            WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue keyValue : entityKvList) {
-                wb.append(keyValue.getKey(), "=", keyValue.getValue());
-            }
-            selector.where(wb);
-        }
-        return findAll(selector);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T findFirst(Selector selector) throws DbException {
-        Cursor cursor = execQuery(selector.limit(1).toString());
-        try {
-            if (cursor.moveToNext()) {
-                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
-            }
-        } finally {
-            IOUtils.closeQuietly(cursor);
-        }
-        return null;
-    }
-
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Selector selector) throws DbException {
+        if (!tableIsExist(selector.getEntityType())) return null;
         Cursor cursor = execQuery(selector.toString());
         List<T> result = new ArrayList<T>();
         try {
@@ -391,6 +389,20 @@ public class DbUtils {
             IOUtils.closeQuietly(cursor);
         }
         return result;
+    }
+
+    public <T> List<T> findAll(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return null;
+        Selector selector = Selector.from(entity.getClass());
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+        if (entityKvList != null) {
+            WhereBuilder wb = WhereBuilder.b();
+            for (KeyValue keyValue : entityKvList) {
+                wb.append(keyValue.getKey(), "=", keyValue.getValue());
+            }
+            selector.where(wb);
+        }
+        return findAll(selector);
     }
 
     public DbModel findDbModelFirst(String sql) throws DbException {
@@ -406,6 +418,7 @@ public class DbUtils {
     }
 
     public DbModel findDbModelFirst(DbModelSelector selector) throws DbException {
+        if (!tableIsExist(selector.getEntityType())) return null;
         Cursor cursor = execQuery(selector.limit(1).toString());
         try {
             if (cursor.moveToNext()) {
@@ -431,6 +444,7 @@ public class DbUtils {
     }
 
     public List<DbModel> findDbModelAll(DbModelSelector selector) throws DbException {
+        if (!tableIsExist(selector.getEntityType())) return null;
         Cursor cursor = execQuery(selector.toString());
         List<DbModel> dbModelList = new ArrayList<DbModel>();
         try {
@@ -648,6 +662,7 @@ public class DbUtils {
     }
 
     public void dropTable(Class<?> entityType) throws DbException {
+        if (!tableIsExist(entityType)) return;
         Table table = Table.get(entityType);
         execNonQuery("DROP TABLE " + table.getTableName());
     }
