@@ -17,44 +17,33 @@ package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
-import com.lidroid.xutils.bitmap.download.Downloader;
+import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class BitmapDownloadProcess {
     private boolean isOriginalDiskCacheReadied = false;
-    private int originalDiskCacheSize;
 
     private LruDiskCache mOriginalDiskCache;//原始图片的路径，不进行任何的压缩操作
     private final Object mOriginalDiskCacheLock = new Object();
     private static final int ORIGINAL_DISK_CACHE_INDEX = 0;
 
     private File mOriginalCacheDir;
-    private Downloader downloader;
 
     private boolean neverCalculate = false;
 
-    public BitmapDownloadProcess(Downloader downloader, String diskCachePath, int originalDiskCacheSize) {
-        this.mOriginalCacheDir = new File(diskCachePath + "/original");
-        this.downloader = downloader;
-        this.originalDiskCacheSize = originalDiskCacheSize;
-    }
+    private BitmapGlobalConfig config;
 
-    public void setDownloader(Downloader downloader) {
-        this.downloader = downloader;
+    public BitmapDownloadProcess(BitmapGlobalConfig config) {
+        this.config = config;
+        this.mOriginalCacheDir = new File(config.getDiskCachePath() + "/original");
     }
 
     public void setOriginalDiskCacheSize(int originalDiskCacheSize) {
-        this.originalDiskCacheSize = originalDiskCacheSize;
         if (mOriginalDiskCache != null) {
             mOriginalDiskCache.setMaxSize(originalDiskCacheSize);
         }
@@ -64,63 +53,73 @@ public class BitmapDownloadProcess {
         this.neverCalculate = neverCalculate;
     }
 
-    public BitmapResult downloadBitmap(String uri, BitmapDisplayConfig config) {
+    public BitmapResult downloadBitmap(String uri, BitmapDisplayConfig displayConfig) {
 
         BitmapResult result = new BitmapResult();
 
-        FileDescriptor fileDescriptor = null;
         OutputStream outputStream = null;
         LruDiskCache.Snapshot snapshot = null;
-        synchronized (mOriginalDiskCacheLock) {
-            // Wait for disk cache to initialize
-            while (!isOriginalDiskCacheReadied) {
-                try {
-                    mOriginalDiskCacheLock.wait();
-                } catch (InterruptedException e) {
-                }
-            }
 
-            if (mOriginalDiskCache != null) {
-                try {
-                    snapshot = mOriginalDiskCache.get(uri);
-                    if (snapshot == null) {
-                        LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
-                        if (editor != null) {
-                            outputStream = editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX);
-                            result.expiryTimestamp = downloader.downloadToOutStreamByUri(uri, outputStream);
-                            if (result.expiryTimestamp < 0) {
-                                editor.abort();
-                            } else {
-                                editor.setEntryExpiryTimestamp(result.expiryTimestamp);
-                                editor.commit();
-                            }
-                            snapshot = mOriginalDiskCache.get(uri);
+        try {
+            if (config.isDiskCacheEnabled()) {
+                FileDescriptor fileDescriptor = null;
+                synchronized (mOriginalDiskCacheLock) {
+                    // Wait for disk cache to initialize
+                    while (!isOriginalDiskCacheReadied) {
+                        try {
+                            mOriginalDiskCacheLock.wait();
+                        } catch (InterruptedException e) {
                         }
                     }
-                    if (snapshot != null) {
-                        fileDescriptor = snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX).getFD();
+
+
+                    if (mOriginalDiskCache != null) {
+                        snapshot = mOriginalDiskCache.get(uri);
+                        if (snapshot == null) {
+                            LruDiskCache.Editor editor = mOriginalDiskCache.edit(uri);
+                            if (editor != null) {
+                                outputStream = editor.newOutputStream(ORIGINAL_DISK_CACHE_INDEX);
+                                result.expiryTimestamp = config.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                                if (result.expiryTimestamp < 0) {
+                                    editor.abort();
+                                } else {
+                                    editor.setEntryExpiryTimestamp(result.expiryTimestamp);
+                                    editor.commit();
+                                }
+                                snapshot = mOriginalDiskCache.get(uri);
+                            }
+                        }
+                        if (snapshot != null) {
+                            fileDescriptor = snapshot.getInputStream(ORIGINAL_DISK_CACHE_INDEX).getFD();
+                        }
                     }
-                } catch (Exception e) {
-                    LogUtils.e(e.getMessage(), e);
+                }
+                if (fileDescriptor != null) {
+                    if (neverCalculate) {
+                        result.bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                    } else {
+                        result.bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, displayConfig.getBitmapMaxWidth(), displayConfig.getBitmapMaxHeight());
+                    }
                 }
             }
-        }
 
+            if (!config.isDiskCacheEnabled() || mOriginalDiskCache == null || result.bitmap == null) {
+                outputStream = new ByteArrayOutputStream();
+                result.expiryTimestamp = config.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                byte[] data = ((ByteArrayOutputStream) outputStream).toByteArray();
 
-        if (fileDescriptor != null) {
-            try {
                 if (neverCalculate) {
-                    result.bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                    result.bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 } else {
-                    result.bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(fileDescriptor, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+                    result.bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(data, displayConfig.getBitmapMaxWidth(), displayConfig.getBitmapMaxHeight());
                 }
-            } catch (Exception e) {
-                LogUtils.e(e.getMessage(), e);
             }
+        } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(outputStream);
+            IOUtils.closeQuietly(snapshot);
         }
-
-        IOUtils.closeQuietly(outputStream);
-        IOUtils.closeQuietly(snapshot);
 
         return result;
     }
@@ -155,13 +154,16 @@ public class BitmapDownloadProcess {
     }
 
     public void initOriginalDiskCache() {
+        if (!config.isDiskCacheEnabled()) return;
+
         if (!mOriginalCacheDir.exists()) {
             mOriginalCacheDir.mkdirs();
         }
+
         synchronized (mOriginalDiskCacheLock) {
-            if (BitmapCommonUtils.getAvailableSpace(mOriginalCacheDir) > originalDiskCacheSize) {
+            if (BitmapCommonUtils.getAvailableSpace(mOriginalCacheDir) > config.getOriginalDiskCacheSize()) {
                 try {
-                    mOriginalDiskCache = LruDiskCache.open(mOriginalCacheDir, 1, 1, originalDiskCacheSize);
+                    mOriginalDiskCache = LruDiskCache.open(mOriginalCacheDir, 1, 1, config.getOriginalDiskCacheSize());
                 } catch (IOException e) {
                     mOriginalDiskCache = null;
                 }

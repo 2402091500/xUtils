@@ -19,7 +19,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.core.BitmapDownloadProcess;
@@ -93,9 +92,6 @@ public class BitmapGlobalConfig {
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
         this.downloader.setDefaultExpiry(getDefaultCacheExpiry());
-        if (bitmapDownloadProcess != null) {
-            bitmapDownloadProcess.setDownloader(downloader);
-        }
     }
 
     public long getDefaultCacheExpiry() {
@@ -104,12 +100,12 @@ public class BitmapGlobalConfig {
 
     public void setDefaultCacheExpiry(long defaultCacheExpiry) {
         this.defaultCacheExpiry = defaultCacheExpiry;
+        this.getDownloader().setDefaultExpiry(defaultCacheExpiry);
     }
 
     public BitmapDownloadProcess getBitmapDownloadProcess() {
         if (bitmapDownloadProcess == null) {
-            bitmapDownloadProcess = new BitmapDownloadProcess(
-                    getDownloader(), getDiskCachePath(), getOriginalDiskCacheSize());
+            bitmapDownloadProcess = new BitmapDownloadProcess(this);
         }
         return bitmapDownloadProcess;
     }
@@ -224,8 +220,7 @@ public class BitmapGlobalConfig {
     }
 
     private int getMemoryClass() {
-        return ((ActivityManager) mContext.getSystemService(
-                Context.ACTIVITY_SERVICE)).getMemoryClass();
+        return ((ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
     }
 
     ////////////////////////////////// bitmap cache management task ///////////////////////////////////////
