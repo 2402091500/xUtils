@@ -37,6 +37,8 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        LogUtils.customTagPrefix = "xUtilsSample"; // 方便调试时过滤 adb logcat 输出
+
         ViewUtils.inject(this);
 
         bitmapUtils = BitmapUtils.create(this);
