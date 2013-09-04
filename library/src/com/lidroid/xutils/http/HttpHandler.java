@@ -17,19 +17,13 @@ package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
 import android.text.TextUtils;
-
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
-import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
-import com.lidroid.xutils.http.client.callback.FileDownloadHandler;
-import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
-import com.lidroid.xutils.http.client.callback.StringDownloadHandler;
+import com.lidroid.xutils.http.client.callback.*;
 import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -57,6 +51,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         this.downloadRedirectHandler = downloadRedirectHandler;
     }
 
+    private HttpRequestBase request;
     private final RequestCallBack callback;
 
     private int retriedTimes = 0;
@@ -149,7 +144,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         }
         try {
             publishProgress(UPDATE_START);
-            Object responseBody = sendRequest((HttpRequestBase) params[0]);
+            request = (HttpRequestBase) params[0];
+            Object responseBody = sendRequest(request);
             publishProgress(UPDATE_SUCCESS, responseBody);
         } catch (HttpException e) {
             publishProgress(UPDATE_FAILURE, e, e.getMessage());
@@ -181,6 +177,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 }
                 break;
             case UPDATE_FAILURE:
+                this.stop();
                 if (callback != null) {
                     callback.onFailure((HttpException) values[1], (String) values[2]);
                 }
@@ -245,7 +242,12 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     @Override
     public void stop() {
         this.mStop = true;
-        this.cancel(true);
+        if (request != null && !request.isAborted()) {
+            request.abort();
+        }
+        if (!this.isCancelled()) {
+            this.cancel(true);
+        }
     }
 
     public boolean isStop() {
