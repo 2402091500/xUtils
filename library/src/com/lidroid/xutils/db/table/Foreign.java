@@ -122,13 +122,7 @@ public class Foreign extends Column {
                     if (foreignValues.size() > 0) {
 
                         if (this.db != null) {
-                            for (Object item : foreignValues) {
-                                try {
-                                    this.db.saveOrUpdate(item);
-                                } catch (DbException e) {
-                                    LogUtils.e(e.getMessage(), e);
-                                }
-                            }
+                            this.db.saveOrUpdate(foreignValues);
                         }
 
                         Class foreignEntityType = ColumnUtils.getForeignEntityType(this);
