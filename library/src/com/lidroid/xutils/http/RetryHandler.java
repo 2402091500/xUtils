@@ -16,9 +16,7 @@
 package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
-
 import com.lidroid.xutils.util.LogUtils;
-
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -26,13 +24,12 @@ import org.apache.http.impl.client.RequestWrapper;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashSet;
-
-import javax.net.ssl.SSLHandshakeException;
 
 public class RetryHandler implements HttpRequestRetryHandler {
     private static final int RETRY_SLEEP_INTERVAL = 1000;
@@ -89,6 +86,7 @@ public class RetryHandler implements HttpRequestRetryHandler {
                         retry = requestWrapper != null && "GET".equals(requestWrapper.getMethod());
                     }
                 } else {
+                    retry = false;
                     LogUtils.e("retry error, curr request is null");
                 }
             } catch (Exception e) {
