@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.lidroid.xutils.*;
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
@@ -291,11 +293,9 @@ public class MyActivity extends Activity {
             //child.parent = new SQLiteLazyLoader<Parent>(Child.class, "parentId", parent.getId());
             child.parent = parent;
 
-            try {
-                Parent test = db.findFirst(parent);//通过entity的属性查找
+            Parent test = db.findFirst(parent);//通过entity的属性查找
+            if (test != null) {
                 LogUtils.d("wyouflf :" + test);
-            } catch (Exception e) {
-                LogUtils.e(e.getMessage(), e);
             }
 
             parent.setTime(new Date());
