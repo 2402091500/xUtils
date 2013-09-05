@@ -405,8 +405,8 @@ public class DbUtils {
         return findAll(selector);
     }
 
-    public DbModel findDbModelFirst(String sql) throws DbException {
-        Cursor cursor = execQuery(sql);
+    public DbModel findDbModelFirst(SqlInfo sqlInfo) throws DbException {
+        Cursor cursor = execQuery(sqlInfo);
         try {
             if (cursor.moveToNext()) {
                 return CursorUtils.getDbModel(cursor);
@@ -430,8 +430,8 @@ public class DbUtils {
         return null;
     }
 
-    public List<DbModel> findDbModelAll(String sql) throws DbException {
-        Cursor cursor = execQuery(sql);
+    public List<DbModel> findDbModelAll(SqlInfo sqlInfo) throws DbException {
+        Cursor cursor = execQuery(sqlInfo);
         List<DbModel> dbModelList = new ArrayList<DbModel>();
         try {
             while (cursor.moveToNext()) {
