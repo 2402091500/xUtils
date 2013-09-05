@@ -60,4 +60,12 @@ public class OtherUtils {
         }
         return result;
     }
+
+    public static StackTraceElement getCurrentMethodName() {
+        return Thread.currentThread().getStackTrace()[3];
+    }
+
+    public static StackTraceElement getCallerMethodName() {
+        return Thread.currentThread().getStackTrace()[4];
+    }
 }
