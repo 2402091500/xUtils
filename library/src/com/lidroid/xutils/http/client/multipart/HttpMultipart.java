@@ -16,7 +16,6 @@
 package com.lidroid.xutils.http.client.multipart;
 
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
-
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.ByteArrayOutputStream;
@@ -48,6 +47,7 @@ class HttpMultipart {
     private static void writeBytes(
             final ByteArrayBuffer b, final OutputStream out) throws IOException {
         out.write(b.buffer(), 0, b.length());
+        out.flush();
     }
 
     private static void writeBytes(
@@ -259,7 +259,7 @@ class HttpMultipart {
      * buffered.
      *
      * @return total length of the multipart entity if known, <code>-1</code>
-     * otherwise.
+     *         otherwise.
      */
     public long getTotalLength() {
         long contentLen = 0;

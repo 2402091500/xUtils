@@ -16,9 +16,6 @@
 package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
-
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
@@ -26,10 +23,7 @@ import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 
 public class BitmapCache {
@@ -58,25 +52,25 @@ public class BitmapCache {
      * Initialize the memory cache
      */
     public void initMemoryCache() {
+        if (!globalConfig.isMemoryCacheEnabled()) return;
+
         // Set up memory cache
-        if (globalConfig.isMemoryCacheEnabled()) {
-            if (mMemoryCache != null) {
-                try {
-                    clearMemoryCache();
-                } catch (Exception e) {
-                }
+        if (mMemoryCache != null) {
+            try {
+                clearMemoryCache();
+            } catch (Exception e) {
             }
-            mMemoryCache = new LruMemoryCache<String, Bitmap>(globalConfig.getMemoryCacheSize()) {
-                /**
-                 * Measure item size in bytes rather than units which is more practical
-                 * for a bitmap cache
-                 */
-                @Override
-                protected int sizeOf(String key, Bitmap bitmap) {
-                    return BitmapCommonUtils.getBitmapSize(bitmap);
-                }
-            };
         }
+        mMemoryCache = new LruMemoryCache<String, Bitmap>(globalConfig.getMemoryCacheSize()) {
+            /**
+             * Measure item size in bytes rather than units which is more practical
+             * for a bitmap cache
+             */
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return BitmapCommonUtils.getBitmapSize(bitmap);
+            }
+        };
     }
 
     /**
@@ -86,22 +80,23 @@ public class BitmapCache {
      * background thread.
      */
     public void initDiskCache() {
+        if (!globalConfig.isDiskCacheEnabled()) return;
+
         // Set up disk cache
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
                 File diskCacheDir = new File(globalConfig.getDiskCachePath());
-                if (globalConfig.isDiskCacheEnabled() && diskCacheDir != null) {
-                    if (!diskCacheDir.exists()) {
-                        diskCacheDir.mkdirs();
-                    }
-                    if (BitmapCommonUtils.getAvailableSpace(diskCacheDir) > globalConfig.getDiskCacheSize()) {
-                        try {
-                            mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, globalConfig.getDiskCacheSize());
-                        } catch (final IOException e) {
-                            mDiskLruCache = null;
-                            LogUtils.e(e.getMessage(), e);
-                        }
-                    }
+                if (!diskCacheDir.exists()) {
+                    diskCacheDir.mkdirs();
+                }
+                long availableSpace = BitmapCommonUtils.getAvailableSpace(diskCacheDir);
+                long diskCacheSize = globalConfig.getDiskCacheSize();
+                diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
+                try {
+                    mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
+                } catch (final IOException e) {
+                    mDiskLruCache = null;
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
             isDiskCacheReadied = true;
@@ -121,64 +116,114 @@ public class BitmapCache {
         }
     }
 
-    /**
-     * Adds a bitmap to both memory and disk cache, if the cache not contains the uri.
-     *
-     * @param uri            Unique identifier for the bitmap to store
-     * @param bitmapResult   The bitmap and expiry timestamp to store
-     * @param compressFormat if null, use default value.
-     */
-    public void addBitmapToCache(String uri, BitmapResult bitmapResult, BitmapDisplayConfig config, CompressFormat compressFormat) {
-        if (uri == null || bitmapResult == null || bitmapResult.bitmap == null) {
-            return;
-        }
+    public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config) {
 
-        // add to memory cache
-        if (mMemoryCache != null && mMemoryCache.get(uri) == null) {
-            mMemoryCache.put(uri, bitmapResult.bitmap, bitmapResult.expiryTimestamp);
-        }
+        BitmapMeta bitmapMeta = new BitmapMeta();
 
-        // add to disk cache
-        synchronized (mDiskCacheLock) {
-            if (mDiskLruCache != null && mDiskLruCache.getDirectory() != null) {
+        OutputStream outputStream = null;
+        LruDiskCache.Snapshot snapshot = null;
 
-                if (!mDiskLruCache.getDirectory().exists()) {
-                    mDiskLruCache.getDirectory().mkdirs();
-                }
+        try {
 
-                OutputStream out = null;
-                LruDiskCache.Snapshot snapshot = null;
-                try {
-                    snapshot = mDiskLruCache.get(uri);
-                    if (snapshot == null) {
-                        final LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
-                        if (editor != null) {
-                            out = editor.newOutputStream(DISK_CACHE_INDEX);
-                            CompressFormat format = compressFormat == null ? globalConfig.getDefaultCompressFormat() : compressFormat;
-                            bitmapResult.bitmap.compress(format, config.getCompressQuality(), out);
-                            editor.setEntryExpiryTimestamp(bitmapResult.expiryTimestamp);
-                            editor.commit();
+            // download to disk cache
+            if (globalConfig.isDiskCacheEnabled()) {
+                synchronized (mDiskCacheLock) {
+                    // Wait for disk cache to initialize
+                    while (!isDiskCacheReadied) {
+                        try {
+                            mDiskCacheLock.wait();
+                        } catch (InterruptedException e) {
                         }
                     }
-                } catch (Exception e) {
-                    LogUtils.e(e.getMessage(), e);
-                } finally {
-                    IOUtils.closeQuietly(out);
-                    IOUtils.closeQuietly(snapshot);
+
+                    if (mDiskLruCache != null) {
+                        snapshot = mDiskLruCache.get(uri);
+                        if (snapshot == null) {
+                            LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
+                            if (editor != null) {
+                                outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
+                                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                                if (bitmapMeta.expiryTimestamp < 0) {
+                                    editor.abort();
+                                } else {
+                                    editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
+                                    editor.commit();
+                                }
+                                snapshot = mDiskLruCache.get(uri);
+                            }
+                        }
+                        if (snapshot != null) {
+                            bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                        }
+                    }
                 }
             }
+
+            if (!globalConfig.isDiskCacheEnabled() || mDiskLruCache == null || bitmapMeta.inputStream == null) {
+                outputStream = new ByteArrayOutputStream();
+                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                if (bitmapMeta.expiryTimestamp < 0) {
+                    bitmapMeta.data = ((ByteArrayOutputStream) outputStream).toByteArray();
+                }
+            }
+
+            return addBitmapToMemoryCache(uri, config, bitmapMeta);
+        } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(outputStream);
+            IOUtils.closeQuietly(snapshot);
         }
+
+        return null;
+    }
+
+    /**
+     * Add a bitmap to memory cache, if the cache not contains the uri.
+     *
+     * @param uri        Unique identifier for the bitmap to store
+     * @param config
+     * @param bitmapMeta The bitmap and expiry timestamp to store
+     */
+    private Bitmap addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, BitmapMeta bitmapMeta) throws IOException {
+        if (uri == null || bitmapMeta == null) {
+            return null;
+        }
+
+        Bitmap bitmap = null;
+        if (bitmapMeta.inputStream != null) {
+            bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(bitmapMeta.inputStream.getFD(), config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+        } else if (bitmapMeta.data != null) {
+            bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(bitmapMeta.data, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+        } else {
+            return null;
+        }
+
+        if (bitmap == null) {
+            return null;
+        }
+
+        String key = uri + config.toString();
+
+        // add to memory cache
+        if (globalConfig.isMemoryCacheEnabled() && mMemoryCache != null && mMemoryCache.get(key) == null) {
+            mMemoryCache.put(key, bitmap, bitmapMeta.expiryTimestamp);
+        }
+
+        return bitmap;
     }
 
     /**
      * Get from memory cache.
      *
-     * @param uri Unique identifier for which item to get
+     * @param uri    Unique identifier for which item to get
+     * @param config
      * @return The bitmap if found in cache, null otherwise
      */
-    public Bitmap getBitmapFromMemCache(String uri) {
+    public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
+        String key = config == null ? uri : uri + config.toString();
         if (mMemoryCache != null) {
-            final Bitmap memBitmap = mMemoryCache.get(uri);
+            final Bitmap memBitmap = mMemoryCache.get(key);
             if (memBitmap != null) {
                 return memBitmap;
             }
@@ -186,14 +231,14 @@ public class BitmapCache {
         return null;
     }
 
-
     /**
      * 获取硬盘缓存
      *
      * @param uri
+     * @param config
      * @return
      */
-    public Bitmap getBitmapFromDiskCache(String uri) {
+    public Bitmap getBitmapFromDiskCache(String uri, BitmapDisplayConfig config) {
         synchronized (mDiskCacheLock) {
             while (!isDiskCacheReadied) {
                 try {
@@ -202,20 +247,16 @@ public class BitmapCache {
                 }
             }
             if (mDiskLruCache != null) {
-                InputStream inputStream = null;
+                LruDiskCache.Snapshot snapshot = null;
                 try {
-                    final LruDiskCache.Snapshot snapshot = mDiskLruCache.get(uri);
+                    snapshot = mDiskLruCache.get(uri);
                     if (snapshot != null) {
-                        inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
-                        if (inputStream != null) {
-                            final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            return bitmap;
-                        }
+                        return BitmapDecoder.decodeSampledBitmapFromDescriptor(snapshot.getInputStream(DISK_CACHE_INDEX).getFD(), config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
                     }
                 } catch (final IOException e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
-                    IOUtils.closeQuietly(inputStream);
+                    IOUtils.closeQuietly(snapshot);
                 }
             }
             return null;
@@ -252,29 +293,6 @@ public class BitmapCache {
         }
     }
 
-    public void clearCache(String uri) {
-        clearMemoryCache(uri);
-        clearDiskCache(uri);
-    }
-
-    public void clearDiskCache(String uri) {
-        synchronized (mDiskCacheLock) {
-            if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
-                try {
-                    mDiskLruCache.remove(uri);
-                } catch (IOException e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    public void clearMemoryCache(String uri) {
-        if (mMemoryCache != null) {
-            mMemoryCache.remove(uri);
-        }
-    }
-
     /**
      * Flushes the disk cache associated with this ImageCache object. Note that this includes
      * disk access so this should not be executed on the main/UI thread.
@@ -308,5 +326,11 @@ public class BitmapCache {
                 }
             }
         }
+    }
+
+    private class BitmapMeta {
+        public FileInputStream inputStream;
+        public byte[] data;
+        public long expiryTimestamp;
     }
 }

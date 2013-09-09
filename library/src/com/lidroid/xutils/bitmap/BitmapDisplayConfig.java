@@ -19,7 +19,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.view.animation.Animation;
-
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 
@@ -39,8 +38,17 @@ public class BitmapDisplayConfig {
 
     private Context mContext;
 
+    private static BitmapDisplayConfig defaultDisplayConfig;
+
     public BitmapDisplayConfig(Context context) {
         mContext = context;
+    }
+
+    public static BitmapDisplayConfig getDefaultDisplayConfig(Context context) {
+        if (defaultDisplayConfig == null) {
+            defaultDisplayConfig = new BitmapDisplayConfig(context);
+        }
+        return defaultDisplayConfig;
     }
 
     public int getBitmapMaxWidth() {
@@ -112,4 +120,8 @@ public class BitmapDisplayConfig {
         this.compressQuality = compressQuality;
     }
 
+    @Override
+    public String toString() {
+        return "-" + getBitmapMaxWidth() + "-" + getBitmapMaxHeight() + "-" + getCompressQuality();
+    }
 }

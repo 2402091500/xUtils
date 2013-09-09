@@ -119,6 +119,7 @@ public class ResponseStream extends InputStream {
             while ((len = ins.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
+            out.flush();
         } catch (IOException e) {
             throw e;
         } finally {

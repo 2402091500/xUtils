@@ -21,7 +21,6 @@ import android.graphics.BitmapFactory;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.FileDescriptor;
-import java.io.InputStream;
 
 public class BitmapDecoder {
 
@@ -69,22 +68,6 @@ public class BitmapDecoder {
         options.inJustDecodeBounds = false;
         try {
             return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        } catch (OutOfMemoryError e) {
-            LogUtils.e(e.getMessage(), e);
-            return null;
-        }
-    }
-
-    public static Bitmap decodeSampledBitmapFromStream(InputStream inputStream, int reqWidth, int reqHeight) {
-
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inPurgeable = true;
-        BitmapFactory.decodeStream(inputStream, null, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        options.inJustDecodeBounds = false;
-        try {
-            return BitmapFactory.decodeStream(inputStream, null, options);
         } catch (OutOfMemoryError e) {
             LogUtils.e(e.getMessage(), e);
             return null;

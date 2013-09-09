@@ -18,18 +18,15 @@ package com.lidroid.xutils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.animation.Animation;
 import android.widget.ImageView;
-
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.core.BitmapResult;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
@@ -49,7 +46,7 @@ public class BitmapUtils {
     private BitmapUtils(Context context, String diskCachePath) {
         BitmapUtils.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
-        defaultDisplayConfig = new BitmapDisplayConfig(context);
+        defaultDisplayConfig = BitmapDisplayConfig.getDefaultDisplayConfig(context);
     }
 
     public static BitmapUtils create(Context ctx) {
@@ -163,18 +160,8 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDefaultCompressFormat(CompressFormat format) {
-        globalConfig.setDefaultCompressFormat(format);
-        return this;
-    }
-
     public BitmapUtils configThreadPoolSize(int poolSize) {
         globalConfig.setThreadPoolSize(poolSize);
-        return this;
-    }
-
-    public BitmapUtils configCalculateBitmap(boolean neverCalculate) {
-        globalConfig.getBitmapDownloadProcess().neverCalculate(neverCalculate);
         return this;
     }
 
@@ -188,11 +175,6 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configOriginalDiskCacheSize(int originalDiskCacheSize) {
-        globalConfig.setOriginalDiskCacheSize(originalDiskCacheSize);
-        return this;
-    }
-
     public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
         BitmapUtils.globalConfig = globalConfig;
         return this;
@@ -201,14 +183,10 @@ public class BitmapUtils {
     ////////////////////////// display ////////////////////////////////////
 
     public void display(ImageView imageView, String uri) {
-        display(imageView, uri, null, null);
+        display(imageView, uri, null);
     }
 
-    public void display(ImageView imageView, String uri, CompressFormat compressFormat) {
-        display(imageView, uri, compressFormat, null);
-    }
-
-    public void display(ImageView imageView, String uri, CompressFormat compressFormat, BitmapDisplayConfig displayConfig) {
+    public void display(ImageView imageView, String uri, BitmapDisplayConfig displayConfig) {
         if (imageView == null || TextUtils.isEmpty(uri)) {
             return;
         }
@@ -219,7 +197,7 @@ public class BitmapUtils {
 
         Bitmap bitmap = null;
 
-        bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri);
+        bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
@@ -235,7 +213,7 @@ public class BitmapUtils {
             imageView.setImageDrawable(asyncBitmapDrawable);
 
             // load bitmap from uri or diskCache
-            loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor(), uri, compressFormat);
+            loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor(), uri);
         }
     }
 
@@ -245,24 +223,12 @@ public class BitmapUtils {
         globalConfig.clearCache();
     }
 
-    public void clearCache(String url) {
-        globalConfig.clearCache(url);
-    }
-
     public void clearMemoryCache() {
         globalConfig.clearMemoryCache();
     }
 
-    public void clearMemoryCache(String url) {
-        globalConfig.clearMemoryCache(url);
-    }
-
     public void clearDiskCache() {
         globalConfig.clearDiskCache();
-    }
-
-    public void clearDiskCache(String url) {
-        globalConfig.clearDiskCache(url);
     }
 
     public void flushCache() {
@@ -273,8 +239,8 @@ public class BitmapUtils {
         globalConfig.closeCache();
     }
 
-    public Bitmap getBitmapFromMemCache(String uri) {
-        return globalConfig.getBitmapCache().getBitmapFromMemCache(uri);
+    public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig displayConfig) {
+        return globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
     }
 
     public BitmapGlobalConfig getBitmapGlobalConfig() {
@@ -342,7 +308,7 @@ public class BitmapUtils {
         }
     }
 
-    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
+    private static class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
         private Object uriData;
         private final WeakReference<ImageView> imageViewReference;
         private final BitmapDisplayConfig displayConfig;
@@ -354,12 +320,10 @@ public class BitmapUtils {
 
         @Override
         protected Bitmap doInBackground(Object... params) {
-            CompressFormat format = null;
             if (params != null && params.length > 0) {
                 uriData = params[0];
-                if (params.length > 1) {
-                    format = (CompressFormat) params[1];
-                }
+            } else {
+                return null;
             }
             final String uri = String.valueOf(uriData);
             Bitmap bitmap = null;
@@ -375,20 +339,12 @@ public class BitmapUtils {
 
             // 从磁盘缓存获取图片
             if (!isCancelled() && getAttachedImageView() != null && !pauseTask) {
-                bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri);
+                bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri, displayConfig);
             }
 
             // 下载图片
-            BitmapResult bitmapResult = null;
             if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !pauseTask) {
-                bitmapResult = globalConfig.getBitmapDownloadProcess().downloadBitmap(uri, displayConfig);
-            }
-
-            // 加入缓存
-            if (bitmapResult != null) {
-                format = format == null ? globalConfig.getDefaultCompressFormat() : format;
-                globalConfig.getBitmapCache().addBitmapToCache(uri, bitmapResult, displayConfig, format);
-                bitmap = bitmapResult.bitmap;
+                bitmap = globalConfig.getBitmapCache().downloadBitmap(uri, displayConfig);
             }
 
             return bitmap;

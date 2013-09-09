@@ -60,6 +60,7 @@ public class SimpleDownloader implements Downloader {
             while ((len = bis.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
             }
+            outputStream.flush();
         } catch (Exception e) {
             result = -1;
             LogUtils.e(e.getMessage(), e);
