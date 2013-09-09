@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@EventBase
 public @interface OnNothingSelected {
     int[] value();
 }

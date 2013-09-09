@@ -20,18 +20,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.TabHost;
-
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.DoubleKeyValueMap;
+import com.lidroid.xutils.view.annotation.event.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ViewCommonEventListener implements
         OnClickListener,
@@ -272,6 +271,75 @@ public class ViewCommonEventListener implements
             stopTrackingTouchMethod.invoke(handler, seekBar);
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static void setEventListener(Object handler, Finder finder, DoubleKeyValueMap<Object, Annotation, Method> value_annotation_method_map) {
+        for (Object value : value_annotation_method_map.getFirstKeys()) {
+            ConcurrentHashMap<Annotation, Method> annotation_method_map = value_annotation_method_map.get(value);
+            for (Annotation annotation : annotation_method_map.keySet()) {
+                try {
+                    Method method = annotation_method_map.get(annotation);
+                    if (annotation.annotationType().equals(OnClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        view.setOnClickListener(new ViewCommonEventListener(handler).click(method));
+                    } else if (annotation.annotationType().equals(OnLongClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        view.setOnLongClickListener(new ViewCommonEventListener(handler).longClick(method));
+                    } else if (annotation.annotationType().equals(OnItemClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ((AdapterView) view).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(method));
+                    } else if (annotation.annotationType().equals(OnItemLongClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ((AdapterView) view).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(method));
+                    } else if (annotation.annotationType().equals(OnCheckedChange.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view instanceof RadioGroup) {
+                            ((RadioGroup) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).radioGroupCheckedChanged(method));
+                        } else if (view instanceof CompoundButton) {
+                            ((CompoundButton) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).compoundButtonCheckedChanged(method));
+                        }
+                    } else if (annotation.annotationType().equals(OnPreferenceChange.class)) {
+                        Preference preference = finder.findPreference(value.toString());
+                        preference.setOnPreferenceChangeListener(new ViewCommonEventListener(handler).preferenceChange(method));
+                    } else if (annotation.annotationType().equals(OnTabChange.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ((TabHost) view).setOnTabChangedListener(new ViewCommonEventListener(handler).tabChanged(method));
+                    } else if (annotation.annotationType().equals(OnScrollChanged.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler).scrollChanged(method));
+                    } else if (annotation.annotationType().equals(OnItemSelected.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        for (Annotation a : a_m_map.keySet()) {
+                            if (a.annotationType().equals(OnItemSelected.class)) {
+                                listener.selected(a_m_map.get(a));
+                            } else if (a.annotationType().equals(OnNothingSelected.class)) {
+                                listener.noSelected(a_m_map.get(a));
+                            }
+                        }
+                        ((AdapterView) view).setOnItemSelectedListener(listener);
+                    } else if (annotation.annotationType().equals(OnProgressChanged.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        for (Annotation a : a_m_map.keySet()) {
+                            if (a.annotationType().equals(OnProgressChanged.class)) {
+                                listener.progressChanged(a_m_map.get(a));
+                            } else if (a.annotationType().equals(OnStartTrackingTouch.class)) {
+                                listener.startTrackingTouch(a_m_map.get(a));
+                            } else if (a.annotationType().equals(OnStopTrackingTouch.class)) {
+                                listener.stopTrackingTouch(a_m_map.get(a));
+                            }
+                        }
+                        ((SeekBar) view).setOnSeekBarChangeListener(listener);
+                    }
+                } catch (Exception e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
+            }
         }
     }
 }
