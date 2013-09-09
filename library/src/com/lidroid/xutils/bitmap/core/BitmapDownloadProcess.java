@@ -166,6 +166,7 @@ public class BitmapDownloadProcess {
                     mOriginalDiskCache = LruDiskCache.open(mOriginalCacheDir, 1, 1, config.getOriginalDiskCacheSize());
                 } catch (IOException e) {
                     mOriginalDiskCache = null;
+                    LogUtils.e(e.getMessage(), e);
                 }
             }
             isOriginalDiskCacheReadied = true;

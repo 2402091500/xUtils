@@ -98,6 +98,7 @@ public class BitmapCache {
                         try {
                             mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, globalConfig.getDiskCacheSize());
                         } catch (final IOException e) {
+                            mDiskLruCache = null;
                             LogUtils.e(e.getMessage(), e);
                         }
                     }

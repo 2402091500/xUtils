@@ -1028,8 +1028,9 @@ public final class LruDiskCache implements Closeable {
 
     /////////////////////////////////////// utils //////////////////////////////////////////////////////////////////////
     private static String readFully(Reader reader) throws IOException {
+        StringWriter writer = null;
         try {
-            StringWriter writer = new StringWriter();
+            writer = new StringWriter();
             char[] buffer = new char[1024];
             int count;
             while ((count = reader.read(buffer)) != -1) {
@@ -1038,6 +1039,7 @@ public final class LruDiskCache implements Closeable {
             return writer.toString();
         } finally {
             IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(writer);
         }
     }
 
