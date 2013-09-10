@@ -52,7 +52,7 @@ public class SimpleDownloader implements Downloader {
                 urlConnection.setReadTimeout(1000 * 30);
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration(); // 如果header中不包含expires返回0
-                result = result == 0 ? System.currentTimeMillis() + getDefaultExpiry() : result;
+                result = result < System.currentTimeMillis() ? System.currentTimeMillis() + getDefaultExpiry() : result;
             }
 
             byte[] buffer = new byte[4096];

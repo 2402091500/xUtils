@@ -51,7 +51,7 @@ public class BitmapGlobalConfig {
     private boolean _dirty_params_bitmapLoadExecutor = true;
     private ExecutorService bitmapLoadExecutor;
 
-    private long defaultCacheExpiry = 1000 * 60 * 60 * 24 * 30; // 默认30天过期
+    private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 默认30天过期
 
     private Context mContext;
 
