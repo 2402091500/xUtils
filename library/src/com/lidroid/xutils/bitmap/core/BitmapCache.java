@@ -221,7 +221,7 @@ public class BitmapCache {
      * @return The bitmap if found in cache, null otherwise
      */
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
-        String key = config == null ? uri : uri + config.toString();
+        String key = uri + config.toString();
         if (mMemoryCache != null) {
             return mMemoryCache.get(key);
         }
@@ -297,7 +297,7 @@ public class BitmapCache {
     }
 
     public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
-        String key = config == null ? uri : uri + config.toString();
+        String key = uri + config.toString();
         if (mMemoryCache != null) {
             mMemoryCache.remove(key);
         }
