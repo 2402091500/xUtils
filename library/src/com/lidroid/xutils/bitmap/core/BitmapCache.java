@@ -142,7 +142,7 @@ public class BitmapCache {
                             LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
                             if (editor != null) {
                                 outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
-                                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
                                 if (bitmapMeta.expiryTimestamp < 0) {
                                     editor.abort();
                                 } else {
@@ -161,7 +161,7 @@ public class BitmapCache {
 
             if (!globalConfig.isDiskCacheEnabled() || mDiskLruCache == null || bitmapMeta.inputStream == null) {
                 outputStream = new ByteArrayOutputStream();
-                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToOutStreamByUri(uri, outputStream);
+                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
                 if (bitmapMeta.expiryTimestamp < 0) {
                     bitmapMeta.data = ((ByteArrayOutputStream) outputStream).toByteArray();
                 }

@@ -35,7 +35,7 @@ public class SimpleDownloader implements Downloader {
      * @return expiryTimestamp 图片过期时间点； 小于零，下载失败。
      */
     @Override
-    public long downloadToOutStreamByUri(String uri, OutputStream outputStream) {
+    public long downloadToStream(String uri, OutputStream outputStream) {
         URLConnection urlConnection = null;
         BufferedInputStream bis = null;
 

@@ -26,7 +26,7 @@ public interface Downloader {
      * @param outputStream
      * @return 图片过期时间点； 小于零，下载失败。
      */
-    long downloadToOutStreamByUri(String uri, OutputStream outputStream);
+    long downloadToStream(String uri, OutputStream outputStream);
 
 
     /**
