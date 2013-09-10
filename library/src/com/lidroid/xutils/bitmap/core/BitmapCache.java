@@ -223,10 +223,7 @@ public class BitmapCache {
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
         String key = config == null ? uri : uri + config.toString();
         if (mMemoryCache != null) {
-            final Bitmap memBitmap = mMemoryCache.get(key);
-            if (memBitmap != null) {
-                return memBitmap;
-            }
+            return mMemoryCache.get(key);
         }
         return null;
     }
@@ -272,6 +269,12 @@ public class BitmapCache {
         clearDiskCache();
     }
 
+    public void clearMemoryCache() {
+        if (mMemoryCache != null) {
+            mMemoryCache.evictAll();
+        }
+    }
+
     public void clearDiskCache() {
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
@@ -287,9 +290,28 @@ public class BitmapCache {
         initDiskCache();
     }
 
-    public void clearMemoryCache() {
+
+    public void clearCache(String uri, BitmapDisplayConfig config) {
+        clearMemoryCache(uri, config);
+        clearDiskCache(uri);
+    }
+
+    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
+        String key = config == null ? uri : uri + config.toString();
         if (mMemoryCache != null) {
-            mMemoryCache.evictAll();
+            mMemoryCache.remove(key);
+        }
+    }
+
+    public void clearDiskCache(String uri) {
+        synchronized (mDiskCacheLock) {
+            if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
+                try {
+                    mDiskLruCache.remove(uri);
+                } catch (IOException e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
+            }
         }
     }
 

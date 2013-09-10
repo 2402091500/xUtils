@@ -46,7 +46,7 @@ public class BitmapUtils {
     private BitmapUtils(Context context, String diskCachePath) {
         BitmapUtils.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
-        defaultDisplayConfig = BitmapDisplayConfig.getDefaultDisplayConfig(context);
+        defaultDisplayConfig = new BitmapDisplayConfig(context);
     }
 
     public static BitmapUtils create(Context ctx) {
@@ -136,6 +136,11 @@ public class BitmapUtils {
 
     public BitmapUtils configDefaultImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
         defaultDisplayConfig.setImageLoadCallBack(imageLoadCallBack);
+        return this;
+    }
+
+    public BitmapUtils configDefaultCompressQuality(int compressQuality) {
+        defaultDisplayConfig.setCompressQuality(compressQuality);
         return this;
     }
 
@@ -231,6 +236,24 @@ public class BitmapUtils {
         globalConfig.clearDiskCache();
     }
 
+    public void clearCache(String uri, BitmapDisplayConfig config) {
+        if (config == null) {
+            config = defaultDisplayConfig;
+        }
+        globalConfig.clearCache(uri, config);
+    }
+
+    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
+        if (config == null) {
+            config = defaultDisplayConfig;
+        }
+        globalConfig.clearMemoryCache(uri, config);
+    }
+
+    public void clearDiskCache(String uri) {
+        globalConfig.clearDiskCache(uri);
+    }
+
     public void flushCache() {
         globalConfig.flushCache();
     }
@@ -241,10 +264,6 @@ public class BitmapUtils {
 
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig displayConfig) {
         return globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
-    }
-
-    public BitmapGlobalConfig getBitmapGlobalConfig() {
-        return globalConfig;
     }
 
     ////////////////////////////////////////// tasks //////////////////////////////////////////////////////////////////////

@@ -202,6 +202,9 @@ public class BitmapGlobalConfig {
         public static final int MESSAGE_CLEAR = 4;
         public static final int MESSAGE_CLEAR_MEMORY = 5;
         public static final int MESSAGE_CLEAR_DISK = 6;
+        public static final int MESSAGE_CLEAR_BY_KEY = 7;
+        public static final int MESSAGE_CLEAR_MEMORY_BY_KEY = 8;
+        public static final int MESSAGE_CLEAR_DISK_BY_KEY = 9;
 
         @Override
         protected Void doInBackground(Object... params) {
@@ -228,6 +231,15 @@ public class BitmapGlobalConfig {
                         break;
                     case MESSAGE_CLEAR_DISK:
                         clearDiskCacheInBackground();
+                        break;
+                    case MESSAGE_CLEAR_BY_KEY:
+                        clearCacheInBackground(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        break;
+                    case MESSAGE_CLEAR_MEMORY_BY_KEY:
+                        clearMemoryCacheInBackground(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        break;
+                    case MESSAGE_CLEAR_DISK_BY_KEY:
+                        clearDiskCacheInBackground(String.valueOf(params[1]));
                         break;
                     default:
                         break;
@@ -258,6 +270,18 @@ public class BitmapGlobalConfig {
             getBitmapCache().clearDiskCache();
         }
 
+        private void clearCacheInBackground(String uri, BitmapDisplayConfig config) {
+            getBitmapCache().clearCache(uri, config);
+        }
+
+        private void clearMemoryCacheInBackground(String uri, BitmapDisplayConfig config) {
+            getBitmapCache().clearMemoryCache(uri, config);
+        }
+
+        private void clearDiskCacheInBackground(String uri) {
+            getBitmapCache().clearDiskCache(uri);
+        }
+
         private void flushCacheInBackground() {
             getBitmapCache().flush();
         }
@@ -277,6 +301,18 @@ public class BitmapGlobalConfig {
 
     public void clearDiskCache() {
         new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_DISK);
+    }
+
+    public void clearCache(String uri, BitmapDisplayConfig config) {
+        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_BY_KEY, uri, config);
+    }
+
+    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
+        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_MEMORY_BY_KEY, uri, config);
+    }
+
+    public void clearDiskCache(String uri) {
+        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_DISK_BY_KEY, uri);
     }
 
     public void flushCache() {

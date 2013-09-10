@@ -38,17 +38,8 @@ public class BitmapDisplayConfig {
 
     private Context mContext;
 
-    private static BitmapDisplayConfig defaultDisplayConfig;
-
     public BitmapDisplayConfig(Context context) {
         mContext = context;
-    }
-
-    public static BitmapDisplayConfig getDefaultDisplayConfig(Context context) {
-        if (defaultDisplayConfig == null) {
-            defaultDisplayConfig = new BitmapDisplayConfig(context);
-        }
-        return defaultDisplayConfig;
     }
 
     public int getBitmapMaxWidth() {
