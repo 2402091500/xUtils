@@ -292,12 +292,15 @@ public class MyActivity extends Activity {
             Child child = new Child();
             child.name = "child' name";
             //db.saveBindingId(parent);
-            //child.parent = new SQLiteLazyLoader<Parent>(Child.class, "parentId", parent.getId());
-            child.parent = parent;
+            //child.parent = new ForeignLazyLoader<Parent>(Child.class, "parentId", parent.getId());
+            //child.parent = parent;
 
             Parent test = db.findFirst(parent);//通过entity的属性查找
             if (test != null) {
+                child.parent = test;
                 LogUtils.d("wyouflf :" + test);
+            } else {
+                child.parent = parent;
             }
 
             parent.setTime(new Date());

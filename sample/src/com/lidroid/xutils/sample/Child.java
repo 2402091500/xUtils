@@ -30,7 +30,7 @@ public class Child extends EntityBase {
     private String email;
 
     //@Foreign(column = "parentId", foreign = "id")
-    //public SQLiteLazyLoader<Parent> parent;
+    //public ForeignLazyLoader<Parent> parent;
     //@Foreign(column = "parentId", foreign = "isVIP")
     //public List<Parent> parent;
     @Foreign(column = "parentId", foreign = "id")

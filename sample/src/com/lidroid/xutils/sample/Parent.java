@@ -1,6 +1,9 @@
 package com.lidroid.xutils.sample;
 
+import com.lidroid.xutils.db.annotation.Finder;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * Author: wyouflf
@@ -20,6 +23,13 @@ public class Parent extends EntityBase {
     private Date time;
 
     private java.sql.Date time2;
+
+    //@Finder(valueColumn = "id",targetColumn = "parentId")
+    //public FinderLazyLoader<Parent> parent;
+    //@Finder(valueColumn = "id",targetColumn = "parentId")
+    //public Parent parent;
+    @Finder(valueColumn = "id", targetColumn = "parentId")
+    private List<Child> children;
 
     public boolean isAdmin() {
         return isAdmin;
