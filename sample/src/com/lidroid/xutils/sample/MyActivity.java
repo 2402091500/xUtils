@@ -334,7 +334,7 @@ public class MyActivity extends Activity {
             //parent.name = "hahaha123";
             //db.update(parent);
 
-            Parent entity = db.findById(Parent.class, parent.getId());
+            Parent entity = db.findById(Parent.class, child.parent.getId());
             LogUtils.d("wyouflf parent:" + entity.toString());
 
             List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
