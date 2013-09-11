@@ -16,7 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
-
+import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.util.LogUtils;
@@ -80,6 +80,11 @@ public class TableUtils {
                     }
                 } else if (ColumnUtils.isForeign(field)) {
                     Foreign column = new Foreign(entityType, field);
+                    if (!columnMap.containsKey(column.getColumnName())) {
+                        columnMap.put(column.getColumnName(), column);
+                    }
+                } else if (ColumnUtils.isFinder(field)) {
+                    Finder column = new Finder(entityType, field);
                     if (!columnMap.containsKey(column.getColumnName())) {
                         columnMap.put(column.getColumnName(), column);
                     }

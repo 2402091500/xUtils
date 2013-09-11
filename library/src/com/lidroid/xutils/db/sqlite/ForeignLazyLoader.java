@@ -21,16 +21,16 @@ import com.lidroid.xutils.exception.DbException;
 
 import java.util.List;
 
-public class SQLiteLazyLoader<T> {
+public class ForeignLazyLoader<T> {
     private Foreign foreignColumn;
     private Object columnValue;
 
-    public SQLiteLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
+    public ForeignLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
         this.columnValue = columnValue;
     }
 
-    public SQLiteLazyLoader(Foreign foreignColumn, Object columnValue) {
+    public ForeignLazyLoader(Foreign foreignColumn, Object columnValue) {
         this.foreignColumn = foreignColumn;
         this.columnValue = columnValue;
     }

@@ -16,7 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
+import com.lidroid.xutils.db.sqlite.ForeignLazyLoader;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -56,19 +56,17 @@ public class Foreign extends Column {
         if (valueStr != null) {
             Class columnType = columnField.getType();
             Object columnValue = ColumnUtils.valueStr2SimpleTypeFieldValue(getForeignColumnType(), valueStr);
-            if (ColumnUtils.isSimpleColumnType(columnField)) {
-                value = columnValue;
-            } else if (columnType.equals(SQLiteLazyLoader.class)) {
-                value = new SQLiteLazyLoader(this, columnValue);
+            if (columnType.equals(ForeignLazyLoader.class)) {
+                value = new ForeignLazyLoader(this, columnValue);
             } else if (columnType.equals(List.class)) {
                 try {
-                    value = new SQLiteLazyLoader(this, columnValue).getAllFromDb();
+                    value = new ForeignLazyLoader(this, columnValue).getAllFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
-                    value = new SQLiteLazyLoader(this, columnValue).getFirstFromDb();
+                    value = new ForeignLazyLoader(this, columnValue).getFirstFromDb();
                 } catch (DbException e) {
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -94,64 +92,69 @@ public class Foreign extends Column {
     @SuppressWarnings("unchecked")
     @Override
     public Object getColumnValue(Object entity) {
-        Object resultObj = null;
-        if (entity != null) {
-            if (getMethod != null) {
-                try {
-                    resultObj = getMethod.invoke(entity);
-                } catch (Exception e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            } else {
-                try {
-                    this.columnField.setAccessible(true);
-                    resultObj = this.columnField.get(entity);
-                } catch (Exception e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
-        }
+        Object valueObj = getFieldValue(entity);
 
-        if (resultObj != null) {
+        if (valueObj != null) {
             Class columnType = columnField.getType();
-            if (columnType.equals(SQLiteLazyLoader.class)) {
-                resultObj = ((SQLiteLazyLoader) resultObj).getColumnValue();
+            if (columnType.equals(ForeignLazyLoader.class)) {
+                valueObj = ((ForeignLazyLoader) valueObj).getColumnValue();
             } else if (columnType.equals(List.class)) {
                 try {
-                    List foreignValues = (List) resultObj;
-                    if (foreignValues.size() > 0) {
+                    List foreignEntities = (List) valueObj;
+                    if (foreignEntities.size() > 0) {
 
                         if (this.db != null) {
-                            this.db.saveOrUpdate(foreignValues);
+                            this.db.saveOrUpdate(foreignEntities);
                         }
 
                         Class foreignEntityType = ColumnUtils.getForeignEntityType(this);
                         Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
-                        resultObj = column.getColumnValue(foreignValues.get(0));
+                        valueObj = column.getColumnValue(foreignEntities.get(0));
                     }
                 } catch (Exception e) {
-                    resultObj = null;
+                    valueObj = null;
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     if (this.db != null) {
                         try {
-                            this.db.saveOrUpdate(resultObj);
+                            this.db.saveOrUpdate(valueObj);
                         } catch (DbException e) {
                             LogUtils.e(e.getMessage(), e);
                         }
                     }
                     Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
-                    resultObj = column.getColumnValue(resultObj);
+                    valueObj = column.getColumnValue(valueObj);
                 } catch (Exception e) {
-                    resultObj = null;
+                    valueObj = null;
                     LogUtils.e(e.getMessage(), e);
                 }
             }
         }
 
-        return ColumnUtils.convert2DbColumnValueIfNeeded(resultObj);
+        return ColumnUtils.convert2DbColumnValueIfNeeded(valueObj);
+    }
+
+    public Object getFieldValue(Object entity) {
+        Object valueObj = null;
+        if (entity != null) {
+            if (getMethod != null) {
+                try {
+                    valueObj = getMethod.invoke(entity);
+                } catch (Exception e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
+            } else {
+                try {
+                    this.columnField.setAccessible(true);
+                    valueObj = this.columnField.get(entity);
+                } catch (Exception e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
+            }
+        }
+        return valueObj;
     }
 
     @Override

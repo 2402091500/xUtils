@@ -48,7 +48,8 @@ public class DoubleKeyValueMap<K1, K2, V> {
     }
 
     public V get(K1 key1, K2 key2) {
-        return k1_k2V_map.get(key1).get(key2);
+        ConcurrentHashMap<K2, V> k2_v = k1_k2V_map.get(key1);
+        return k2_v == null ? null : k2_v.get(key2);
     }
 
     public ConcurrentHashMap<K2, V> get(K1 key1) {

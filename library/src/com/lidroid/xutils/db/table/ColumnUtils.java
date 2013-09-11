@@ -16,15 +16,13 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
-
-import com.lidroid.xutils.db.annotation.Check;
+import com.lidroid.xutils.db.annotation.*;
 import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.Finder;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
-import com.lidroid.xutils.db.annotation.NotNull;
-import com.lidroid.xutils.db.annotation.Transient;
-import com.lidroid.xutils.db.annotation.Unique;
-import com.lidroid.xutils.db.sqlite.SQLiteLazyLoader;
+import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
+import com.lidroid.xutils.db.sqlite.ForeignLazyLoader;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
@@ -97,6 +95,11 @@ public class ColumnUtils {
             return foreign.column();
         }
 
+        Finder finder = field.getAnnotation(Finder.class);
+        if (finder != null) {
+            return field.getName();
+        }
+
         return field.getName();
     }
 
@@ -124,6 +127,10 @@ public class ColumnUtils {
 
     public static boolean isForeign(Field field) {
         return field.getAnnotation(Foreign.class) != null;
+    }
+
+    public static boolean isFinder(Field field) {
+        return field.getAnnotation(Finder.class) != null;
     }
 
     public static boolean isSimpleColumnType(Field field) {
@@ -201,8 +208,17 @@ public class ColumnUtils {
     @SuppressWarnings("unchecked")
     public static Class<?> getForeignEntityType(com.lidroid.xutils.db.table.Foreign foreignColumn) {
         Class<?> result = (Class<?>) foreignColumn.getColumnField().getType();
-        if (result.equals(SQLiteLazyLoader.class) || result.equals(List.class)) {
+        if (result.equals(ForeignLazyLoader.class) || result.equals(List.class)) {
             result = (Class<?>) ((ParameterizedType) foreignColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Class<?> getFinderTargetEntityType(com.lidroid.xutils.db.table.Finder finderColumn) {
+        Class<?> result = (Class<?>) finderColumn.getColumnField().getType();
+        if (result.equals(FinderLazyLoader.class) || result.equals(List.class)) {
+            result = (Class<?>) ((ParameterizedType) finderColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
         }
         return result;
     }

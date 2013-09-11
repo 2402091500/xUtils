@@ -16,13 +16,7 @@
 package com.lidroid.xutils.db.sqlite;
 
 import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.db.table.Column;
-import com.lidroid.xutils.db.table.ColumnUtils;
-import com.lidroid.xutils.db.table.Foreign;
-import com.lidroid.xutils.db.table.Id;
-import com.lidroid.xutils.db.table.KeyValue;
-import com.lidroid.xutils.db.table.Table;
-import com.lidroid.xutils.db.table.TableUtils;
+import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.exception.DbException;
 
 import java.util.ArrayList;
@@ -227,6 +221,9 @@ public class SqlInfoBuilder {
 
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
+            if (column instanceof Finder) {
+                continue;
+            }
             sqlBuffer.append("\"").append(column.getColumnName()).append("\"  ");
             sqlBuffer.append(column.getColumnDbType());
             if (ColumnUtils.isUnique(column.getColumnField())) {
@@ -273,6 +270,9 @@ public class SqlInfoBuilder {
 
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
+            if (column instanceof Finder) {
+                ((Finder) column).db = db;
+            }
             if (column instanceof Foreign) {
                 ((Foreign) column).db = db;
             }
@@ -303,6 +303,9 @@ public class SqlInfoBuilder {
 
         Collection<Column> columns = table.columnMap.values();
         for (Column column : columns) {
+            if (column instanceof Finder) {
+                ((Finder) column).db = db;
+            }
             if (column instanceof Foreign) {
                 ((Foreign) column).db = db;
             }

@@ -340,7 +340,8 @@ public class DbUtils {
         Cursor cursor = execQuery(selector.limit(1).toString());
         try {
             if (cursor.moveToNext()) {
-                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
+                T entity = (T) CursorUtils.getEntity(this, cursor, selector.getEntityType(), CursorUtils.FindCacheSequence.getSeq());
+                return entity;
             }
         } finally {
             IOUtils.closeQuietly(cursor);
@@ -354,7 +355,8 @@ public class DbUtils {
         Cursor cursor = execQuery(selector.limit(1).toString());
         try {
             if (cursor.moveToNext()) {
-                return (T) CursorUtils.getEntity(this, cursor, selector.getEntityType());
+                T entity = (T) CursorUtils.getEntity(this, cursor, selector.getEntityType(), CursorUtils.FindCacheSequence.getSeq());
+                return entity;
             }
         } finally {
             IOUtils.closeQuietly(cursor);
@@ -382,8 +384,10 @@ public class DbUtils {
         Cursor cursor = execQuery(selector.toString());
         List<T> result = new ArrayList<T>();
         try {
+            long seq = CursorUtils.FindCacheSequence.getSeq();
             while (cursor.moveToNext()) {
-                result.add((T) CursorUtils.getEntity(this, cursor, selector.getEntityType()));
+                T entity = (T) CursorUtils.getEntity(this, cursor, selector.getEntityType(), seq);
+                result.add(entity);
             }
         } finally {
             IOUtils.closeQuietly(cursor);
@@ -610,7 +614,6 @@ public class DbUtils {
         } else {
             LogUtils.w("List<KeyValue> is empty or ContentValues is empty!");
         }
-
     }
 
     private void createTableIfNotExist(Class<?> entityType) throws DbException {
