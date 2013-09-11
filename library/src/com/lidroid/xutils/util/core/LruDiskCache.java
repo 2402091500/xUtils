@@ -403,6 +403,18 @@ public final class LruDiskCache implements Closeable {
         }
     }
 
+    public synchronized long getExpiryTimestamp(String key) throws IOException {
+        String diskKey = DiskCacheKeyGenerator.generate(key);
+        checkNotClosed();
+        validateKey(diskKey);
+        Entry entry = lruEntries.get(diskKey);
+        if (entry == null) {
+            return 0;
+        } else {
+            return entry.expiryTimestamp;
+        }
+    }
+
 
     public Snapshot get(String key) throws IOException {
         String diskKey = DiskCacheKeyGenerator.generate(key);

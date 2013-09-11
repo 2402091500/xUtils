@@ -34,7 +34,7 @@ public class BitmapDisplayConfig {
 
     private ImageLoadCallBack imageLoadCallBack;
 
-    private int compressQuality = 70;
+    private boolean showOriginal = false;
 
     private Context mContext;
 
@@ -103,16 +103,16 @@ public class BitmapDisplayConfig {
         this.imageLoadCallBack = imageLoadCallBack;
     }
 
-    public int getCompressQuality() {
-        return compressQuality;
+    public boolean isShowOriginal() {
+        return showOriginal;
     }
 
-    public void setCompressQuality(int compressQuality) {
-        this.compressQuality = compressQuality;
+    public void setShowOriginal(boolean showOriginal) {
+        this.showOriginal = showOriginal;
     }
 
     @Override
     public String toString() {
-        return "-" + getBitmapMaxWidth() + "-" + getBitmapMaxHeight() + "-" + getCompressQuality();
+        return isShowOriginal() ? "" : "-" + getBitmapMaxWidth() + "-" + getBitmapMaxHeight();
     }
 }

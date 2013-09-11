@@ -139,8 +139,8 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDefaultCompressQuality(int compressQuality) {
-        defaultDisplayConfig.setCompressQuality(compressQuality);
+    public BitmapUtils configDefaultShowOriginal(boolean showOriginal) {
+        defaultDisplayConfig.setShowOriginal(showOriginal);
         return this;
     }
 
