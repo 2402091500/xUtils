@@ -13,24 +13,16 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http;
+package com.lidroid.xutils.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-
-import com.lidroid.xutils.util.LogUtils;
-
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author michael yang
  */
-public class PreferencesCookieStore implements CookieStore {
+public class CookieUtils implements CookieStore {
 
     private static final String COOKIE_PREFS = "CookiePrefsFile";
     private static final String COOKIE_NAME_STORE = "names";
@@ -53,7 +45,7 @@ public class PreferencesCookieStore implements CookieStore {
     /**
      * Construct a persistent cookie store.
      */
-    public PreferencesCookieStore(Context context) {
+    public CookieUtils(Context context) {
         cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, 0);
         cookies = new ConcurrentHashMap<String, Cookie>();
 
