@@ -20,9 +20,9 @@ import android.preference.PreferenceActivity;
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.DoubleKeyValueMap;
-import com.lidroid.xutils.view.Finder;
 import com.lidroid.xutils.view.ViewCommonEventListener;
 import com.lidroid.xutils.view.ViewCustomEventListener;
+import com.lidroid.xutils.view.ViewFinder;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.EventBase;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -48,32 +48,32 @@ public class ViewUtils {
     }
 
     public static void inject(View view) {
-        injectObject(view, new Finder(view));
+        injectObject(view, new ViewFinder(view));
     }
 
     public static void inject(Activity activity) {
-        injectObject(activity, new Finder(activity));
+        injectObject(activity, new ViewFinder(activity));
     }
 
     public static void inject(PreferenceActivity preferenceActivity) {
-        injectObject(preferenceActivity, new Finder(preferenceActivity));
+        injectObject(preferenceActivity, new ViewFinder(preferenceActivity));
     }
 
     public static void inject(Object handler, View view) {
-        injectObject(handler, new Finder(view));
+        injectObject(handler, new ViewFinder(view));
     }
 
     public static void inject(Object handler, Activity activity) {
-        injectObject(handler, new Finder(activity));
+        injectObject(handler, new ViewFinder(activity));
     }
 
     public static void inject(Object handler, PreferenceActivity preferenceActivity) {
-        injectObject(handler, new Finder(preferenceActivity));
+        injectObject(handler, new ViewFinder(preferenceActivity));
     }
 
 
     @SuppressWarnings("ConstantConditions")
-    private static void injectObject(Object handler, Finder finder) {
+    private static void injectObject(Object handler, ViewFinder finder) {
 
         // inject view
         Field[] fields = handler.getClass().getDeclaredFields();

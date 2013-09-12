@@ -10,21 +10,21 @@ import android.view.View;
  * Date: 13-9-9
  * Time: 下午12:29
  */
-public class Finder {
+public class ViewFinder {
 
     private View view;
     private Activity activity;
     private PreferenceActivity preferenceActivity;
 
-    public Finder(View view) {
+    public ViewFinder(View view) {
         this.view = view;
     }
 
-    public Finder(Activity activity) {
+    public ViewFinder(Activity activity) {
         this.activity = activity;
     }
 
-    private Finder(PreferenceActivity preferenceActivity) {
+    private ViewFinder(PreferenceActivity preferenceActivity) {
         this.preferenceActivity = preferenceActivity;
         this.activity = preferenceActivity;
     }

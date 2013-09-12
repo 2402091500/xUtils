@@ -9,5 +9,5 @@ import java.lang.reflect.Method;
  * Time: 下午12:26
  */
 public interface ViewCustomEventListener {
-    void setEventListener(Object handler, Finder finder, Annotation annotation, Method method);
+    void setEventListener(Object handler, ViewFinder finder, Annotation annotation, Method method);
 }

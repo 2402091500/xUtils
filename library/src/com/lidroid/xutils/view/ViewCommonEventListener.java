@@ -308,7 +308,7 @@ public class ViewCommonEventListener implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    public static void setEventListener(Object handler, Finder finder, DoubleKeyValueMap<Object, Annotation, Method> value_annotation_method_map) {
+    public static void setEventListener(Object handler, ViewFinder finder, DoubleKeyValueMap<Object, Annotation, Method> value_annotation_method_map) {
         for (Object value : value_annotation_method_map.getFirstKeys()) {
             ConcurrentHashMap<Annotation, Method> annotation_method_map = value_annotation_method_map.get(value);
             for (Annotation annotation : annotation_method_map.keySet()) {
