@@ -36,6 +36,8 @@ public class HttpGetCache {
 
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
+    private boolean enabled = true;
+
     private static long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
 
     /**
@@ -83,7 +85,7 @@ public class HttpGetCache {
     }
 
     public void put(String url, String result, long expiry) {
-        if (url == null || result == null) return;
+        if (!enabled || url == null || result == null) return;
 
         if (expiry < MIN_EXPIRY_TIME) {
             expiry = MIN_EXPIRY_TIME;
@@ -95,10 +97,18 @@ public class HttpGetCache {
     }
 
     public String get(String url) {
-        return mMemoryCache.get(url);
+        return enabled ? mMemoryCache.get(url) : null;
     }
 
     public void clear() {
         mMemoryCache.evictAll();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
