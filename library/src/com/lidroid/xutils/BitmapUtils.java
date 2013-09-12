@@ -297,12 +297,12 @@ public class BitmapUtils {
         return null;
     }
 
-    private static boolean bitmapLoadTaskExist(ImageView imageView, Object uriData) {
+    private static boolean bitmapLoadTaskExist(ImageView imageView, String uri) {
         final BitmapLoadTask oldLoadTask = getBitmapTaskFromImageView(imageView);
 
         if (oldLoadTask != null) {
-            final Object oldUri = oldLoadTask.uriData;
-            if (oldUri == null || !oldUri.equals(uriData)) {
+            final String oldUri = oldLoadTask.uri;
+            if (TextUtils.isEmpty(oldUri) || !oldUri.equals(uri)) {
                 oldLoadTask.cancel(true);
             } else {
                 // 同一个线程已经在执行
@@ -313,7 +313,6 @@ public class BitmapUtils {
     }
 
     private static class AsyncBitmapDrawable extends BitmapDrawable {
-
 
         private final WeakReference<BitmapLoadTask> bitmapLoadTaskReference;
 
@@ -328,27 +327,26 @@ public class BitmapUtils {
     }
 
     private static class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
-        private Object uriData;
-        private final WeakReference<ImageView> imageViewReference;
+        private String uri;
+        private final WeakReference<ImageView> targetImageViewReference;
         private final BitmapDisplayConfig displayConfig;
 
         public BitmapLoadTask(ImageView imageView, BitmapDisplayConfig config) {
-            imageViewReference = new WeakReference<ImageView>(imageView);
+            targetImageViewReference = new WeakReference<ImageView>(imageView);
             displayConfig = config;
         }
 
         @Override
         protected Bitmap doInBackground(Object... params) {
             if (params != null && params.length > 0) {
-                uriData = params[0];
+                uri = (String) params[0];
             } else {
                 return null;
             }
-            final String uri = String.valueOf(uriData);
             Bitmap bitmap = null;
 
             synchronized (pauseTaskLock) {
-                while (pauseTask && !isCancelled()) {
+                while (pauseTask && !this.isCancelled()) {
                     try {
                         pauseTaskLock.wait();
                     } catch (InterruptedException e) {
@@ -357,12 +355,12 @@ public class BitmapUtils {
             }
 
             // 从磁盘缓存获取图片
-            if (!isCancelled() && getAttachedImageView() != null && !pauseTask) {
+            if (!pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri, displayConfig);
             }
 
             // 下载图片
-            if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !pauseTask) {
+            if (bitmap == null && !pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().downloadBitmap(uri, displayConfig);
             }
 
@@ -376,10 +374,10 @@ public class BitmapUtils {
                 bitmap = null;
             }
 
-            final ImageView imageView = getAttachedImageView();
+            final ImageView imageView = this.getTargetImageView();
             if (bitmap != null && imageView != null) {//显示图片
                 displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
-            } else if (bitmap == null && imageView != null) {//显示获取错误图片
+            } else if (imageView != null) {//显示获取错误图片
                 displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
             }
         }
@@ -397,8 +395,8 @@ public class BitmapUtils {
          *
          * @return
          */
-        private ImageView getAttachedImageView() {
-            final ImageView imageView = imageViewReference.get();
+        private ImageView getTargetImageView() {
+            final ImageView imageView = targetImageViewReference.get();
             final BitmapLoadTask bitmapWorkerTask = getBitmapTaskFromImageView(imageView);
 
             if (this == bitmapWorkerTask) {
