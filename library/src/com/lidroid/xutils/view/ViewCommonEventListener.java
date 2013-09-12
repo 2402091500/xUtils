@@ -42,6 +42,7 @@ public class ViewCommonEventListener implements
         Preference.OnPreferenceChangeListener,
         TabHost.OnTabChangeListener,
         ViewTreeObserver.OnScrollChangedListener,
+        AbsListView.OnScrollListener,
         OnItemSelectedListener,
         SeekBar.OnSeekBarChangeListener {
 
@@ -56,6 +57,10 @@ public class ViewCommonEventListener implements
     private Method preferenceChangeMethod;
     private Method tabChangedMethod;
     private Method scrollChangedMethod;
+
+    // onScrollStateChanged
+    private Method scrollStateChanged;
+    private Method scroll;
 
     // ItemSelected
     private Method itemSelectMethod;
@@ -113,6 +118,16 @@ public class ViewCommonEventListener implements
 
     public ViewCommonEventListener scrollChanged(Method method) {
         this.scrollChangedMethod = method;
+        return this;
+    }
+
+    public ViewCommonEventListener scrollStateChanged(Method method) {
+        this.scrollStateChanged = method;
+        return this;
+    }
+
+    public ViewCommonEventListener scroll(Method method) {
+        this.scroll = method;
         return this;
     }
 
@@ -230,6 +245,24 @@ public class ViewCommonEventListener implements
     }
 
     @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        try {
+            scrollStateChanged.invoke(handler, absListView, i);
+        } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+        try {
+            scroll.invoke(handler, absListView, i, i2, i3);
+        } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         try {
             itemSelectMethod.invoke(handler, parent, view, position, id);
@@ -309,6 +342,18 @@ public class ViewCommonEventListener implements
                     } else if (annotation.annotationType().equals(OnScrollChanged.class)) {
                         View view = finder.findViewById((Integer) value);
                         view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler).scrollChanged(method));
+                    } else if (annotation.annotationType().equals(OnScrollStateChanged.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        for (Annotation a : a_m_map.keySet()) {
+                            if (a.annotationType().equals(OnScrollStateChanged.class)) {
+                                listener.scrollStateChanged(a_m_map.get(a));
+                            } else if (a.annotationType().equals(OnScroll.class)) {
+                                listener.scroll(a_m_map.get(a));
+                            }
+                        }
+                        ((AdapterView) view).setOnItemSelectedListener(listener);
                     } else if (annotation.annotationType().equals(OnItemSelected.class)) {
                         View view = finder.findViewById((Integer) value);
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);
