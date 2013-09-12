@@ -212,10 +212,9 @@ public class BitmapCache {
             return null;
         }
 
-        String key = uri + config.toString();
-
         // add to memory cache
-        if (globalConfig.isMemoryCacheEnabled() && mMemoryCache != null && mMemoryCache.get(key) == null) {
+        String key = uri + config.toString();
+        if (globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
             mMemoryCache.put(key, bitmap, bitmapMeta.expiryTimestamp);
         }
 
@@ -269,8 +268,8 @@ public class BitmapCache {
 
                         // add to memory cache
                         String key = uri + config.toString();
-                        if (globalConfig.isMemoryCacheEnabled() && mMemoryCache != null && mMemoryCache.get(key) == null) {
-                            mMemoryCache.put(key, bitmap, mDiskLruCache.getExpiryTimestamp(key));
+                        if (globalConfig.isMemoryCacheEnabled() && mMemoryCache != null && bitmap != null) {
+                            mMemoryCache.put(key, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
                         }
 
                         return bitmap;
