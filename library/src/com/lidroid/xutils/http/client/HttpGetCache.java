@@ -32,7 +32,7 @@ public class HttpGetCache {
 
     private final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
-    private final static long MIN_EXPIRY_TIME = 500;
+    private final static long MIN_EXPIRY_TIME = 200;
 
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
@@ -69,6 +69,8 @@ public class HttpGetCache {
     public static void setDefaultExpiryTime(long defaultExpiryTime) {
         if (defaultExpiryTime > MIN_EXPIRY_TIME) {
             HttpGetCache.defaultExpiryTime = defaultExpiryTime;
+        } else {
+            HttpGetCache.defaultExpiryTime = MIN_EXPIRY_TIME;
         }
     }
 
