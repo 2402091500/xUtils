@@ -2,6 +2,8 @@
 * xUtils 包含了很多实用的android工具。
 * xUtils 源于Afinal框架，对Afinal进行了大量重构，使得xUtils支持大文件上传，更全面的http请求协议支持，拥有更加灵活的ORM，更多的事件注解支持且不受混淆影响...
 
+## 注意: jar包导入后运行时报NoClassDefFoundError的看下面连接的内容
+* <http://my.oschina.net/u/1171837/blog/161301>
 
 ## 目前xUtils主要有四大模块：
 
@@ -224,6 +226,10 @@ handler.stop();
 ```java
 BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
 //BitmapUtils.create(this).display(testImageView, "/sdcard/test.jpg"); //支持加载本地图片
+
+// 使用ListView等容器展示图片时可通过PauseOnScrollListener控制滑动和快速滑动过程中时候暂停加载图片
+listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
+listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true), customListener);
 ```
 
 ----
