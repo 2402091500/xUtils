@@ -38,63 +38,40 @@ public class BitmapUtils {
     private static final Object pauseTaskLock = new Object();
 
     private static Context context;
-    private static BitmapUtils instance;
     private static BitmapGlobalConfig globalConfig;
     private static BitmapDisplayConfig defaultDisplayConfig;
 
     /////////////////////////////////////////////// create ///////////////////////////////////////////////////
-    private BitmapUtils(Context context, String diskCachePath) {
+    public BitmapUtils(Context context) {
+        this(context, null);
+    }
+
+    public BitmapUtils(Context context, String diskCachePath) {
         BitmapUtils.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
         defaultDisplayConfig = new BitmapDisplayConfig(context);
     }
 
-    public static BitmapUtils create(Context ctx) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), null);
-        }
-        return instance;
+    public BitmapUtils(Context ctx, String diskCachePath, int memoryCacheSize) {
+        this(context, diskCachePath);
+        globalConfig.setMemoryCacheSize(memoryCacheSize);
     }
 
-    public static BitmapUtils create(Context ctx, String diskCachePath) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
-        }
-        return instance;
+    public BitmapUtils(Context ctx, String diskCachePath, int memoryCacheSize, int diskCacheSize) {
+        this(context, diskCachePath);
+        globalConfig.setMemoryCacheSize(memoryCacheSize);
+        globalConfig.setDiskCacheSize(diskCacheSize);
     }
 
-    public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
-            globalConfig.setMemoryCacheSize(memoryCacheSize);
-        }
-        return instance;
+    public BitmapUtils(Context ctx, String diskCachePath, float memoryCachePercent) {
+        this(context, diskCachePath);
+        globalConfig.setMemCacheSizePercent(memoryCachePercent);
     }
 
-    public static BitmapUtils create(Context ctx, String diskCachePath, int memoryCacheSize, int diskCacheSize) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
-            globalConfig.setMemoryCacheSize(memoryCacheSize);
-            globalConfig.setDiskCacheSize(diskCacheSize);
-        }
-        return instance;
-    }
-
-    public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
-            globalConfig.setMemCacheSizePercent(memoryCachePercent);
-        }
-        return instance;
-    }
-
-    public static BitmapUtils create(Context ctx, String diskCachePath, float memoryCachePercent, int diskCacheSize) {
-        if (instance == null) {
-            instance = new BitmapUtils(ctx.getApplicationContext(), diskCachePath);
-            globalConfig.setMemCacheSizePercent(memoryCachePercent);
-            globalConfig.setDiskCacheSize(diskCacheSize);
-        }
-        return instance;
+    public BitmapUtils(Context ctx, String diskCachePath, float memoryCachePercent, int diskCacheSize) {
+        this(context, diskCachePath);
+        globalConfig.setMemCacheSizePercent(memoryCachePercent);
+        globalConfig.setDiskCacheSize(diskCacheSize);
     }
 
     //////////////////////////////////////// config ////////////////////////////////////////////////////////////////////
