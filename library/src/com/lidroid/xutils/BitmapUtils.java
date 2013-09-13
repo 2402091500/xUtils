@@ -192,12 +192,17 @@ public class BitmapUtils {
     }
 
     public void display(ImageView imageView, String uri, BitmapDisplayConfig displayConfig) {
-        if (imageView == null || TextUtils.isEmpty(uri)) {
+        if (imageView == null) {
             return;
         }
 
         if (displayConfig == null) {
             displayConfig = defaultDisplayConfig;
+        }
+
+        if (TextUtils.isEmpty(uri)) {
+            displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+            return;
         }
 
         Bitmap bitmap = null;
