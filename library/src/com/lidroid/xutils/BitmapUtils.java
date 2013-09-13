@@ -34,12 +34,12 @@ import java.lang.ref.WeakReference;
 
 public class BitmapUtils {
 
-    private static boolean pauseTask = false;
-    private static final Object pauseTaskLock = new Object();
+    private boolean pauseTask = false;
+    private final Object pauseTaskLock = new Object();
 
-    private static Context context;
-    private static BitmapGlobalConfig globalConfig;
-    private static BitmapDisplayConfig defaultDisplayConfig;
+    private Context context;
+    private BitmapGlobalConfig globalConfig;
+    private BitmapDisplayConfig defaultDisplayConfig;
 
     /////////////////////////////////////////////// create ///////////////////////////////////////////////////
     public BitmapUtils(Context context) {
@@ -47,28 +47,28 @@ public class BitmapUtils {
     }
 
     public BitmapUtils(Context context, String diskCachePath) {
-        BitmapUtils.context = context;
+        this.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
         defaultDisplayConfig = new BitmapDisplayConfig(context);
     }
 
-    public BitmapUtils(Context ctx, String diskCachePath, int memoryCacheSize) {
+    public BitmapUtils(Context context, String diskCachePath, int memoryCacheSize) {
         this(context, diskCachePath);
         globalConfig.setMemoryCacheSize(memoryCacheSize);
     }
 
-    public BitmapUtils(Context ctx, String diskCachePath, int memoryCacheSize, int diskCacheSize) {
+    public BitmapUtils(Context context, String diskCachePath, int memoryCacheSize, int diskCacheSize) {
         this(context, diskCachePath);
         globalConfig.setMemoryCacheSize(memoryCacheSize);
         globalConfig.setDiskCacheSize(diskCacheSize);
     }
 
-    public BitmapUtils(Context ctx, String diskCachePath, float memoryCachePercent) {
+    public BitmapUtils(Context context, String diskCachePath, float memoryCachePercent) {
         this(context, diskCachePath);
         globalConfig.setMemCacheSizePercent(memoryCachePercent);
     }
 
-    public BitmapUtils(Context ctx, String diskCachePath, float memoryCachePercent, int diskCacheSize) {
+    public BitmapUtils(Context context, String diskCachePath, float memoryCachePercent, int diskCacheSize) {
         this(context, diskCachePath);
         globalConfig.setMemCacheSizePercent(memoryCachePercent);
         globalConfig.setDiskCacheSize(diskCacheSize);
@@ -158,7 +158,7 @@ public class BitmapUtils {
     }
 
     public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
-        BitmapUtils.globalConfig = globalConfig;
+        this.globalConfig = globalConfig;
         return this;
     }
 
@@ -294,7 +294,7 @@ public class BitmapUtils {
         return false;
     }
 
-    private static class AsyncBitmapDrawable extends BitmapDrawable {
+    private class AsyncBitmapDrawable extends BitmapDrawable {
 
         private final WeakReference<BitmapLoadTask> bitmapLoadTaskReference;
 
@@ -308,7 +308,7 @@ public class BitmapUtils {
         }
     }
 
-    private static class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
+    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
         private String uri;
         private final WeakReference<ImageView> targetImageViewReference;
         private final BitmapDisplayConfig displayConfig;
