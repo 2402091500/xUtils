@@ -41,7 +41,7 @@ public class MyActivity extends Activity {
 
         ViewUtils.inject(this);
 
-        bitmapUtils = BitmapUtils.create(this);
+        bitmapUtils = new BitmapUtils(this);
     }
 
     BitmapUtils bitmapUtils;
