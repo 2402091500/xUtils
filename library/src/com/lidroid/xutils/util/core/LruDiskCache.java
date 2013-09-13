@@ -1051,7 +1051,7 @@ public final class LruDiskCache implements Closeable {
             if (file.isDirectory()) {
                 deleteContents(file);
             }
-            if (!file.delete()) {
+            if (file.exists() && !file.delete()) {
                 throw new IOException("failed to delete file: " + file);
             }
         }
