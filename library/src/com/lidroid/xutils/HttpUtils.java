@@ -16,7 +16,6 @@
 package com.lidroid.xutils;
 
 import android.text.TextUtils;
-
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
@@ -28,14 +27,7 @@ import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
-
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.HttpVersion;
+import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
@@ -64,12 +56,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HttpUtils {
 
+    public final static HttpGetCache sHttpGetCache = new HttpGetCache();
+
     private final DefaultHttpClient httpClient;
     private final HttpContext httpContext = new BasicHttpContext();
 
-    public final static HttpGetCache sHttpGetCache = new HttpGetCache();
-
-    public DownloadRedirectHandler downloadRedirectHandler;
+    private DownloadRedirectHandler downloadRedirectHandler;
 
     public HttpUtils() {
         this(HttpUtils.DEFAULT_CONN_TIMEOUT);
