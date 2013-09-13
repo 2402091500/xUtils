@@ -25,20 +25,20 @@ public class CursorUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T getEntity(DbUtils db, Cursor cursor, Class<T> entityType, long findCacheSequence) {
-        FindTempCache.setSeq(findCacheSequence);
+        EntityTempCache.setSeq(findCacheSequence);
         try {
             if (cursor != null) {
-                int columnCount = cursor.getColumnCount();
                 Table table = Table.get(entityType);
                 int idIndex = cursor.getColumnIndex(table.getId().getColumnName());
                 String idStr = cursor.getString(idIndex);
-                T entity = FindTempCache.get(entityType, idStr);
+                T entity = EntityTempCache.get(entityType, idStr);
                 if (entity == null) {
                     entity = entityType.newInstance();
-                    FindTempCache.put(entity, idStr);
+                    EntityTempCache.put(entity, idStr);
                 } else {
                     return entity;
                 }
+                int columnCount = cursor.getColumnCount();
                 for (int i = 0; i < columnCount; i++) {
                     String columnName = cursor.getColumnName(i);
                     Column column = table.columnMap.get(columnName);
@@ -101,8 +101,8 @@ public class CursorUtils {
         }
     }
 
-    private static class FindTempCache {
-        private FindTempCache() {
+    private static class EntityTempCache {
+        private EntityTempCache() {
         }
 
         /**
@@ -124,9 +124,9 @@ public class CursorUtils {
         }
 
         public static void setSeq(long seq) {
-            if (FindTempCache.seq != seq) {
+            if (EntityTempCache.seq != seq) {
                 cache.clear();
-                FindTempCache.seq = seq;
+                EntityTempCache.seq = seq;
             }
         }
     }
