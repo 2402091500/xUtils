@@ -146,6 +146,7 @@ public class BitmapCache {
                                 bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
                                 if (bitmapMeta.expiryTimestamp < 0) {
                                     editor.abort();
+                                    return null;
                                 } else {
                                     editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
                                     editor.commit();
@@ -164,6 +165,8 @@ public class BitmapCache {
                 outputStream = new ByteArrayOutputStream();
                 bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
                 if (bitmapMeta.expiryTimestamp < 0) {
+                    return null;
+                } else {
                     bitmapMeta.data = ((ByteArrayOutputStream) outputStream).toByteArray();
                 }
             }
@@ -244,6 +247,7 @@ public class BitmapCache {
      * @return
      */
     public Bitmap getBitmapFromDiskCache(String uri, BitmapDisplayConfig config) {
+        if (!globalConfig.isDiskCacheEnabled()) return null;
         synchronized (mDiskCacheLock) {
             while (!isDiskCacheReadied) {
                 try {
