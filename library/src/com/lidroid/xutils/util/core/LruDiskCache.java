@@ -16,6 +16,7 @@
 package com.lidroid.xutils.util.core;
 
 import com.lidroid.xutils.util.IOUtils;
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.protocol.HTTP;
 
 import java.io.*;
@@ -220,12 +221,11 @@ public final class LruDiskCache implements Closeable {
                         new OutputStreamWriter(new FileOutputStream(cache.journalFile, true), HTTP.US_ASCII));
                 return cache;
             } catch (IOException journalIsCorrupt) {
-                System.out
-                        .println("DiskLruCache "
-                                + directory
-                                + " is corrupt: "
-                                + journalIsCorrupt.getMessage()
-                                + ", removing");
+                LogUtils.e("DiskLruCache "
+                        + directory
+                        + " is corrupt: "
+                        + journalIsCorrupt.getMessage()
+                        + ", removing", journalIsCorrupt);
                 cache.delete();
             }
         }
