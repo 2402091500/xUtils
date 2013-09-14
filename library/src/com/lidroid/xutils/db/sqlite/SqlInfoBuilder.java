@@ -272,8 +272,7 @@ public class SqlInfoBuilder {
         for (Column column : columns) {
             if (column instanceof Finder) {
                 ((Finder) column).db = db;
-            }
-            if (column instanceof Foreign) {
+            } else if (column instanceof Foreign) {
                 ((Foreign) column).db = db;
             }
             KeyValue kv = column2KeyValue(entity, column);
@@ -305,8 +304,7 @@ public class SqlInfoBuilder {
         for (Column column : columns) {
             if (column instanceof Finder) {
                 ((Finder) column).db = db;
-            }
-            if (column instanceof Foreign) {
+            } else if (column instanceof Foreign) {
                 ((Foreign) column).db = db;
             }
             KeyValue kv = column2KeyValue(entity, column);

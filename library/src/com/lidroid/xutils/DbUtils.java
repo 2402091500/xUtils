@@ -778,7 +778,7 @@ public class DbUtils {
          * key: sql;
          * value: find result
          */
-        private ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<String, Object>();
+        private final ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<String, Object>();
 
         private long seq = 0;
 
