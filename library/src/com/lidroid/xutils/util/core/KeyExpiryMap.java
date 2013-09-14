@@ -40,7 +40,7 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
     }
 
     @Override
-    public Long get(Object key) {
+    public synchronized Long get(Object key) {
         if (this.containsKey(key)) {
             return super.get(key);
         } else {
@@ -49,7 +49,7 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
     }
 
     @Override
-    public Long put(K key, Long expiryTimestamp) {
+    public synchronized Long put(K key, Long expiryTimestamp) {
         if (this.containsKey(key)) {
             this.remove(key);
         }
@@ -57,7 +57,7 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public synchronized boolean containsKey(Object key) {
         boolean result = false;
         if (super.containsKey(key)) {
             if (System.currentTimeMillis() < super.get(key)) {
@@ -70,12 +70,12 @@ public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
     }
 
     @Override
-    public Long remove(Object key) {
+    public synchronized Long remove(Object key) {
         return super.remove(key);
     }
 
     @Override
-    public void clear() {
+    public synchronized void clear() {
         super.clear();
     }
 }
