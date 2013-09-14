@@ -100,9 +100,7 @@ public class DbFragment extends Fragment {
             List<Parent> list = db.findAll(
                     Selector.from(Parent.class)
                             .where(WhereBuilder.b("id", "<", 54)
-                                    .append("time", ">", calendar.getTime())
-                                    .appendOR("isVIP", "=", true)
-                            )
+                                    .append("time", ">", calendar.getTime()))
                             .orderBy("id")
                             .limit(10));
             temp += "find parent size:" + list.size() + "\n";
@@ -119,7 +117,9 @@ public class DbFragment extends Fragment {
             temp += "find by id:" + entity.toString() + "\n";
             resultText.setText(temp);
 
-            List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
+            List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class)
+                    .groupBy("name")
+                    .select("name", "count(name) as count"));
             temp += "group by result:" + dbModels.get(0).getDataMap() + "\n";
             resultText.setText(temp);
 
