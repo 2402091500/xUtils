@@ -25,49 +25,47 @@ public class CursorUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T getEntity(DbUtils db, Cursor cursor, Class<T> entityType, long findCacheSequence) {
+        if (db == null || cursor == null) return null;
+
         EntityTempCache.setSeq(findCacheSequence);
         try {
-            if (cursor != null) {
-                Table table = Table.get(entityType);
-                int idIndex = cursor.getColumnIndex(table.getId().getColumnName());
-                String idStr = cursor.getString(idIndex);
-                T entity = EntityTempCache.get(entityType, idStr);
-                if (entity == null) {
-                    entity = entityType.newInstance();
-                    EntityTempCache.put(entity, idStr);
-                } else {
-                    return entity;
-                }
-                int columnCount = cursor.getColumnCount();
-                for (int i = 0; i < columnCount; i++) {
-                    String columnName = cursor.getColumnName(i);
-                    Column column = table.columnMap.get(columnName);
-                    if (column != null) {
-                        if (column instanceof Foreign) {
-                            Foreign foreign = (Foreign) column;
-                            if (foreign.getFieldValue(entity) == null) {
-                                foreign.db = db;
-                                foreign.setValue2Entity(entity, cursor.getString(i));
-                            }
-                        } else {
-                            column.setValue2Entity(entity, cursor.getString(i));
-                        }
-                    } else if (columnName.equals(table.getId().getColumnName())) {
-                        table.getId().setValue2Entity(entity, cursor.getString(i));
-                    }
-                }
-
-                for (Column column : table.columnMap.values()) {
-                    if (column instanceof Finder) {
-                        Finder finder = (Finder) column;
-                        if (finder.getFieldValue(entity) == null) {
-                            finder.db = db;
-                            finder.setValue2Entity(entity, null);
-                        }
-                    }
-                }
-                return entity;
+            Table table = Table.get(entityType);
+            int idIndex = cursor.getColumnIndex(table.getId().getColumnName());
+            String idStr = cursor.getString(idIndex);
+            T entity = EntityTempCache.get(entityType, idStr);
+            if (entity == null) {
+                entity = entityType.newInstance();
+                EntityTempCache.put(entity, idStr);
             }
+            int columnCount = cursor.getColumnCount();
+            for (int i = 0; i < columnCount; i++) {
+                String columnName = cursor.getColumnName(i);
+                Column column = table.columnMap.get(columnName);
+                if (column != null) {
+                    if (column instanceof Foreign) {
+                        Foreign foreign = (Foreign) column;
+                        if (foreign.getFieldValue(entity) == null) {
+                            foreign.db = db;
+                            foreign.setValue2Entity(entity, cursor.getString(i));
+                        }
+                    } else {
+                        column.setValue2Entity(entity, cursor.getString(i));
+                    }
+                } else if (columnName.equals(table.getId().getColumnName())) {
+                    table.getId().setValue2Entity(entity, cursor.getString(i));
+                }
+            }
+
+            for (Column column : table.columnMap.values()) {
+                if (column instanceof Finder) {
+                    Finder finder = (Finder) column;
+                    if (finder.getFieldValue(entity) == null) {
+                        finder.db = db;
+                        finder.setValue2Entity(entity, null);
+                    }
+                }
+            }
+            return entity;
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
         }
