@@ -23,8 +23,8 @@ import android.graphics.drawable.TransitionDrawable;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
+import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
@@ -40,7 +40,7 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     @Override
     public void loadFailed(ImageView imageView, Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
+        BitmapCommonUtils.setBitmap2ImageView(imageView, bitmap);
     }
 
     private void fadeInDisplay(ImageView imageView, Bitmap bitmap) {
@@ -55,7 +55,7 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     private void animationDisplay(ImageView imageView, Bitmap bitmap, Animation animation) {
         animation.setStartTime(AnimationUtils.currentAnimationTimeMillis());
-        imageView.setImageBitmap(bitmap);
+        BitmapCommonUtils.setBitmap2ImageView(imageView, bitmap);
         imageView.startAnimation(animation);
     }
 }

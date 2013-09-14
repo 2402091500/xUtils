@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
+import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
@@ -187,8 +188,7 @@ public class BitmapUtils {
         bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
 
         if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-
+            BitmapCommonUtils.setBitmap2ImageView(imageView, bitmap);
         } else if (!bitmapLoadTaskExist(imageView, uri)) {
 
             final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, displayConfig);
@@ -357,10 +357,12 @@ public class BitmapUtils {
             }
 
             final ImageView imageView = this.getTargetImageView();
-            if (bitmap != null && imageView != null) {//显示图片
-                displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
-            } else if (imageView != null) {//显示获取错误图片
-                displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+            if (imageView != null) {
+                if (bitmap != null) {//显示图片
+                    displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
+                } else {//显示获取错误图片
+                    displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+                }
             }
         }
 

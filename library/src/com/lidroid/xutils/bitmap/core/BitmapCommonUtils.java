@@ -17,8 +17,11 @@ package com.lidroid.xutils.bitmap.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.StatFs;
+import android.widget.ImageView;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
@@ -65,6 +68,22 @@ public class BitmapCommonUtils {
             return -1;
         }
 
+    }
+
+    public static void setBitmap2ImageView(ImageView imageView, Bitmap bitmap) {
+        if (imageView == null || bitmap == null) return;
+
+        // recycle old bitmap
+        Drawable oldDrawable = imageView.getDrawable();
+        if (oldDrawable != null && oldDrawable instanceof BitmapDrawable) {
+            Bitmap oldBitmap = ((BitmapDrawable) oldDrawable).getBitmap();
+            if (oldBitmap != null && !oldBitmap.equals(bitmap) && !oldBitmap.isRecycled()) {
+                oldBitmap.recycle();
+                oldBitmap = null;
+            }
+        }
+
+        imageView.setImageBitmap(bitmap);
     }
 
 }
