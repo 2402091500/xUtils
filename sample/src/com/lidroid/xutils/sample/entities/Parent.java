@@ -1,4 +1,4 @@
-package com.lidroid.xutils.sample;
+package com.lidroid.xutils.sample.entities;
 
 import com.lidroid.xutils.db.annotation.Finder;
 
@@ -18,11 +18,9 @@ public class Parent extends EntityBase {
 
     private boolean isAdmin;
 
-    public boolean isVIP;
-
     private Date time;
 
-    private java.sql.Date time2;
+    private java.sql.Date date;
 
     //@Finder(valueColumn = "id",targetColumn = "parentId")
     //public FinderLazyLoader<Parent> parent;
@@ -47,12 +45,12 @@ public class Parent extends EntityBase {
         this.time = time;
     }
 
-    public java.sql.Date getTime2() {
-        return time2;
+    public java.sql.Date getDate() {
+        return date;
     }
 
-    public void setTime2(java.sql.Date time2) {
-        this.time2 = time2;
+    public void setDate(java.sql.Date date) {
+        this.date = date;
     }
 
     public String getEmail() {
@@ -70,9 +68,8 @@ public class Parent extends EntityBase {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", isAdmin=" + isAdmin +
-                ", isVIP=" + isVIP +
                 ", time=" + time +
-                ", time2=" + time2 +
+                ", date=" + date +
                 '}';
     }
 }

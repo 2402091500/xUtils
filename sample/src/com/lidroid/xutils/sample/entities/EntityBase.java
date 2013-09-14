@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.sample;
+package com.lidroid.xutils.sample.entities;
 
 /**
  * Author: wyouflf

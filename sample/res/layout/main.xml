@@ -4,21 +4,28 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
-    <TextView
-            android:id="@+id/textView"
+    <FrameLayout
+            android:id="@+id/realtabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1">
+    </FrameLayout>
+
+    <android.support.v4.app.FragmentTabHost
+            android:id="@+id/tabhost"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World, MyActivity"
-            />
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button" android:layout_gravity="left|center_vertical"/>
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView" android:layout_gravity="left|center_vertical"
-            android:src="@drawable/ic_launcher"/>
+            android:background="@drawable/tab_background">
+        <TabHost
+                android:id="@+id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+        </TabHost>
+        <FrameLayout
+                android:id="@+id/tabcontent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+        </FrameLayout>
+    </android.support.v4.app.FragmentTabHost>
 </LinearLayout>
 
