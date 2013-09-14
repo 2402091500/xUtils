@@ -56,8 +56,7 @@ public abstract class RequestCallBack<T> {
     public void onLoading(long total, long current) {
     }
 
-    public void onSuccess(T result) {
-    }
+    public abstract void onSuccess(T result);
 
     public void onFailure(HttpException error, String msg) {
     }
