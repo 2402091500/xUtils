@@ -77,8 +77,8 @@ public class BitmapCommonUtils {
         Drawable oldDrawable = imageView.getDrawable();
         if (oldDrawable != null && oldDrawable instanceof BitmapDrawable) {
             Bitmap oldBitmap = ((BitmapDrawable) oldDrawable).getBitmap();
-            if (oldBitmap != null && !oldBitmap.equals(bitmap) && !oldBitmap.isRecycled()) {
-                oldBitmap.recycle();
+            if (oldBitmap != null && !oldBitmap.equals(bitmap)) {// && !oldBitmap.isRecycled()) {
+                //oldBitmap.recycle(); // 可能回收其他地方在使用的图片
                 oldBitmap = null;
             }
         }
