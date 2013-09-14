@@ -36,6 +36,8 @@ public class CursorUtils {
             if (entity == null) {
                 entity = entityType.newInstance();
                 EntityTempCache.put(entity, idStr);
+            } else {
+                return entity;
             }
             int columnCount = cursor.getColumnCount();
             for (int i = 0; i < columnCount; i++) {
