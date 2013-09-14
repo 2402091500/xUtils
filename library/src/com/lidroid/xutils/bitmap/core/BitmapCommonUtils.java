@@ -19,7 +19,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.StatFs;
-
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
@@ -33,11 +32,11 @@ public class BitmapCommonUtils {
      * @param dirName 目录名称
      * @return
      */
-    public static File getDiskCacheDir(Context context, String dirName) {
+    public static String getDiskCacheDir(Context context, String dirName) {
         final String cachePath = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ?
                 context.getExternalCacheDir().getPath() : context.getCacheDir().getPath();
 
-        return new File(cachePath + File.separator + dirName);
+        return cachePath + File.separator + dirName;
     }
 
 

@@ -18,6 +18,7 @@ package com.lidroid.xutils.bitmap;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
@@ -71,8 +72,8 @@ public class BitmapGlobalConfig {
     }
 
     public String getDiskCachePath() {
-        if (diskCachePath == null) {
-            diskCachePath = BitmapCommonUtils.getDiskCacheDir(mContext, "xBitmapCache").getAbsolutePath();
+        if (TextUtils.isEmpty(diskCachePath)) {
+            diskCachePath = BitmapCommonUtils.getDiskCacheDir(mContext, "xBitmapCache");
         }
         return diskCachePath;
     }

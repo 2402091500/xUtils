@@ -9,6 +9,7 @@ import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
@@ -41,7 +42,7 @@ public class MyActivity extends Activity {
 
         ViewUtils.inject(this);
 
-        bitmapUtils = new BitmapUtils(this);
+        bitmapUtils = new BitmapUtils(this, BitmapCommonUtils.getDiskCacheDir(this, "test"));
     }
 
     BitmapUtils bitmapUtils;
