@@ -46,6 +46,7 @@ public class BitmapFragment extends Fragment {
         ViewUtils.inject(this, view);
 
         bitmapUtils = new BitmapUtils(this.getActivity());
+        bitmapUtils.configDefaultLoadingImage(R.drawable.ic_launcher);
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
 
