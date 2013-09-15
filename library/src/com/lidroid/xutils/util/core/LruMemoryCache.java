@@ -168,11 +168,6 @@ public class LruMemoryCache<K, V> {
             K key;
             V value;
             synchronized (this) {
-                if (size < 0 || (map.isEmpty() && size != 0)) {
-                    throw new IllegalStateException(getClass().getName()
-                            + ".sizeOf() is reporting inconsistent results!");
-                }
-
                 if (size <= maxSize || map.isEmpty()) {
                     break;
                 }

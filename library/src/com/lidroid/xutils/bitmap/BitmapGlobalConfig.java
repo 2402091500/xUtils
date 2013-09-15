@@ -46,7 +46,7 @@ public class BitmapGlobalConfig {
     private boolean diskCacheEnabled = true;
 
     private Downloader downloader;
-    private BitmapCache bitmapCache;
+    private static BitmapCache bitmapCache;
 
     private int threadPoolSize = 5;
     private boolean _dirty_params_bitmapLoadExecutor = true;

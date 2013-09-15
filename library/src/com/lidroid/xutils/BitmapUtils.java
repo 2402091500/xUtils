@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 
@@ -193,7 +192,7 @@ public class BitmapUtils {
         bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
 
         if (bitmap != null) {
-            BitmapCommonUtils.setBitmap2ImageView(imageView, bitmap);
+            imageView.setImageBitmap(bitmap);
         } else if (!bitmapLoadTaskExist(imageView, uri)) {
 
             final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, displayConfig);

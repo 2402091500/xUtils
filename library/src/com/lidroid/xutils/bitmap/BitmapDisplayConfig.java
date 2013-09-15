@@ -24,12 +24,14 @@ import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 
 public class BitmapDisplayConfig {
 
+    private static final Bitmap TRANSPARENT_BITMAP = Bitmap.createBitmap(50, 50, Bitmap.Config.ALPHA_8);
+
     private int bitmapMaxWidth = 0;
     private int bitmapMaxHeight = 0;
 
     private Animation animation;
 
-    private Bitmap loadingBitmap;
+    private Bitmap loadingBitmap = TRANSPARENT_BITMAP;
     private Bitmap loadFailedBitmap;
 
     private ImageLoadCallBack imageLoadCallBack;
