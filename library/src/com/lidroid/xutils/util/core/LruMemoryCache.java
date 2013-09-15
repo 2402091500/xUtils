@@ -250,8 +250,11 @@ public class LruMemoryCache<K, V> {
 
     private int safeSizeOf(K key, V value) {
         int result = sizeOf(key, value);
-        if (result < 0) {
-            throw new IllegalStateException("Negative size: " + key + "=" + value);
+        if (result <= 0) {
+            size = 0;
+            for (Map.Entry<K, V> entry : map.entrySet()) {
+                size += sizeOf(entry.getKey(), entry.getValue());
+            }
         }
         return result;
     }
