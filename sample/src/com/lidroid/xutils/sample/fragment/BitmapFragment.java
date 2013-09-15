@@ -1,6 +1,7 @@
 package com.lidroid.xutils.sample.fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -46,6 +47,7 @@ public class BitmapFragment extends Fragment {
 
         bitmapUtils = new BitmapUtils(this.getActivity());
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
+        bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
 
         // 滑动和快速滑动时不加载图片
         imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, false));

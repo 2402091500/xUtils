@@ -122,6 +122,11 @@ public class BitmapUtils {
         return this;
     }
 
+    public BitmapUtils configDefaultBitmapConfig(Bitmap.Config config) {
+        defaultDisplayConfig.setBitmapConfig(config);
+        return this;
+    }
+
     public BitmapUtils configDefaultDisplayConfig(BitmapDisplayConfig displayConfig) {
         defaultDisplayConfig = displayConfig;
         return this;

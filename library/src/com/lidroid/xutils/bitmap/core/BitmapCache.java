@@ -199,13 +199,21 @@ public class BitmapCache {
             if (config.isShowOriginal()) {
                 bitmap = BitmapFactory.decodeFileDescriptor(bitmapMeta.inputStream.getFD());
             } else {
-                bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(bitmapMeta.inputStream.getFD(), config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+                bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
+                        bitmapMeta.inputStream.getFD(),
+                        config.getBitmapMaxWidth(),
+                        config.getBitmapMaxHeight(),
+                        config.getBitmapConfig());
             }
         } else if (bitmapMeta.data != null) {
             if (config.isShowOriginal()) {
                 bitmap = BitmapFactory.decodeByteArray(bitmapMeta.data, 0, bitmapMeta.data.length);
             } else {
-                bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(bitmapMeta.data, config.getBitmapMaxWidth(), config.getBitmapMaxHeight());
+                bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(
+                        bitmapMeta.data,
+                        config.getBitmapMaxWidth(),
+                        config.getBitmapMaxHeight(),
+                        config.getBitmapConfig());
             }
         } else {
             return null;
@@ -262,12 +270,14 @@ public class BitmapCache {
                     if (snapshot != null) {
                         Bitmap bitmap = null;
                         if (config.isShowOriginal()) {
-                            bitmap = BitmapFactory.decodeFileDescriptor(snapshot.getInputStream(DISK_CACHE_INDEX).getFD());
+                            bitmap = BitmapFactory.decodeFileDescriptor(
+                                    snapshot.getInputStream(DISK_CACHE_INDEX).getFD());
                         } else {
                             bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
                                     snapshot.getInputStream(DISK_CACHE_INDEX).getFD(),
                                     config.getBitmapMaxWidth(),
-                                    config.getBitmapMaxHeight());
+                                    config.getBitmapMaxHeight(),
+                                    config.getBitmapConfig());
                         }
 
                         // add to memory cache

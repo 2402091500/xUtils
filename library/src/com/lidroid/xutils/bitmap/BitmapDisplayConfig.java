@@ -36,6 +36,8 @@ public class BitmapDisplayConfig {
 
     private boolean showOriginal = false;
 
+    private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_4444;
+
     private Context mContext;
 
     public BitmapDisplayConfig(Context context) {
@@ -109,6 +111,14 @@ public class BitmapDisplayConfig {
 
     public void setShowOriginal(boolean showOriginal) {
         this.showOriginal = showOriginal;
+    }
+
+    public Bitmap.Config getBitmapConfig() {
+        return bitmapConfig;
+    }
+
+    public void setBitmapConfig(Bitmap.Config bitmapConfig) {
+        this.bitmapConfig = bitmapConfig;
     }
 
     @Override
