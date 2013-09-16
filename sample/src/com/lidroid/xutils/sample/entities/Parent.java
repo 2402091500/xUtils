@@ -23,7 +23,7 @@ public class Parent extends EntityBase {
     private java.sql.Date date;
 
     //@Finder(valueColumn = "id",targetColumn = "parentId")
-    //public FinderLazyLoader<Parent> parent;
+    //public FinderLazyLoader<Parent> parent; // 关联对象多时建议使用这种方式，延迟加载效率较高。
     //@Finder(valueColumn = "id",targetColumn = "parentId")
     //public Parent parent;
     @Finder(valueColumn = "id", targetColumn = "parentId")

@@ -42,13 +42,18 @@ public class BitmapFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.bitmap_fragment, container, false);
-        ViewUtils.inject(this, view);
+        View view = inflater.inflate(R.layout.bitmap_fragment, container, false); // 加载fragment布局
+        ViewUtils.inject(this, view); //注入view和事件
 
         bitmapUtils = new BitmapUtils(this.getActivity());
         bitmapUtils.configDefaultLoadingImage(R.drawable.ic_launcher);
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
+
+        //bitmapUtils.configDefaultBitmapMaxWidth(200);
+        //bitmapUtils.configDefaultBitmapMaxHeight(200);
+
+        ////bitmapUtils.configDefaultShowOriginal(true);// 显示原始图片，不压缩。
 
         // 滑动和快速滑动时不加载图片
         imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, false));
@@ -56,7 +61,7 @@ public class BitmapFragment extends Fragment {
         imageListView.setAdapter(imageListAdapter);
 
         // 加载url请求返回的图片连接给listview
-        // 这里只是简单的示例，图片较多时，最好上拉加载更多...
+        // 这里只是简单的示例，并非最贱实践，图片较多时，最好上拉加载更多...
         for (String url : imgSites) {
             loadImgList(url);
         }
@@ -116,6 +121,7 @@ public class BitmapFragment extends Fragment {
                 view = new ImageView(this.context);
             }
             bitmapUtils.display((ImageView) view, imgSrcList.get(position));
+            //bitmapUtils.display((ImageView) view, imgSrcList.get(position), displayConfig);
             return view;
         }
     }
