@@ -56,7 +56,7 @@ public class BitmapFragment extends Fragment {
         ////bitmapUtils.configDefaultShowOriginal(true);// 显示原始图片，不压缩。
 
         // 滑动和快速滑动时不加载图片
-        imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, false));
+        imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, true, true));
         imageListAdapter = new ImageListAdapter(this.getActivity());
         imageListView.setAdapter(imageListAdapter);
 

@@ -250,6 +250,9 @@ public class BitmapUtils {
 
     public void resumeTasks() {
         pauseTask = false;
+        synchronized (pauseTaskLock) {
+            pauseTaskLock.notifyAll();
+        }
     }
 
     public void pauseTasks() {
