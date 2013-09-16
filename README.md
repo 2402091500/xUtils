@@ -247,7 +247,4 @@ LogUtils.d("wyouflf");
 * Email： <wyouflf@qq.com>, <wyouflf@gmail.com>
 * 有任何建议都可以给我发邮件, 你也可以加入这个QQ群：330445659, 技术交流，idea分享 *_*
 
-# 关于Afinal
-* <https://github.com/yangfuhai/afinal>
-
 
