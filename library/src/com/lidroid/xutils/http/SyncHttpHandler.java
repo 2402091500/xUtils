@@ -16,7 +16,6 @@
 package com.lidroid.xutils.http;
 
 import android.text.TextUtils;
-
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
@@ -25,7 +24,6 @@ import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import com.lidroid.xutils.util.OtherUtils;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -43,7 +41,7 @@ public class SyncHttpHandler {
 
     private int retriedTimes = 0;
 
-    private String charset; // 文本返回内容的默认charset
+    private String charset; // The default charset of response header info.
 
     private DownloadRedirectHandler downloadRedirectHandler;
 
@@ -57,7 +55,7 @@ public class SyncHttpHandler {
         this.charset = charset;
     }
 
-    private String _getRequestUrl; // if not get method, it will be null.
+    private String _getMethodRequestUrl; // If current request not http "get" method, it will be null.
     private long expiry = HttpGetCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
@@ -72,13 +70,13 @@ public class SyncHttpHandler {
             IOException exception = null;
             try {
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
-                    _getRequestUrl = request.getURI().toString();
+                    _getMethodRequestUrl = request.getURI().toString();
                 } else {
-                    _getRequestUrl = null;
+                    _getMethodRequestUrl = null;
                 }
-                if (_getRequestUrl != null) {
-                    String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
-                    if (result != null) { // 未过期的返回字符串的get请求直接返回结果
+                if (_getMethodRequestUrl != null) {
+                    String result = HttpUtils.sHttpGetCache.get(_getMethodRequestUrl);
+                    if (result != null) {
                         return new ResponseStream(result);
                     }
                 }
@@ -115,11 +113,11 @@ public class SyncHttpHandler {
         int statusCode = status.getStatusCode();
         if (statusCode < 300) {
 
-            // 自适应charset
+            // Set charset from response header if it's exist.
             String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
             charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
-            return new ResponseStream(response, charset, _getRequestUrl, expiry);
+            return new ResponseStream(response, charset, _getMethodRequestUrl, expiry);
         } else if (statusCode == 301 || statusCode == 302) {
             if (downloadRedirectHandler == null) {
                 downloadRedirectHandler = new DefaultDownloadRedirectHandler();

@@ -26,11 +26,9 @@ import java.io.File;
 public class BitmapCommonUtils {
 
     /**
-     * 获取可以使用的缓存目录
-     *
      * @param context
-     * @param dirName 目录名称
-     * @return
+     * @param dirName Only the folder name, not contain full path.
+     * @return app_cache_path/dirName
      */
     public static String getDiskCacheDir(Context context, String dirName) {
         final String cachePath = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ?
@@ -39,27 +37,14 @@ public class BitmapCommonUtils {
         return cachePath + File.separator + dirName;
     }
 
-
-    /**
-     * 获取bitmap的字节大小
-     *
-     * @param bitmap
-     * @return
-     */
     public static int getBitmapSize(Bitmap bitmap) {
         if (bitmap == null) return 0;
         return bitmap.getRowBytes() * bitmap.getHeight();
     }
 
-    /**
-     * 获取文件路径空间大小
-     *
-     * @param path
-     * @return
-     */
-    public static long getAvailableSpace(File path) {
+    public static long getAvailableSpace(File dir) {
         try {
-            final StatFs stats = new StatFs(path.getPath());
+            final StatFs stats = new StatFs(dir.getPath());
             return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);

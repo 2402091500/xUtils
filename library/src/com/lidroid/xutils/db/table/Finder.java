@@ -15,9 +15,6 @@ import java.util.List;
  */
 public class Finder extends Column {
 
-    /**
-     * 被 CursorUtils.getEntity 或 SqlInfoBuilder.entity2KeyValueList 赋值
-     */
     public DbUtils db;
 
     private String valueColumnName;

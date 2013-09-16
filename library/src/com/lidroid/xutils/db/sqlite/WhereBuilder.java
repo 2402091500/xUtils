@@ -16,7 +16,6 @@
 package com.lidroid.xutils.db.sqlite;
 
 import android.text.TextUtils;
-
 import com.lidroid.xutils.db.table.ColumnUtils;
 
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public class WhereBuilder {
             sqlSb.append("NULL");
         } else if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
             String valueStr = value.toString();
-            if (valueStr.indexOf('\'') != -1) { // 单引号转义
+            if (valueStr.indexOf('\'') != -1) { // convert single quotations
                 valueStr = valueStr.replace("'", "''");
             }
             sqlSb.append("'" + valueStr + "'");

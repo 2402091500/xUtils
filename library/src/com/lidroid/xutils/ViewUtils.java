@@ -40,6 +40,12 @@ public class ViewUtils {
 
     private static ConcurrentHashMap<Class<? extends Annotation>, ViewCustomEventListener> annotationType_viewCustomEventListener_map;
 
+    /**
+     * register Custom Annotation
+     *
+     * @param annotationType The type of custom annotation must be annotated by @EventBase.
+     * @param listener
+     */
     public static void registerCustomAnnotation(Class<? extends Annotation> annotationType, ViewCustomEventListener listener) {
         if (annotationType_viewCustomEventListener_map == null) {
             annotationType_viewCustomEventListener_map = new ConcurrentHashMap<Class<? extends Annotation>, ViewCustomEventListener>();

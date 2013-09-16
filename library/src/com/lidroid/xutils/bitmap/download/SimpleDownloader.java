@@ -28,11 +28,11 @@ import java.net.URLConnection;
 public class SimpleDownloader implements Downloader {
 
     /**
-     * 把网络或本地图片下载到文件的 outputStream
+     * Download bitmap to outputStream by uri.
      *
      * @param uri
      * @param outputStream
-     * @return expiryTimestamp 图片过期时间点； 小于零，下载失败。
+     * @return The expiry time stamp or -1 if failed to download.
      */
     @Override
     public long downloadToStream(String uri, OutputStream outputStream) {
@@ -72,21 +72,11 @@ public class SimpleDownloader implements Downloader {
 
     private long defaultExpiry;
 
-    /**
-     * 设置图片过期时长
-     *
-     * @param expiry
-     */
     @Override
     public void setDefaultExpiry(long expiry) {
         this.defaultExpiry = expiry;
     }
 
-    /**
-     * 获取图片过期时长
-     *
-     * @return
-     */
     @Override
     public long getDefaultExpiry() {
         return this.defaultExpiry;

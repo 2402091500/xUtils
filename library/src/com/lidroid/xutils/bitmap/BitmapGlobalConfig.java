@@ -58,7 +58,7 @@ public class BitmapGlobalConfig {
 
     /**
      * @param context
-     * @param diskCachePath if null, use default appCacheDir+"/xBitmapCache"
+     * @param diskCachePath If null, use default appCacheDir+"/xBitmapCache"
      */
     public BitmapGlobalConfig(Context context, String diskCachePath) {
         this.mContext = context;
@@ -118,7 +118,7 @@ public class BitmapGlobalConfig {
                 bitmapCache.setMemoryCacheSize(this.memoryCacheSize);
             }
         } else {
-            this.setMemCacheSizePercent(0.3f);//设置默认的内存缓存大小
+            this.setMemCacheSizePercent(0.3f);// Set default memory cache size.
         }
     }
 

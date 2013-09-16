@@ -24,8 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 构造insert，update，delete，create语句。
- * 构造select，请使用Selector。
+ * Build "insert", "replace",，"update", "delete" and "create" sql.
  */
 public class SqlInfoBuilder {
 
@@ -159,7 +158,7 @@ public class SqlInfoBuilder {
         Id id = table.getId();
         Object idValue = id.getColumnValue(entity);
 
-        if (null == idValue) {//主键值不能为null，否则不能更新
+        if (null == idValue) {
             throw new DbException("this entity[" + entity.getClass() + "]'s id value is null");
         }
 
@@ -293,8 +292,7 @@ public class SqlInfoBuilder {
 
         if (id != null) {
             Object idValue = id.getColumnValue(entity);
-            if (idValue != null && !id.isAutoIncreaseType()) {
-                //用了非自增长,添加id
+            if (idValue != null && !id.isAutoIncreaseType()) { // If the id not auto increase, insert it to table.
                 KeyValue kv = new KeyValue(table.getId().getColumnName(), idValue);
                 keyValueList.add(kv);
             }

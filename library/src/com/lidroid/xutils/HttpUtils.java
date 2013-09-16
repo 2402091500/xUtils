@@ -120,16 +120,15 @@ public class HttpUtils {
 
     // ************************************    default settings & fields ****************************
 
-    // 文本返回内容的默认charset
     private String defaultResponseTextCharset = HTTP.UTF_8;
 
-    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime(); // httpGetCache过期时间
+    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
 
-    private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 默认15秒超时
+    private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 15s
 
-    private final static int DEFAULT_RETRY_TIMES = 5;  // 默认错误重试次数
+    private final static int DEFAULT_RETRY_TIMES = 5;
 
-    private final static int HTTP_THREAD_POOL_SIZE = 3; // http线程池数量
+    private final static int HTTP_THREAD_POOL_SIZE = 3;
 
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
@@ -152,11 +151,6 @@ public class HttpUtils {
 
     // ***************************************** config *******************************************
 
-    /**
-     * 文本返回内容的默认charset，如果response的Content-Type中包含charset则使用Content-Type中的charset。
-     *
-     * @param charSet
-     */
     public HttpUtils configDefaultResponseTextCharset(String charSet) {
         if (!TextUtils.isEmpty(charSet)) {
             this.defaultResponseTextCharset = charSet;

@@ -16,7 +16,6 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
-import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.util.LogUtils;
@@ -34,7 +33,6 @@ public class TableUtils {
     public static String getTableName(Class<?> entityType) {
         Table table = entityType.getAnnotation(Table.class);
         if (table == null || TextUtils.isEmpty(table.name())) {
-            //当没有注解的时候默认用类的名称作为表名,并把点（.）替换为下划线(_)
             return entityType.getName().replace('.', '_');
         }
         return table.name();

@@ -47,7 +47,7 @@ public class BitmapDisplayConfig {
     }
 
     public int getBitmapMaxWidth() {
-        if (bitmapMaxWidth == 0) {//图片的显示最大尺寸（为屏幕的大小,默认为屏幕宽度的1/2）
+        if (bitmapMaxWidth == 0) {// default max width = screen_width/2
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
             bitmapMaxWidth = (int) Math.floor(displayMetrics.widthPixels / 2);
             bitmapMaxHeight = bitmapMaxHeight == 0 ? bitmapMaxWidth : bitmapMaxHeight;
@@ -60,7 +60,7 @@ public class BitmapDisplayConfig {
     }
 
     public int getBitmapMaxHeight() {
-        if (bitmapMaxHeight == 0) {//图片的显示最大尺寸（为屏幕的大小,默认为屏幕宽度的1/2）
+        if (bitmapMaxHeight == 0) {// default max height = screen_width/2
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
             bitmapMaxHeight = (int) Math.floor(displayMetrics.widthPixels / 2);
             bitmapMaxWidth = bitmapMaxWidth == 0 ? bitmapMaxHeight : bitmapMaxWidth;

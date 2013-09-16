@@ -18,7 +18,6 @@ package com.lidroid.xutils.http.client.multipart;
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;
@@ -53,7 +52,7 @@ public class MultipartEntity implements HttpEntity, UploadEntity {
 
         /**
          * @param forceUpdateUI
-         * @return 是否继续上传
+         * @return Whether continue.
          */
         public boolean doCallBack(boolean forceUpdateUI) {
             if (callBackHandler != null) {

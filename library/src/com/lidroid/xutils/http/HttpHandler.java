@@ -55,11 +55,11 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private final RequestCallBack callback;
 
     private int retriedTimes = 0;
-    private String fileSavePath = null; // 下载的路径
-    private boolean isDownloadingFile; // fileSavePath != null;
-    private boolean autoResume = false; // 是否断点续传
-    private boolean autoRename = false; // 是否自动重命名
-    private String charset; // 文本返回内容的默认charset
+    private String fileSavePath = null;
+    private boolean isDownloadingFile;
+    private boolean autoResume = false; // Whether the downloading could continue from the point of interruption.
+    private boolean autoRename = false; // Whether rename the file by response header info when the download completely.
+    private String charset; // The default charset of response header info.
 
     public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack callback) {
         this.client = client;
@@ -100,7 +100,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 }
                 if (_getRequestUrl != null) {
                     String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
-                    if (result != null) { // 未过期的返回字符串的get请求直接返回结果
+                    if (result != null) {
                         return result;
                     }
                 }
@@ -209,7 +209,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                     responseBody = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
                 } else {
 
-                    // 自适应charset
+                    // Set charset from response header info if it's exist.
                     String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
                     charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
@@ -237,7 +237,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private boolean mStop = false;
 
     /**
-     * 停止下载任务
+     * stop request task.
      */
     @Override
     public void stop() {
@@ -261,7 +261,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         if (mStop) {
             return !mStop;
         }
-        if (callback != null && callback.isProgress()) {
+        if (callback != null) {
             if (forceUpdateUI) {
                 publishProgress(UPDATE_LOADING, total, current);
             } else {

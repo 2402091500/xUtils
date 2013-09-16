@@ -136,12 +136,6 @@ public class BitmapUtils {
         return this;
     }
 
-    /**
-     * 设置默认的缓存过期时间。如果http请求返回了过期时间，使用请求返回的时间。
-     *
-     * @param defaultExpiry
-     * @return
-     */
     public BitmapUtils configDefaultCacheExpiry(long defaultExpiry) {
         globalConfig.setDefaultCacheExpiry(defaultExpiry);
         return this;
@@ -291,7 +285,6 @@ public class BitmapUtils {
             if (TextUtils.isEmpty(oldUri) || !oldUri.equals(uri)) {
                 oldLoadTask.cancel(true);
             } else {
-                // 同一个线程已经在执行
                 return true;
             }
         }
@@ -340,12 +333,12 @@ public class BitmapUtils {
                 }
             }
 
-            // 从磁盘缓存获取图片
+            // get cache from disk cache
             if (!pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri, displayConfig);
             }
 
-            // 下载图片
+            // download image
             if (bitmap == null && !pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().downloadBitmap(uri, displayConfig);
             }
@@ -353,7 +346,6 @@ public class BitmapUtils {
             return bitmap;
         }
 
-        // 获取图片任务完成
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (isCancelled() || pauseTask) {
@@ -362,9 +354,9 @@ public class BitmapUtils {
 
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
-                if (bitmap != null) {//显示图片
+                if (bitmap != null) {
                     displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
-                } else {//显示获取错误图片
+                } else {
                     displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
                 }
             }
@@ -378,11 +370,6 @@ public class BitmapUtils {
             }
         }
 
-        /**
-         * 获取线程匹配的imageView,防止出现闪动的现象
-         *
-         * @return
-         */
         private ImageView getTargetImageView() {
             final ImageView imageView = targetImageViewReference.get();
             final BitmapLoadTask bitmapWorkerTask = getBitmapTaskFromImageView(imageView);

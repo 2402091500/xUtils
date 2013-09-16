@@ -32,12 +32,11 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class RetryHandler implements HttpRequestRetryHandler {
-    private static final int RETRY_SLEEP_INTERVAL = 1000;
 
-    //网络异常，继续
+    private static final int RETRY_SLEEP_INTERVAL = 500;
+
     private static HashSet<Class<?>> exceptionWhiteList = new HashSet<Class<?>>();
 
-    //用户异常，不继续（如，用户中断线程）
     private static HashSet<Class<?>> exceptionBlackList = new HashSet<Class<?>>();
 
     static {
@@ -63,10 +62,8 @@ public class RetryHandler implements HttpRequestRetryHandler {
         boolean sent = (b != null && b.booleanValue());
 
         if (retriedTimes > maxRetries) {
-            // 尝试次数超过用户定义的测试，默认5次
             retry = false;
         } else if (exceptionBlackList.contains(exception.getClass())) {
-            // 线程被用户中断，则不继续尝试
             retry = false;
         } else if (exceptionWhiteList.contains(exception.getClass())) {
             retry = true;
@@ -80,10 +77,10 @@ public class RetryHandler implements HttpRequestRetryHandler {
                 if (currRequest != null) {
                     if (currRequest instanceof HttpRequestBase) {
                         HttpRequestBase requestBase = (HttpRequestBase) currRequest;
-                        retry = requestBase != null && "GET".equals(requestBase.getMethod());
+                        retry = "GET".equals(requestBase.getMethod());
                     } else if (currRequest instanceof RequestWrapper) {
                         RequestWrapper requestWrapper = (RequestWrapper) currRequest;
-                        retry = requestWrapper != null && "GET".equals(requestWrapper.getMethod());
+                        retry = "GET".equals(requestWrapper.getMethod());
                     }
                 } else {
                     retry = false;
@@ -96,8 +93,7 @@ public class RetryHandler implements HttpRequestRetryHandler {
         }
 
         if (retry) {
-            //休眠1秒钟后再继续尝试
-            SystemClock.sleep(RETRY_SLEEP_INTERVAL);
+            SystemClock.sleep(RETRY_SLEEP_INTERVAL); // sleep a while and retry http request again.
         } else {
             LogUtils.e(exception.getMessage(), exception);
         }

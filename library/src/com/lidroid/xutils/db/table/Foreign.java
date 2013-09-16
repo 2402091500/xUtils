@@ -25,9 +25,6 @@ import java.util.List;
 
 public class Foreign extends Column {
 
-    /**
-     * 被 CursorUtils.getEntity 或 SqlInfoBuilder.entity2KeyValueList 赋值
-     */
     public DbUtils db;
 
     private String foreignColumnName;
@@ -163,7 +160,7 @@ public class Foreign extends Column {
     }
 
     /**
-     * 外键没有默认值，返回null
+     * It always return null.
      *
      * @return null
      */

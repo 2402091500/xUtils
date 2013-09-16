@@ -20,39 +20,15 @@ import com.lidroid.xutils.exception.HttpException;
 
 public abstract class RequestCallBack<T> {
 
-    private boolean progress = true;
-    private int rate = 1000 * 1;//每秒
-
-
-    public boolean isProgress() {
-        return progress;
-    }
+    private int rate = 1000 * 1;
 
     public int getRate() {
         return rate;
     }
 
-    /**
-     * 设置进度,而且只有设置了这个了以后，onLoading才能有效。
-     *
-     * @param progress 是否启用进度显示
-     * @param rate     进度更新频率
-     */
-    public RequestCallBack<T> progress(boolean progress, int rate) {
-        this.progress = progress;
-        this.rate = rate;
-        return this;
-    }
-
     public void onStart() {
     }
 
-    /**
-     * onLoading方法有效progress
-     *
-     * @param total
-     * @param current
-     */
     public void onLoading(long total, long current) {
     }
 

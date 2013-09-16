@@ -20,26 +20,15 @@ import java.io.OutputStream;
 public interface Downloader {
 
     /**
-     * 把网络或本地图片下载到文件的 outputStream
+     * Download bitmap to outputStream by uri.
      *
      * @param uri
      * @param outputStream
-     * @return 图片过期时间点； 小于零，下载失败。
+     * @return The expiry time stamp or -1 if failed to download.
      */
     long downloadToStream(String uri, OutputStream outputStream);
 
-
-    /**
-     * 设置图片过期时长
-     *
-     * @param expiry
-     */
     void setDefaultExpiry(long expiry);
 
-    /**
-     * 获取图片过期时长
-     *
-     * @return
-     */
     long getDefaultExpiry();
 }
