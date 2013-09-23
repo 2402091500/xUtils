@@ -148,7 +148,7 @@ params.addBodyParameter("name", "value");
 // 加入文件参数后默认使用MultipartEntity（"multipart/form-data"），
 // 如需"multipart/related"，xUtils中提供的MultipartEntity支持设置subType为"related"。
 // 使用params.setBodyEntity(httpEntity)可设置更多类型的HttpEntity（如：
-// MultipartEntity,BodyParamsEntity,UploadFileEntity,UploadInputStreamEntity,StringEntity）。
+// MultipartEntity,BodyParamsEntity,FileUploadEntity,InputStreamUploadEntity,StringEntity）。
 params.addBodyParameter("file", new File("path"));
 ...
 
