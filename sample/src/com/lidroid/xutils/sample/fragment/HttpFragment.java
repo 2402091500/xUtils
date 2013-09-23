@@ -15,7 +15,9 @@ import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
+import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.sample.R;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
@@ -199,4 +201,19 @@ public class HttpFragment extends Fragment {
                 });
     }
 
+    // 同步请求 必须在异步块儿中执行
+    private String testGetSync() {
+        RequestParams params = new RequestParams();
+        params.addQueryStringParameter("wd", "lidroid");
+
+        HttpUtils http = new HttpUtils();
+        http.configCurrRequestExpiry(1000 * 10);
+        try {
+            ResponseStream responseStream = http.sendSync(HttpRequest.HttpMethod.GET, "http://www.baidu.com/s", params);
+            return responseStream.readString();
+        } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return null;
+    }
 }
