@@ -45,7 +45,7 @@ public class DbFragment extends Fragment {
     private TextView resultText;
 
     @OnClick(R.id.db_test_btn)
-    public void download(View view) {
+    public void testDb(View view) {
 
         String temp = "";
 
