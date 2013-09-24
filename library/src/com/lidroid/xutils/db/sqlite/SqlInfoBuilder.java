@@ -67,7 +67,7 @@ public class SqlInfoBuilder {
 
     public static SqlInfo buildReplaceSqlInfo(DbUtils db, Object entity) throws DbException {
 
-        List<KeyValue> keyValueList = entity2KeyValueListForReplace(db, entity);
+        List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
         if (keyValueList.size() == 0) return null;
 
         SqlInfo result = new SqlInfo();
@@ -212,10 +212,10 @@ public class SqlInfoBuilder {
         sqlBuffer.append(table.getTableName());
         sqlBuffer.append(" ( ");
 
-        if (id.isAutoIncreaseType()) {
+        if (id.isAutoIncrement()) {
             sqlBuffer.append("\"").append(id.getColumnName()).append("\"  ").append("INTEGER PRIMARY KEY AUTOINCREMENT,");
         } else {
-            sqlBuffer.append("\"").append(id.getColumnName()).append("\"  ").append("TEXT PRIMARY KEY,");
+            sqlBuffer.append("\"").append(id.getColumnName()).append("\"  ").append(id.getColumnDbType()).append(" PRIMARY KEY,");
         }
 
         Collection<Column> columns = table.columnMap.values();
@@ -254,7 +254,7 @@ public class SqlInfoBuilder {
         return kv;
     }
 
-    private static List<KeyValue> entity2KeyValueListForReplace(DbUtils db, Object entity) {
+    public static List<KeyValue> entity2KeyValueList(DbUtils db, Object entity) {
 
         List<KeyValue> keyValueList = new ArrayList<KeyValue>();
 
@@ -263,39 +263,8 @@ public class SqlInfoBuilder {
         Object idValue = TableUtils.getIdValue(entity);
 
         if (id != null && idValue != null) {
-            KeyValue kv = new KeyValue(table.getId().getColumnName(), idValue);
+            KeyValue kv = new KeyValue(id.getColumnName(), idValue);
             keyValueList.add(kv);
-        }
-
-        Collection<Column> columns = table.columnMap.values();
-        for (Column column : columns) {
-            if (column instanceof Finder) {
-                ((Finder) column).db = db;
-            } else if (column instanceof Foreign) {
-                ((Foreign) column).db = db;
-            }
-            KeyValue kv = column2KeyValue(entity, column);
-            if (kv != null) {
-                keyValueList.add(kv);
-            }
-        }
-
-        return keyValueList;
-    }
-
-    public static List<KeyValue> entity2KeyValueList(DbUtils db, Object entity) {
-
-        List<KeyValue> keyValueList = new ArrayList<KeyValue>();
-
-        Table table = Table.get(entity.getClass());
-        Id id = table.getId();
-
-        if (id != null) {
-            Object idValue = id.getColumnValue(entity);
-            if (idValue != null && !id.isAutoIncreaseType()) { // If the id not auto increase, insert it to table.
-                KeyValue kv = new KeyValue(table.getId().getColumnName(), idValue);
-                keyValueList.add(kv);
-            }
         }
 
         Collection<Column> columns = table.columnMap.values();

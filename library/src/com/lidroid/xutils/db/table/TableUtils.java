@@ -179,7 +179,8 @@ public class TableUtils {
                 return null;
             }
         } catch (Exception e) {
-            return null;
+            LogUtils.e(e.getMessage(), e);
         }
+        return null;
     }
 }

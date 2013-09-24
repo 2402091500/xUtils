@@ -15,6 +15,8 @@
 
 package com.lidroid.xutils.db.table;
 
+import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+
 import java.lang.reflect.Field;
 
 public class Id extends Column {
@@ -23,7 +25,10 @@ public class Id extends Column {
         super(entityType, field);
     }
 
-    public boolean isAutoIncreaseType() {
+    public boolean isAutoIncrement() {
+        if (this.getColumnField().getAnnotation(NoAutoIncrement.class) != null) {
+            return false;
+        }
         Class idType = this.getColumnField().getType();
         return idType.equals(int.class) ||
                 idType.equals(Integer.class) ||
