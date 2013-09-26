@@ -108,6 +108,15 @@ public class DbUtils {
         return getInstance(config);
     }
 
+    public static DbUtils create(Context context, String sdCardPath, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) throws DbException {
+        DaoConfig config = new DaoConfig(context);
+        config.setSdCardPath(sdCardPath);
+        config.setDbName(dbName);
+        config.setDbVersion(dbVersion);
+        config.setDbUpgradeListener(dbUpgradeListener);
+        return getInstance(config);
+    }
+
     public static DbUtils create(DaoConfig daoConfig) throws DbException {
         return getInstance(daoConfig);
     }
