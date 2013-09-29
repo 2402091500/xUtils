@@ -99,8 +99,8 @@ public class DbFragment extends Fragment {
 
             List<Parent> list = db.findAll(
                     Selector.from(Parent.class)
-                            .where(WhereBuilder.b("id", "<", 54)
-                                    .append("time", ">", calendar.getTime()))
+                            .where("id", "<", 54)
+                            .and("time", ">", calendar.getTime())
                             .orderBy("id")
                             .limit(10));
             temp += "find parent size:" + list.size() + "\n";
