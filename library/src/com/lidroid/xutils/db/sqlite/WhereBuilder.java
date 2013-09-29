@@ -110,6 +110,8 @@ public class WhereBuilder {
                 sqlSb.append(columnName).append(" IS NULL");
             } else if ("<>".equals(op)) {
                 sqlSb.append(columnName).append(" IS NOT NULL");
+            } else {
+                sqlSb.append(columnName).append(" " + op + " NULL");
             }
         } else {
             sqlSb.append(columnName).append(" " + op + " ");
