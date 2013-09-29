@@ -49,6 +49,21 @@ public class Selector {
         return this;
     }
 
+    public Selector where(String columnName, String op, Object value) {
+        this.whereBuilder = WhereBuilder.b(columnName, op, value);
+        return this;
+    }
+
+    public Selector and(String columnName, String op, Object value) {
+        this.whereBuilder.append(columnName, op, value);
+        return this;
+    }
+
+    public Selector or(String columnName, String op, Object value) {
+        this.whereBuilder.appendOR(columnName, op, value);
+        return this;
+    }
+
     public DbModelSelector groupBy(String columnName) {
         return new DbModelSelector(this, columnName);
     }

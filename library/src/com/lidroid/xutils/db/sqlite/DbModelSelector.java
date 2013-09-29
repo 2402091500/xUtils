@@ -53,6 +53,21 @@ public class DbModelSelector {
         return this;
     }
 
+    public DbModelSelector where(String columnName, String op, Object value) {
+        selector.where(columnName, op, value);
+        return this;
+    }
+
+    public DbModelSelector and(String columnName, String op, Object value) {
+        selector.and(columnName, op, value);
+        return this;
+    }
+
+    public DbModelSelector or(String columnName, String op, Object value) {
+        selector.or(columnName, op, value);
+        return this;
+    }
+
     public DbModelSelector groupBy(String columnName) {
         this.groupByColumnName = columnName;
         return this;
