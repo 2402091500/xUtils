@@ -50,11 +50,11 @@ public class DbUtils {
 
     private DbUtils(DaoConfig config) throws DbException {
         if (config == null) {
-            throw new RuntimeException("daoConfig is null");
+            throw new IllegalArgumentException("daoConfig may not be null");
         }
 
         if (config.getContext() == null) {
-            throw new RuntimeException("android context is null");
+            throw new IllegalArgumentException("context mey not be null");
         }
 
         String sdCardPath = config.getSdCardPath();
