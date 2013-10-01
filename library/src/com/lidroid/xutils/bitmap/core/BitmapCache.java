@@ -241,7 +241,7 @@ public class BitmapCache {
     }
 
     /**
-     * Get from memory cache.
+     * Get the bitmap from memory cache.
      *
      * @param uri    Unique identifier for which item to get
      * @param config
@@ -257,7 +257,20 @@ public class BitmapCache {
     }
 
     /**
-     * 获取硬盘缓存
+     * Get the bitmap file from disk cache.
+     *
+     * @param uri Unique identifier for which item to get
+     * @return The file if found in cache.
+     */
+    public File getBitmapFileFromDiskCache(String uri) {
+        if (mDiskLruCache != null) {
+            return mDiskLruCache.getCacheFile(uri, DISK_CACHE_INDEX);
+        }
+        return null;
+    }
+
+    /**
+     * Get the bitmap from disk cache.
      *
      * @param uri
      * @param config

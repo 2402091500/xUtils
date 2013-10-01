@@ -31,6 +31,7 @@ import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class BitmapUtils {
@@ -246,6 +247,10 @@ public class BitmapUtils {
 
     public void closeCache() {
         globalConfig.closeCache();
+    }
+
+    public File getBitmapFileFromDiskCache(String uri) {
+        return globalConfig.getBitmapCache().getBitmapFileFromDiskCache(uri);
     }
 
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig displayConfig) {

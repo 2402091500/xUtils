@@ -415,6 +415,10 @@ public final class LruDiskCache implements Closeable {
         }
     }
 
+    public File getCacheFile(String key, int index) {
+        String diskKey = diskCacheFileNameGenerator.generate(key);
+        return new File(this.directory, diskKey + "." + index);
+    }
 
     public Snapshot get(String key) throws IOException {
         String diskKey = diskCacheFileNameGenerator.generate(key);
