@@ -24,6 +24,7 @@ import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.bitmap.download.SimpleDownloader;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.LruDiskCache;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,13 +47,15 @@ public class BitmapGlobalConfig {
     private boolean diskCacheEnabled = true;
 
     private Downloader downloader;
-    private static BitmapCache bitmapCache;
+    private BitmapCache bitmapCache;
 
     private int threadPoolSize = 5;
     private boolean _dirty_params_bitmapLoadExecutor = true;
     private ExecutorService bitmapLoadExecutor;
 
     private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 默认30天过期
+
+    private LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator;
 
     private Context mContext;
 
@@ -188,6 +191,17 @@ public class BitmapGlobalConfig {
 
     public void setDiskCacheEnabled(boolean diskCacheEnabled) {
         this.diskCacheEnabled = diskCacheEnabled;
+    }
+
+    public LruDiskCache.DiskCacheFileNameGenerator getDiskCacheFileNameGenerator() {
+        return diskCacheFileNameGenerator;
+    }
+
+    public void setDiskCacheFileNameGenerator(LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
+        this.diskCacheFileNameGenerator = diskCacheFileNameGenerator;
+        if (bitmapCache != null) {
+            bitmapCache.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
+        }
     }
 
     private int getMemoryClass() {

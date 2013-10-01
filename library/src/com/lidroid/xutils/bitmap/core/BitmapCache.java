@@ -30,10 +30,10 @@ import java.lang.ref.SoftReference;
 
 public class BitmapCache {
 
-    private static final int DISK_CACHE_INDEX = 0;
+    private final int DISK_CACHE_INDEX = 0;
 
-    private static LruDiskCache mDiskLruCache;
-    private static LruMemoryCache<String, SoftReference<Bitmap>> mMemoryCache;
+    private LruDiskCache mDiskLruCache;
+    private LruMemoryCache<String, SoftReference<Bitmap>> mMemoryCache;
 
     private final Object mDiskCacheLock = new Object();
     private boolean isDiskCacheReadied = false;
@@ -96,6 +96,7 @@ public class BitmapCache {
                 diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
                 try {
                     mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
+                    mDiskLruCache.setDiskCacheFileNameGenerator(globalConfig.getDiskCacheFileNameGenerator());
                 } catch (final IOException e) {
                     mDiskLruCache = null;
                     LogUtils.e(e.getMessage(), e);
@@ -115,6 +116,12 @@ public class BitmapCache {
     public void setDiskCacheSize(int maxSize) {
         if (mDiskLruCache != null) {
             mDiskLruCache.setMaxSize(maxSize);
+        }
+    }
+
+    public void setDiskCacheFileNameGenerator(LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
+        if (mDiskLruCache != null) {
+            mDiskLruCache.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
         }
     }
 
