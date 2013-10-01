@@ -19,7 +19,6 @@ import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.util.URIBuilder;
 import com.lidroid.xutils.util.LogUtils;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -81,17 +80,18 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
         return this;
     }
 
-    public void addHeaders(List<Header> headers) {
-        if (headers != null) {
-            for (Header header : headers) {
-                this.addHeader(header);
-            }
-        }
-    }
-
     public void setRequestParams(RequestParams param) {
         if (param != null) {
-            this.addHeaders(param.getHeaders());
+            List<RequestParams.HeaderItem> headerItems = param.getHeaders();
+            if (headerItems != null) {
+                for (RequestParams.HeaderItem headerItem : headerItems) {
+                    if (headerItem.overwrite) {
+                        this.setHeader(headerItem.header);
+                    } else {
+                        this.addHeader(headerItem.header);
+                    }
+                }
+            }
             this.addQueryStringParams(param.getQueryStringParams());
             this.setEntity(param.getEntity());
         }
@@ -99,7 +99,16 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
 
     public void setRequestParams(RequestParams param, RequestCallBackHandler callBackHandler) {
         if (param != null) {
-            this.addHeaders(param.getHeaders());
+            List<RequestParams.HeaderItem> headerItems = param.getHeaders();
+            if (headerItems != null) {
+                for (RequestParams.HeaderItem headerItem : headerItems) {
+                    if (headerItem.overwrite) {
+                        this.setHeader(headerItem.header);
+                    } else {
+                        this.addHeader(headerItem.header);
+                    }
+                }
+            }
             this.addQueryStringParams(param.getQueryStringParams());
             HttpEntity entity = param.getEntity();
             if (entity != null) {

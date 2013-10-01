@@ -22,7 +22,6 @@ import com.lidroid.xutils.http.client.multipart.content.FileBody;
 import com.lidroid.xutils.http.client.multipart.content.InputStreamBody;
 import com.lidroid.xutils.http.client.multipart.content.StringBody;
 import com.lidroid.xutils.util.LogUtils;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -43,7 +42,7 @@ public class RequestParams {
 
     private String charset = HTTP.UTF_8;
 
-    private List<Header> headers;
+    private List<HeaderItem> headers;
     private List<NameValuePair> queryStringParams;
     private HttpEntity bodyEntity;
     private List<NameValuePair> bodyParams;
@@ -56,25 +55,78 @@ public class RequestParams {
         this.charset = charset;
     }
 
+    /**
+     * Adds a header to this message. The header will be appended to the end of the list.
+     * @param header
+     */
     public void addHeader(Header header) {
         if (this.headers == null) {
-            this.headers = new ArrayList<Header>();
+            this.headers = new ArrayList<HeaderItem>();
         }
-        this.headers.add(header);
+        this.headers.add(new HeaderItem(header));
     }
 
+    /**
+     * Adds a header to this message. The header will be appended to the end of the list.
+     * @param name
+     * @param value
+     */
     public void addHeader(String name, String value) {
         if (this.headers == null) {
-            this.headers = new ArrayList<Header>();
+            this.headers = new ArrayList<HeaderItem>();
         }
-        this.headers.add(new BasicHeader(name, value));
+        this.headers.add(new HeaderItem(name, value));
     }
 
+    /**
+     * Adds all the headers to this message.
+     * @param headers
+     */
     public void addHeaders(List<Header> headers) {
         if (this.headers == null) {
-            this.headers = new ArrayList<Header>();
+            this.headers = new ArrayList<HeaderItem>();
         }
-        this.headers.addAll(headers);
+        for (Header header : headers) {
+            this.headers.add(new HeaderItem(header));
+        }
+    }
+
+    /**
+     * Overwrites the first header with the same name.
+     * The new header will be appended to the end of the list, if no header with the given name can be found.
+     * @param header
+     */
+    public void setHeader(Header header) {
+        if (this.headers == null) {
+            this.headers = new ArrayList<HeaderItem>();
+        }
+        this.headers.add(new HeaderItem(header, true));
+    }
+
+    /**
+     * Overwrites the first header with the same name.
+     * The new header will be appended to the end of the list, if no header with the given name can be found.
+     * @param name
+     * @param value
+     */
+    public void setHeader(String name, String value) {
+        if (this.headers == null) {
+            this.headers = new ArrayList<HeaderItem>();
+        }
+        this.headers.add(new HeaderItem(name, value, true));
+    }
+
+    /**
+     * Overwrites all the headers in the message.
+     * @param headers
+     */
+    public void setHeaders(List<Header> headers) {
+        if (this.headers == null) {
+            this.headers = new ArrayList<HeaderItem>();
+        }
+        for (Header header : headers) {
+            this.headers.add(new HeaderItem(header, true));
+        }
     }
 
     public void addQueryStringParameter(String name, String value) {
@@ -207,7 +259,32 @@ public class RequestParams {
         return this.queryStringParams;
     }
 
-    public List<Header> getHeaders() {
+    public List<HeaderItem> getHeaders() {
         return headers;
+    }
+
+    public class HeaderItem {
+        public final boolean overwrite;
+        public final Header header;
+
+        public HeaderItem(Header header) {
+            this.overwrite = false;
+            this.header = header;
+        }
+
+        public HeaderItem(Header header, boolean overwrite) {
+            this.overwrite = overwrite;
+            this.header = header;
+        }
+
+        public HeaderItem(String name, String value) {
+            this.overwrite = false;
+            this.header = new BasicHeader(name, value);
+        }
+
+        public HeaderItem(String name, String value, boolean overwrite) {
+            this.overwrite = overwrite;
+            this.header = new BasicHeader(name, value);
+        }
     }
 }
