@@ -210,18 +210,18 @@ public class HttpUtils {
 
     // ***************************************** send request *******************************************
 
-    public HttpHandler send(HttpRequest.HttpMethod method, String url,
-                            RequestCallBack<? extends Object> callBack) {
+    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url,
+                                   RequestCallBack<T> callBack) {
         return send(method, url, null, callBack);
     }
 
-    public HttpHandler send(HttpRequest.HttpMethod method, String url, RequestParams params,
-                            RequestCallBack<? extends Object> callBack) {
+    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params,
+                                   RequestCallBack<T> callBack) {
         return send(method, url, params, null, callBack);
     }
 
-    public HttpHandler send(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType,
-                            RequestCallBack<? extends Object> callBack) {
+    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType,
+                                   RequestCallBack<T> callBack) {
         HttpRequest request = new HttpRequest(method, url);
         return sendRequest(request, params, contentType, callBack);
     }
