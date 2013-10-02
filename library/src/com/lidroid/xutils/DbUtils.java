@@ -347,7 +347,7 @@ public class DbUtils {
         if (!tableIsExist(entityType)) return null;
 
         Id id = Table.get(entityType).getId();
-        Selector selector = Selector.from(entityType).where(WhereBuilder.b(id.getColumnName(), "=", idValue));
+        Selector selector = Selector.from(entityType).where(id.getColumnName(), "=", idValue);
 
         String sql = selector.limit(1).toString();
         long seq = CursorUtils.FindCacheSequence.getSeq();

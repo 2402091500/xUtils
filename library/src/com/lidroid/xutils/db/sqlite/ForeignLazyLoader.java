@@ -40,7 +40,7 @@ public class ForeignLazyLoader<T> {
         if (foreignColumn != null && foreignColumn.db != null) {
             entities = foreignColumn.db.findAll(
                     Selector.from(foreignColumn.getForeignEntityType()).
-                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", columnValue)));
+                            where(foreignColumn.getForeignColumnName(), "=", columnValue));
         }
         return entities;
     }
@@ -50,7 +50,7 @@ public class ForeignLazyLoader<T> {
         if (foreignColumn != null && foreignColumn.db != null) {
             entity = foreignColumn.db.findFirst(
                     Selector.from(foreignColumn.getForeignEntityType()).
-                            where(WhereBuilder.b(foreignColumn.getForeignColumnName(), "=", columnValue)));
+                            where(foreignColumn.getForeignColumnName(), "=", columnValue));
         }
         return entity;
     }

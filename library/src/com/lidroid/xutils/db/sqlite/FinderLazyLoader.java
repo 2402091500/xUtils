@@ -30,7 +30,7 @@ public class FinderLazyLoader<T> {
         if (finderColumn != null && finderColumn.db != null) {
             entities = finderColumn.db.findAll(
                     Selector.from(finderColumn.getTargetEntityType()).
-                            where(WhereBuilder.b(finderColumn.getTargetColumnName(), "=", finderValue)));
+                            where(finderColumn.getTargetColumnName(), "=", finderValue));
         }
         return entities;
     }
@@ -40,7 +40,7 @@ public class FinderLazyLoader<T> {
         if (finderColumn != null && finderColumn.db != null) {
             entity = finderColumn.db.findFirst(
                     Selector.from(finderColumn.getTargetEntityType()).
-                            where(WhereBuilder.b(finderColumn.getTargetColumnName(), "=", finderValue)));
+                            where(finderColumn.getTargetColumnName(), "=", finderValue));
         }
         return entity;
     }
