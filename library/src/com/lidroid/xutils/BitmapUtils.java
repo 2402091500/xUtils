@@ -348,12 +348,12 @@ public class BitmapUtils {
             }
 
             // get cache from disk cache
-            if (!pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
+            if (!this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri, displayConfig);
             }
 
             // download image
-            if (bitmap == null && !pauseTask && !this.isCancelled() && this.getTargetImageView() != null) {
+            if (bitmap == null && !this.isCancelled() && this.getTargetImageView() != null) {
                 bitmap = globalConfig.getBitmapCache().downloadBitmap(uri, displayConfig);
             }
 
@@ -362,10 +362,6 @@ public class BitmapUtils {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            if (isCancelled() || pauseTask) {
-                bitmap = null;
-            }
-
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
                 if (bitmap != null) {
