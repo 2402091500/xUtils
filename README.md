@@ -4,7 +4,7 @@
 
 ### 注意: jar包导入后运行时报NoClassDefFoundError的看下面连接的内容
 * <http://my.oschina.net/u/1171837/blog/161301>
-* xUitls最低兼容android2.3.3, 考虑到2.3.3一下的版本用户量已经很少，并且活跃度较低，故不再兼容。 如果需要兼容更低版本，请自行移植（添加缺少的类和少量修改）。
+* xUitls最低兼容android 2.2 (api level 8)
 
 ## 目前xUtils主要有四大模块：
 
