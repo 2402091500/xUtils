@@ -19,8 +19,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.compatible.ArrayDeque;
 
-import java.util.ArrayDeque;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;

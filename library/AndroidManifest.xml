@@ -3,6 +3,6 @@
           package="com.lidroid.xutils"
           android:versionCode="130"
           android:versionName="1.3.0">
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="17"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
     <application/>
 </manifest>

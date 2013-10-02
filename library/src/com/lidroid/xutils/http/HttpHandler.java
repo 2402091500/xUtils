@@ -118,12 +118,12 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 exception = e;
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (NullPointerException e) {
-                exception = new IOException(e);
+                exception = new IOException(e.getMessage());
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (HttpException e) {
                 throw e;
             } catch (Exception e) {
-                exception = new IOException(e);
+                exception = new IOException(e.getMessage());
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } finally {
                 if (!retry && exception != null) {

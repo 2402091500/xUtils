@@ -23,12 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 上午11:25
  */
 public class KeyExpiryMap<K, V> extends ConcurrentHashMap<K, Long> {
+
+    private static final int DEFAULT_CONCURRENCY_LEVEL = 16;
+
     public KeyExpiryMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
 
     public KeyExpiryMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+        super(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL);
     }
 
     public KeyExpiryMap(int initialCapacity) {
