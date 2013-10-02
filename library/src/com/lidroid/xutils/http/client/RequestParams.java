@@ -16,6 +16,7 @@
 package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.http.client.entity.BodyParamsEntity;
+import com.lidroid.xutils.http.client.multipart.HttpMultipartMode;
 import com.lidroid.xutils.http.client.multipart.MultipartEntity;
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
 import com.lidroid.xutils.http.client.multipart.content.FileBody;
@@ -57,6 +58,7 @@ public class RequestParams {
 
     /**
      * Adds a header to this message. The header will be appended to the end of the list.
+     *
      * @param header
      */
     public void addHeader(Header header) {
@@ -68,6 +70,7 @@ public class RequestParams {
 
     /**
      * Adds a header to this message. The header will be appended to the end of the list.
+     *
      * @param name
      * @param value
      */
@@ -80,6 +83,7 @@ public class RequestParams {
 
     /**
      * Adds all the headers to this message.
+     *
      * @param headers
      */
     public void addHeaders(List<Header> headers) {
@@ -94,6 +98,7 @@ public class RequestParams {
     /**
      * Overwrites the first header with the same name.
      * The new header will be appended to the end of the list, if no header with the given name can be found.
+     *
      * @param header
      */
     public void setHeader(Header header) {
@@ -106,6 +111,7 @@ public class RequestParams {
     /**
      * Overwrites the first header with the same name.
      * The new header will be appended to the end of the list, if no header with the given name can be found.
+     *
      * @param name
      * @param value
      */
@@ -118,6 +124,7 @@ public class RequestParams {
 
     /**
      * Overwrites all the headers in the message.
+     *
      * @param headers
      */
     public void setHeaders(List<Header> headers) {
@@ -231,7 +238,7 @@ public class RequestParams {
 
         if (fileParams != null && !fileParams.isEmpty()) {
 
-            MultipartEntity multipartEntity = new MultipartEntity();
+            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
             if (bodyParams != null) {
                 for (NameValuePair param : bodyParams) {
