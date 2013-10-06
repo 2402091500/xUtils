@@ -127,7 +127,7 @@ http.send(HttpRequest.HttpMethod.GET,
         }
 
         @Override
-        public void onFailure((HttpException error, String msg) {
+        public void onFailure(HttpException error, String msg) {
         }
 });
 ```
