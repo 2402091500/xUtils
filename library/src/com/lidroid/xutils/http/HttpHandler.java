@@ -52,7 +52,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     }
 
     private HttpRequestBase request;
-    private final RequestCallBack callback;
+    private final RequestCallBack<T> callback;
 
     private int retriedTimes = 0;
     private String fileSavePath = null;
@@ -61,7 +61,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private boolean autoRename = false; // Whether rename the file by response header info when the download completely.
     private String charset; // The default charset of response header info.
 
-    public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack callback) {
+    public HttpHandler(AbstractHttpClient client, HttpContext context, String charset, RequestCallBack<T> callback) {
         this.client = client;
         this.context = context;
         this.callback = callback;

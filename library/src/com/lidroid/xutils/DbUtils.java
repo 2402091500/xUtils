@@ -795,7 +795,6 @@ public class DbUtils {
             cache.put(sql, result);
         }
 
-        @SuppressWarnings("unchecked")
         public Object get(String sql) {
             return cache.get(sql);
         }
