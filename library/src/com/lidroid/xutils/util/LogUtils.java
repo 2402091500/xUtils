@@ -20,8 +20,8 @@ import android.util.Log;
 
 /**
  * Log工具，类似android.util.Log。
- * tag自动产生，格式: customTagPrefix:className[methodName,lineNumber],
- * customTagPrefix为空时只输出：className[methodName,lineNumber]。
+ * tag自动产生，格式: customTagPrefix:className.methodName(L:ineNumber),
+ * customTagPrefix为空时只输出：className.methodName(L:ineNumber)。
  * <p/>
  * Author: wyouflf
  * Date: 13-7-24
@@ -42,7 +42,7 @@ public class LogUtils {
     public static boolean allowWtf = true;
 
     private static String generateTag(StackTraceElement caller) {
-        String tag = "%s[%s, %d]";
+        String tag = "%s.%s(L:%d)";
         String callerClazzName = caller.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
         tag = String.format(tag, callerClazzName, caller.getMethodName(), caller.getLineNumber());
