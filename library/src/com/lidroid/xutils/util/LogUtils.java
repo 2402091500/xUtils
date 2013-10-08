@@ -50,81 +50,168 @@ public class LogUtils {
         return tag;
     }
 
+    public static CustomLogger customLogger;
+
+    public interface CustomLogger {
+        void d(String tag, String content);
+
+        void d(String tag, String content, Throwable tr);
+
+        void e(String tag, String content);
+
+        void e(String tag, String content, Throwable tr);
+
+        void i(String tag, String content);
+
+        void i(String tag, String content, Throwable tr);
+
+        void v(String tag, String content);
+
+        void v(String tag, String content, Throwable tr);
+
+        void w(String tag, String content);
+
+        void w(String tag, String content, Throwable tr);
+
+        void w(String tag, Throwable tr);
+
+        void wtf(String tag, String content);
+
+        void wtf(String tag, String content, Throwable tr);
+
+        void wtf(String tag, Throwable tr);
+    }
+
     public static void d(String content) {
         if (!allowD) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.d(tag, content);
+
+        if (customLogger != null) {
+            customLogger.d(tag, content);
+        } else {
+            Log.d(tag, content);
+        }
     }
 
     public static void d(String content, Throwable tr) {
         if (!allowD) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.d(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.d(tag, content, tr);
+        } else {
+            Log.d(tag, content, tr);
+        }
     }
 
     public static void e(String content) {
         if (!allowE) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.e(tag, content);
+
+        if (customLogger != null) {
+            customLogger.e(tag, content);
+        } else {
+            Log.e(tag, content);
+        }
     }
 
     public static void e(String content, Throwable tr) {
         if (!allowE) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.e(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.e(tag, content, tr);
+        } else {
+            Log.e(tag, content, tr);
+        }
     }
 
     public static void i(String content) {
         if (!allowI) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.i(tag, content);
+
+        if (customLogger != null) {
+            customLogger.i(tag, content);
+        } else {
+            Log.i(tag, content);
+        }
     }
 
     public static void i(String content, Throwable tr) {
         if (!allowI) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.i(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.i(tag, content, tr);
+        } else {
+            Log.i(tag, content, tr);
+        }
     }
 
     public static void v(String content) {
         if (!allowV) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.v(tag, content);
+
+        if (customLogger != null) {
+            customLogger.v(tag, content);
+        } else {
+            Log.v(tag, content);
+        }
     }
 
     public static void v(String content, Throwable tr) {
         if (!allowV) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.v(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.v(tag, content, tr);
+        } else {
+            Log.v(tag, content, tr);
+        }
     }
 
     public static void w(String content) {
         if (!allowW) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.w(tag, content);
+
+        if (customLogger != null) {
+            customLogger.w(tag, content);
+        } else {
+            Log.w(tag, content);
+        }
     }
 
     public static void w(String content, Throwable tr) {
         if (!allowW) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.w(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.w(tag, content, tr);
+        } else {
+            Log.w(tag, content, tr);
+        }
     }
 
     public static void w(Throwable tr) {
         if (!allowW) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.w(tag, tr);
+
+        if (customLogger != null) {
+            customLogger.w(tag, tr);
+        } else {
+            Log.w(tag, tr);
+        }
     }
 
 
@@ -132,21 +219,36 @@ public class LogUtils {
         if (!allowWtf) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.wtf(tag, content);
+
+        if (customLogger != null) {
+            customLogger.wtf(tag, content);
+        } else {
+            Log.wtf(tag, content);
+        }
     }
 
     public static void wtf(String content, Throwable tr) {
         if (!allowWtf) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.wtf(tag, content, tr);
+
+        if (customLogger != null) {
+            customLogger.wtf(tag, content, tr);
+        } else {
+            Log.wtf(tag, content, tr);
+        }
     }
 
     public static void wtf(Throwable tr) {
         if (!allowWtf) return;
         StackTraceElement caller = OtherUtils.getCallerStackTraceElement();
         String tag = generateTag(caller);
-        Log.wtf(tag, tr);
+
+        if (customLogger != null) {
+            customLogger.wtf(tag, tr);
+        } else {
+            Log.wtf(tag, tr);
+        }
     }
 
 }
