@@ -47,9 +47,9 @@ public class BitmapDisplayConfig {
     }
 
     public int getBitmapMaxWidth() {
-        if (bitmapMaxWidth == 0) {// default max width = screen_width/2
+        if (bitmapMaxWidth == 0) {// default max width = screen_width/3
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-            bitmapMaxWidth = (int) Math.floor(displayMetrics.widthPixels / 2);
+            bitmapMaxWidth = (int) Math.floor(displayMetrics.widthPixels / 3);
             bitmapMaxHeight = bitmapMaxHeight == 0 ? bitmapMaxWidth : bitmapMaxHeight;
         }
         return bitmapMaxWidth;
@@ -60,9 +60,9 @@ public class BitmapDisplayConfig {
     }
 
     public int getBitmapMaxHeight() {
-        if (bitmapMaxHeight == 0) {// default max height = screen_width/2
+        if (bitmapMaxHeight == 0) {// default max height = screen_width/3
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-            bitmapMaxHeight = (int) Math.floor(displayMetrics.widthPixels / 2);
+            bitmapMaxHeight = (int) Math.floor(displayMetrics.widthPixels / 3);
             bitmapMaxWidth = bitmapMaxWidth == 0 ? bitmapMaxHeight : bitmapMaxWidth;
         }
         return bitmapMaxHeight;
