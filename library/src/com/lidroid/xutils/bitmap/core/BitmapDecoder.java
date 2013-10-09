@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.FileDescriptor;
+import java.io.IOException;
 
 public class BitmapDecoder {
 
@@ -40,7 +41,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeResource(res, resId, options);
-        } catch (OutOfMemoryError e) {
+        } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -58,7 +59,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeFile(filename, options);
-        } catch (OutOfMemoryError e) {
+        } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -77,7 +78,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        } catch (OutOfMemoryError e) {
+        } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -96,7 +97,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeByteArray(data, 0, data.length, options);
-        } catch (OutOfMemoryError e) {
+        } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }

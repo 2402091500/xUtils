@@ -97,7 +97,7 @@ public class BitmapCache {
                 try {
                     mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
                     mDiskLruCache.setDiskCacheFileNameGenerator(globalConfig.getDiskCacheFileNameGenerator());
-                } catch (final IOException e) {
+                } catch (Exception e) {
                     mDiskLruCache = null;
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -310,7 +310,7 @@ public class BitmapCache {
 
                         return bitmap;
                     }
-                } catch (final IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
                     IOUtils.closeQuietly(snapshot);
@@ -340,7 +340,7 @@ public class BitmapCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 }
                 mDiskLruCache = null;
@@ -368,7 +368,7 @@ public class BitmapCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.remove(uri);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
@@ -384,7 +384,7 @@ public class BitmapCache {
             if (mDiskLruCache != null) {
                 try {
                     mDiskLruCache.flush();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
@@ -403,7 +403,7 @@ public class BitmapCache {
                         mDiskLruCache.close();
                         mDiskLruCache = null;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }

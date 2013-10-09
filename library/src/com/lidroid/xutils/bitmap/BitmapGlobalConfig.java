@@ -39,7 +39,7 @@ public class BitmapGlobalConfig {
 
     private String diskCachePath;
     public final static int MIN_MEMORY_CACHE_SIZE = 1024 * 1024 * 2; // 2M
-    private int memoryCacheSize = 1024 * 1024 * 8; // 8MB
+    private int memoryCacheSize = 1024 * 1024 * 4; // 4MB
     public final static int MIN_DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10M
     private int diskCacheSize = 1024 * 1024 * 50;  // 50M
 

@@ -38,7 +38,7 @@ public class BitmapDisplayConfig {
 
     private boolean showOriginal = false;
 
-    private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_4444;
+    private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
     private Context mContext;
 
