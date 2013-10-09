@@ -119,7 +119,7 @@ public class TableUtils {
 
     public static synchronized com.lidroid.xutils.db.table.Id getId(Class<?> entityType) {
         if (Object.class.equals(entityType)) {
-            throw new RuntimeException("this model[" + entityType + "] has no any field");
+            throw new RuntimeException("field 'id' not found");
         }
 
         if (entityIdMap.containsKey(entityType.getCanonicalName())) {
