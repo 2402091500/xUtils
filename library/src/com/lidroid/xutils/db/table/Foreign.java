@@ -101,7 +101,7 @@ public class Foreign extends Column {
                     if (foreignEntities.size() > 0) {
 
                         if (this.db != null) {
-                            this.db.saveOrUpdate(foreignEntities);
+                            this.db.saveOrUpdateAll(foreignEntities);
                         }
 
                         Class foreignEntityType = ColumnUtils.getForeignEntityType(this);

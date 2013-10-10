@@ -149,7 +149,7 @@ public class DbUtils {
         }
     }
 
-    public void saveOrUpdate(List<Object> entities) throws DbException {
+    public void saveOrUpdateAll(List<Object> entities) throws DbException {
         try {
             beginTransaction();
 
@@ -175,7 +175,7 @@ public class DbUtils {
         }
     }
 
-    public void replace(List<Object> entities) throws DbException {
+    public void replaceAll(List<Object> entities) throws DbException {
         try {
             beginTransaction();
 
@@ -201,7 +201,7 @@ public class DbUtils {
         }
     }
 
-    public void save(List<Object> entities) throws DbException {
+    public void saveAll(List<Object> entities) throws DbException {
         try {
             beginTransaction();
 
@@ -229,7 +229,7 @@ public class DbUtils {
         return result;
     }
 
-    public void saveBindingId(List<Object> entities) throws DbException {
+    public void saveBindingIdAll(List<Object> entities) throws DbException {
         try {
             beginTransaction();
 
@@ -259,7 +259,7 @@ public class DbUtils {
         }
     }
 
-    public void delete(List<Object> entities) throws DbException {
+    public void deleteAll(List<Object> entities) throws DbException {
         if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
@@ -314,7 +314,7 @@ public class DbUtils {
         }
     }
 
-    public void update(List<Object> entities) throws DbException {
+    public void updateAll(List<Object> entities) throws DbException {
         if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
