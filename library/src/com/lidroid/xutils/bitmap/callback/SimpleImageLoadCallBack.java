@@ -15,8 +15,6 @@
 
 package com.lidroid.xutils.bitmap.callback;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -28,33 +26,33 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     @Override
-    public void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config) {
+    public void loadCompleted(ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
         Animation animation = config.getAnimation();
         if (animation == null) {
-            fadeInDisplay(imageView, bitmap);
+            fadeInDisplay(imageView, drawable);
         } else {
-            animationDisplay(imageView, bitmap, animation);
+            animationDisplay(imageView, drawable, animation);
         }
     }
 
     @Override
-    public void loadFailed(ImageView imageView, Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
+    public void loadFailed(ImageView imageView, Drawable drawable) {
+        imageView.setImageDrawable(drawable);
     }
 
-    private void fadeInDisplay(ImageView imageView, Bitmap bitmap) {
+    private void fadeInDisplay(ImageView imageView, Drawable drawable) {
         final TransitionDrawable td =
                 new TransitionDrawable(new Drawable[]{
                         new ColorDrawable(android.R.color.transparent),
-                        new BitmapDrawable(imageView.getResources(), bitmap)
+                        drawable
                 });
         imageView.setImageDrawable(td);
         td.startTransition(300);
     }
 
-    private void animationDisplay(ImageView imageView, Bitmap bitmap, Animation animation) {
+    private void animationDisplay(ImageView imageView, Drawable drawable, Animation animation) {
         animation.setStartTime(AnimationUtils.currentAnimationTimeMillis());
-        imageView.setImageBitmap(bitmap);
+        imageView.setImageDrawable(drawable);
         imageView.startAnimation(animation);
     }
 }

@@ -16,7 +16,6 @@
 package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
@@ -205,7 +204,7 @@ public class BitmapCache {
         Bitmap bitmap = null;
         if (bitmapMeta.inputStream != null) {
             if (config.isShowOriginal()) {
-                bitmap = BitmapFactory.decodeFileDescriptor(bitmapMeta.inputStream.getFD());
+                bitmap = BitmapDecoder.decodeFileDescriptor(bitmapMeta.inputStream.getFD());
             } else {
                 bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
                         bitmapMeta.inputStream.getFD(),
@@ -215,7 +214,7 @@ public class BitmapCache {
             }
         } else if (bitmapMeta.data != null) {
             if (config.isShowOriginal()) {
-                bitmap = BitmapFactory.decodeByteArray(bitmapMeta.data, 0, bitmapMeta.data.length);
+                bitmap = BitmapDecoder.decodeByteArray(bitmapMeta.data);
             } else {
                 bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(
                         bitmapMeta.data,
@@ -292,7 +291,7 @@ public class BitmapCache {
                     if (snapshot != null) {
                         Bitmap bitmap = null;
                         if (config.isShowOriginal()) {
-                            bitmap = BitmapFactory.decodeFileDescriptor(
+                            bitmap = BitmapDecoder.decodeFileDescriptor(
                                     snapshot.getInputStream(DISK_CACHE_INDEX).getFD());
                         } else {
                             bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
@@ -396,6 +395,7 @@ public class BitmapCache {
      * disk access so this should not be executed on the main/UI thread.
      */
     public void close() {
+        clearMemoryCache();
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache != null) {
                 try {

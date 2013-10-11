@@ -17,6 +17,9 @@ package com.lidroid.xutils.bitmap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
@@ -24,15 +27,13 @@ import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 
 public class BitmapDisplayConfig {
 
-    private static final Bitmap TRANSPARENT_BITMAP = Bitmap.createBitmap(50, 50, Bitmap.Config.ALPHA_8);
-
     private int bitmapMaxWidth = 0;
     private int bitmapMaxHeight = 0;
 
     private Animation animation;
 
-    private Bitmap loadingBitmap = TRANSPARENT_BITMAP;
-    private Bitmap loadFailedBitmap;
+    private Drawable loadingDrawable = new ColorDrawable(Color.TRANSPARENT);
+    private Drawable loadFailedDrawable;
 
     private ImageLoadCallBack imageLoadCallBack;
 
@@ -80,20 +81,20 @@ public class BitmapDisplayConfig {
         this.animation = animation;
     }
 
-    public Bitmap getLoadingBitmap() {
-        return loadingBitmap;
+    public Drawable getLoadingDrawable() {
+        return loadingDrawable;
     }
 
-    public void setLoadingBitmap(Bitmap loadingBitmap) {
-        this.loadingBitmap = loadingBitmap;
+    public void setLoadingDrawable(Drawable loadingDrawable) {
+        this.loadingDrawable = loadingDrawable;
     }
 
-    public Bitmap getLoadFailedBitmap() {
-        return loadFailedBitmap;
+    public Drawable getLoadFailedDrawable() {
+        return loadFailedDrawable;
     }
 
-    public void setLoadFailedBitmap(Bitmap loadFailedBitmap) {
-        this.loadFailedBitmap = loadFailedBitmap;
+    public void setLoadFailedDrawable(Drawable loadFailedDrawable) {
+        this.loadFailedDrawable = loadFailedDrawable;
     }
 
     public ImageLoadCallBack getImageLoadCallBack() {

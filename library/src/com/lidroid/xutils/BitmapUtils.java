@@ -16,9 +16,9 @@
 package com.lidroid.xutils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -78,23 +78,23 @@ public class BitmapUtils {
 
     //////////////////////////////////////// config ////////////////////////////////////////////////////////////////////
 
-    public BitmapUtils configDefaultLoadingImage(Bitmap bitmap) {
-        defaultDisplayConfig.setLoadingBitmap(bitmap);
+    public BitmapUtils configDefaultLoadingImage(Drawable bitmap) {
+        defaultDisplayConfig.setLoadingDrawable(bitmap);
         return this;
     }
 
     public BitmapUtils configDefaultLoadingImage(int resId) {
-        defaultDisplayConfig.setLoadingBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
+        defaultDisplayConfig.setLoadingDrawable(context.getResources().getDrawable(resId));
         return this;
     }
 
-    public BitmapUtils configDefaultLoadFailedImage(Bitmap bitmap) {
-        defaultDisplayConfig.setLoadFailedBitmap(bitmap);
+    public BitmapUtils configDefaultLoadFailedImage(Drawable bitmap) {
+        defaultDisplayConfig.setLoadFailedDrawable(bitmap);
         return this;
     }
 
     public BitmapUtils configDefaultLoadFailedImage(int resId) {
-        defaultDisplayConfig.setLoadFailedBitmap(BitmapFactory.decodeResource(context.getResources(), resId));
+        defaultDisplayConfig.setLoadFailedDrawable(context.getResources().getDrawable(resId));
         return this;
     }
 
@@ -184,7 +184,7 @@ public class BitmapUtils {
         }
 
         if (TextUtils.isEmpty(uri)) {
-            displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+            displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedDrawable());
             return;
         }
 
@@ -199,8 +199,7 @@ public class BitmapUtils {
             final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, displayConfig);
             // set loading image
             final AsyncBitmapDrawable asyncBitmapDrawable = new AsyncBitmapDrawable(
-                    context.getResources(),
-                    displayConfig.getLoadingBitmap(),
+                    displayConfig.getLoadingDrawable(),
                     loadTask);
             imageView.setImageDrawable(asyncBitmapDrawable);
 
@@ -305,17 +304,39 @@ public class BitmapUtils {
         return false;
     }
 
-    private class AsyncBitmapDrawable extends BitmapDrawable {
+    private class AsyncBitmapDrawable extends Drawable {
 
         private final WeakReference<BitmapLoadTask> bitmapLoadTaskReference;
 
-        public AsyncBitmapDrawable(Resources res, Bitmap bitmap, BitmapLoadTask bitmapWorkerTask) {
-            super(res, bitmap);
+        private Drawable baseDrawable;
+
+        public AsyncBitmapDrawable(Drawable drawable, BitmapLoadTask bitmapWorkerTask) {
+            baseDrawable = drawable;
             bitmapLoadTaskReference = new WeakReference<BitmapLoadTask>(bitmapWorkerTask);
         }
 
         public BitmapLoadTask getBitmapWorkerTask() {
             return bitmapLoadTaskReference.get();
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            baseDrawable.draw(canvas);
+        }
+
+        @Override
+        public void setAlpha(int i) {
+            baseDrawable.setAlpha(i);
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter colorFilter) {
+            baseDrawable.setColorFilter(colorFilter);
+        }
+
+        @Override
+        public int getOpacity() {
+            return baseDrawable.getOpacity();
         }
     }
 
@@ -365,9 +386,9 @@ public class BitmapUtils {
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
                 if (bitmap != null) {
-                    displayConfig.getImageLoadCallBack().loadCompleted(imageView, bitmap, displayConfig);
+                    displayConfig.getImageLoadCallBack().loadCompleted(imageView, new BitmapDrawable(bitmap), displayConfig);
                 } else {
-                    displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedBitmap());
+                    displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedDrawable());
                 }
             }
         }

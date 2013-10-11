@@ -15,7 +15,7 @@
 
 package com.lidroid.xutils.bitmap.callback;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
@@ -25,17 +25,17 @@ public interface ImageLoadCallBack {
      * Call back when bitmap has loaded.
      *
      * @param imageView
-     * @param bitmap
+     * @param drawable
      * @param config
      */
-    void loadCompleted(ImageView imageView, Bitmap bitmap, BitmapDisplayConfig config);
+    void loadCompleted(ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
 
     /**
      * Call back when bitmap failed to load.
      *
      * @param imageView
-     * @param bitmap
+     * @param drawable
      */
-    void loadFailed(ImageView imageView, Bitmap bitmap);
+    void loadFailed(ImageView imageView, Drawable drawable);
 
 }
