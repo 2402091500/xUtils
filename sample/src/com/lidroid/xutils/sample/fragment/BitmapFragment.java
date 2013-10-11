@@ -8,7 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -135,6 +138,8 @@ public class BitmapFragment extends Fragment {
         public View getView(final int position, View view, ViewGroup parent) {
             if (view == null) {
                 view = new ImageView(this.context);
+                view.setMinimumWidth(150);
+                view.setMinimumHeight(150);
             }
             bitmapUtils.display((ImageView) view, imgSrcList.get(position));
             //bitmapUtils.display((ImageView) view, imgSrcList.get(position), displayConfig);
