@@ -27,6 +27,7 @@ import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.http.client.ResponseStream;
 import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
+import com.lidroid.xutils.util.core.SimpleSSLSocketFactory;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -83,7 +84,7 @@ public class HttpUtils {
 
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        schemeRegistry.register(new Scheme("https", SimpleSSLSocketFactory.getSocketFactory(), 443));
 
         httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
 
