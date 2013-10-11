@@ -21,8 +21,8 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.ResponseStream;
-import com.lidroid.xutils.http.client.callback.DefaultDownloadRedirectHandler;
-import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
+import com.lidroid.xutils.http.client.callback.DefaultHttpRedirectHandler;
+import com.lidroid.xutils.http.client.callback.HttpRedirectHandler;
 import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -43,10 +43,10 @@ public class SyncHttpHandler {
 
     private String charset; // The default charset of response header info.
 
-    private DownloadRedirectHandler downloadRedirectHandler;
+    private HttpRedirectHandler httpRedirectHandler;
 
-    public void setDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
-        this.downloadRedirectHandler = downloadRedirectHandler;
+    public void setHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
+        this.httpRedirectHandler = httpRedirectHandler;
     }
 
     public SyncHttpHandler(AbstractHttpClient client, HttpContext context, String charset) {
@@ -119,10 +119,10 @@ public class SyncHttpHandler {
 
             return new ResponseStream(response, charset, _getMethodRequestUrl, expiry);
         } else if (statusCode == 301 || statusCode == 302) {
-            if (downloadRedirectHandler == null) {
-                downloadRedirectHandler = new DefaultDownloadRedirectHandler();
+            if (httpRedirectHandler == null) {
+                httpRedirectHandler = new DefaultHttpRedirectHandler();
             }
-            HttpRequestBase request = downloadRedirectHandler.getDirectRequest(response);
+            HttpRequestBase request = httpRedirectHandler.getDirectRequest(response);
             if (request != null) {
                 return this.sendRequest(request);
             }

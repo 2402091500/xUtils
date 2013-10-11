@@ -25,7 +25,7 @@ import com.lidroid.xutils.http.client.HttpGetCache;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.http.client.ResponseStream;
-import com.lidroid.xutils.http.client.callback.DownloadRedirectHandler;
+import com.lidroid.xutils.http.client.callback.HttpRedirectHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
 import com.lidroid.xutils.util.core.SimpleSSLSocketFactory;
 import org.apache.http.*;
@@ -62,7 +62,7 @@ public class HttpUtils {
     private final DefaultHttpClient httpClient;
     private final HttpContext httpContext = new BasicHttpContext();
 
-    private DownloadRedirectHandler downloadRedirectHandler;
+    private HttpRedirectHandler httpRedirectHandler;
 
     public HttpUtils() {
         this(HttpUtils.DEFAULT_CONN_TIMEOUT);
@@ -164,8 +164,8 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
-        this.downloadRedirectHandler = downloadRedirectHandler;
+    public HttpUtils configHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
+        this.httpRedirectHandler = httpRedirectHandler;
         return this;
     }
 
@@ -275,7 +275,7 @@ public class HttpUtils {
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, defaultResponseTextCharset, callback);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(downloadRedirectHandler);
+        handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
         handler.executeOnExecutor(executor, request, target, autoResume, autoRename);
@@ -291,7 +291,7 @@ public class HttpUtils {
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, defaultResponseTextCharset, callBack);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(downloadRedirectHandler);
+        handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
         handler.executeOnExecutor(executor, request);
@@ -306,7 +306,7 @@ public class HttpUtils {
         SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, defaultResponseTextCharset);
 
         handler.setExpiry(currRequestExpiry);
-        handler.setDownloadRedirectHandler(downloadRedirectHandler);
+        handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params);
 
         return handler.sendRequest(request);

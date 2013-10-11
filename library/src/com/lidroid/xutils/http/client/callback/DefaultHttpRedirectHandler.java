@@ -25,7 +25,7 @@ import org.apache.http.client.methods.HttpRequestBase;
  * Date: 13-7-17
  * Time: 上午10:41
  */
-public class DefaultDownloadRedirectHandler implements DownloadRedirectHandler {
+public class DefaultHttpRedirectHandler implements HttpRedirectHandler {
     @Override
     public HttpRequestBase getDirectRequest(HttpResponse response) {
         if (response.containsHeader("Location")) {

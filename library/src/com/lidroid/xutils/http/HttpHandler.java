@@ -45,10 +45,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private final StringDownloadHandler mStringDownloadHandler = new StringDownloadHandler();
     private final FileDownloadHandler mFileDownloadHandler = new FileDownloadHandler();
 
-    private DownloadRedirectHandler downloadRedirectHandler;
+    private HttpRedirectHandler httpRedirectHandler;
 
-    public void setDownloadRedirectHandler(DownloadRedirectHandler downloadRedirectHandler) {
-        this.downloadRedirectHandler = downloadRedirectHandler;
+    public void setHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
+        this.httpRedirectHandler = httpRedirectHandler;
     }
 
     private HttpRequestBase request;
@@ -219,10 +219,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             }
             return responseBody;
         } else if (statusCode == 301 || statusCode == 302) {
-            if (downloadRedirectHandler == null) {
-                downloadRedirectHandler = new DefaultDownloadRedirectHandler();
+            if (httpRedirectHandler == null) {
+                httpRedirectHandler = new DefaultHttpRedirectHandler();
             }
-            HttpRequestBase request = downloadRedirectHandler.getDirectRequest(response);
+            HttpRequestBase request = httpRedirectHandler.getDirectRequest(response);
             if (request != null) {
                 return this.sendRequest(request);
             }

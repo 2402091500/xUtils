@@ -24,6 +24,6 @@ import org.apache.http.client.methods.HttpRequestBase;
  * Date: 13-7-17
  * Time: 上午10:36
  */
-public interface DownloadRedirectHandler {
+public interface HttpRedirectHandler {
     HttpRequestBase getDirectRequest(HttpResponse response);
 }
