@@ -1,5 +1,6 @@
 package com.lidroid.xutils.util.core;
 
+import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import javax.net.ssl.SSLContext;
@@ -26,6 +27,7 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
             trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(null, null);
         } catch (Exception e) {
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -36,6 +38,7 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
             try {
                 instance = new SimpleSSLSocketFactory();
             } catch (Exception e) {
+                LogUtils.e(e.getMessage(), e);
             }
         }
         return instance;
@@ -48,7 +51,7 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
             KeyManagementException {
         super(trustStore);
 
-        TrustManager x509TrustManager = new X509TrustManager() {
+        TrustManager trustAllCerts = new X509TrustManager() {
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -65,7 +68,7 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
                     throws java.security.cert.CertificateException {
             }
         };
-        sslContext.init(null, new TrustManager[]{x509TrustManager}, null);
+        sslContext.init(null, new TrustManager[]{trustAllCerts}, null);
 
         this.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     }
