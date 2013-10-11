@@ -58,6 +58,10 @@ public class RetryHandler implements HttpRequestRetryHandler {
     public boolean retryRequest(IOException exception, int retriedTimes, HttpContext context) {
         boolean retry = true;
 
+        if (exception == null || context == null) {
+            return false;
+        }
+
         Boolean b = (Boolean) context.getAttribute(ExecutionContext.HTTP_REQ_SENT);
         boolean sent = (b != null && b.booleanValue());
 
