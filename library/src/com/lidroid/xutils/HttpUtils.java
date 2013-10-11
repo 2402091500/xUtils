@@ -123,7 +123,7 @@ public class HttpUtils {
 
     private String defaultResponseTextCharset = HTTP.UTF_8;
 
-    private long currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+    private long currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
 
     private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 15s
 
@@ -171,12 +171,12 @@ public class HttpUtils {
 
     public HttpUtils configHttpGetCacheDefaultExpiry(long defaultExpiry) {
         HttpGetCache.setDefaultExpiryTime(defaultExpiry);
-        currRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+        currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
         return this;
     }
 
-    public HttpUtils configCurrRequestExpiry(long currRequestExpiry) {
-        this.currRequestExpiry = currRequestExpiry;
+    public HttpUtils configCurrentRequestExpiry(long currRequestExpiry) {
+        this.currentRequestExpiry = currRequestExpiry;
         return this;
     }
 
@@ -274,7 +274,7 @@ public class HttpUtils {
 
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, defaultResponseTextCharset, callback);
 
-        handler.setExpiry(currRequestExpiry);
+        handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
@@ -290,7 +290,7 @@ public class HttpUtils {
 
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, defaultResponseTextCharset, callBack);
 
-        handler.setExpiry(currRequestExpiry);
+        handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
@@ -305,7 +305,7 @@ public class HttpUtils {
 
         SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, defaultResponseTextCharset);
 
-        handler.setExpiry(currRequestExpiry);
+        handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params);
 
