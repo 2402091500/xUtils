@@ -129,7 +129,7 @@ public class HttpUtils {
 
     private final static int DEFAULT_RETRY_TIMES = 5;
 
-    private final static int HTTP_THREAD_POOL_SIZE = 3;
+    private final static int DEFAULT_THREAD_POOL_SIZE = 3;
 
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
@@ -144,7 +144,7 @@ public class HttpUtils {
         }
     };
 
-    private static final Executor executor = Executors.newFixedThreadPool(HTTP_THREAD_POOL_SIZE, sThreadFactory);
+    private static Executor executor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE, sThreadFactory);
 
     public HttpClient getHttpClient() {
         return this.httpClient;
@@ -206,6 +206,11 @@ public class HttpUtils {
 
     public HttpUtils configRequestRetryCount(int count) {
         this.httpClient.setHttpRequestRetryHandler(new RetryHandler(count));
+        return this;
+    }
+
+    public HttpUtils configRequestThreadPoolSize(int threadPoolSize) {
+        this.executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
         return this;
     }
 
