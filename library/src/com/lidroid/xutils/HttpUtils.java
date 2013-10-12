@@ -169,13 +169,13 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configHttpGetCacheDefaultExpiry(long defaultExpiry) {
+    public HttpUtils configDefaultHttpGetCacheExpiry(long defaultExpiry) {
         HttpGetCache.setDefaultExpiryTime(defaultExpiry);
         currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
         return this;
     }
 
-    public HttpUtils configCurrentRequestExpiry(long currRequestExpiry) {
+    public HttpUtils configCurrentHttpGetCacheExpiry(long currRequestExpiry) {
         this.currentRequestExpiry = currRequestExpiry;
         return this;
     }
@@ -204,7 +204,7 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configRequestExecutionRetryCount(int count) {
+    public HttpUtils configRequestRetryCount(int count) {
         this.httpClient.setHttpRequestRetryHandler(new RetryHandler(count));
         return this;
     }

@@ -137,7 +137,7 @@ public class HttpFragment extends Fragment {
                 "3.1042851f652496c9362b1cd77d4f849b.2592000.1377530363.3590808424-248414");
 
         HttpUtils http = new HttpUtils();
-        http.configCurrentRequestExpiry(1000 * 10);
+        http.configCurrentHttpGetCacheExpiry(1000 * 10);
         http.send(HttpRequest.HttpMethod.GET,
                 "https://pcs.baidu.com/rest/2.0/pcs/quota",
                 params,
@@ -207,7 +207,7 @@ public class HttpFragment extends Fragment {
         params.addQueryStringParameter("wd", "lidroid");
 
         HttpUtils http = new HttpUtils();
-        http.configCurrentRequestExpiry(1000 * 10);
+        http.configCurrentHttpGetCacheExpiry(1000 * 10);
         try {
             ResponseStream responseStream = http.sendSync(HttpRequest.HttpMethod.GET, "http://www.baidu.com/s", params);
             return responseStream.readString();
