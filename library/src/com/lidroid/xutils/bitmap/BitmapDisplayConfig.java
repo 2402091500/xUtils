@@ -32,7 +32,7 @@ public class BitmapDisplayConfig {
 
     private Animation animation;
 
-    private Drawable loadingDrawable = new ColorDrawable(Color.TRANSPARENT);
+    private Drawable loadingDrawable;
     private Drawable loadFailedDrawable;
 
     private ImageLoadCallBack imageLoadCallBack;
@@ -42,6 +42,8 @@ public class BitmapDisplayConfig {
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
     private Context mContext;
+
+    private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
     public BitmapDisplayConfig(Context context) {
         mContext = context;
@@ -82,7 +84,7 @@ public class BitmapDisplayConfig {
     }
 
     public Drawable getLoadingDrawable() {
-        return loadingDrawable;
+        return loadingDrawable == null ? TRANSPARENT_DRAWABLE : loadingDrawable;
     }
 
     public void setLoadingDrawable(Drawable loadingDrawable) {
@@ -90,7 +92,7 @@ public class BitmapDisplayConfig {
     }
 
     public Drawable getLoadFailedDrawable() {
-        return loadFailedDrawable;
+        return loadFailedDrawable == null ? TRANSPARENT_DRAWABLE : loadFailedDrawable;
     }
 
     public void setLoadFailedDrawable(Drawable loadFailedDrawable) {
