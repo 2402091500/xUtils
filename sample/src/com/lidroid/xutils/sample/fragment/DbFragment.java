@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
-import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.db.table.DbModel;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.sample.R;
@@ -60,7 +59,7 @@ public class DbFragment extends Fragment {
 
         try {
 
-            //DbUtils db = DbUtils.create(this, "/sdcard/", "test");
+            //DbUtils db = DbUtils.create(this.getActivity(), "/sdcard/", "test");
             DbUtils db = DbUtils.create(this.getActivity());
             db.configAllowTransaction(true);
             db.configDebug(true);

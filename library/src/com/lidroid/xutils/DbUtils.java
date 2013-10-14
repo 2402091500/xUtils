@@ -28,7 +28,6 @@ import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +47,7 @@ public class DbUtils {
     private boolean debug = false;
     private boolean allowTransaction = false;
 
-    private DbUtils(DaoConfig config) throws DbException {
+    private DbUtils(DaoConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("daoConfig may not be null");
         }
@@ -59,19 +58,15 @@ public class DbUtils {
 
         String sdCardPath = config.getSdCardPath();
         if (TextUtils.isEmpty(sdCardPath)) {
-            this.database = new SQLiteDbHelper(
-                    config.getContext().getApplicationContext(),
-                    config.getDbName(),
-                    config.getDbVersion(),
-                    config.getDbUpgradeListener()).getWritableDatabase();
+            this.database = new SQLiteDbHelper(config).getWritableDatabase();
         } else {
-            this.database = createDbFileOnSDCard(sdCardPath, config.getDbName());
+            this.database = createDbFileOnSDCard(config);
         }
         this.config = config;
     }
 
 
-    private synchronized static DbUtils getInstance(DaoConfig daoConfig) throws DbException {
+    private synchronized static DbUtils getInstance(DaoConfig daoConfig) {
         DbUtils dao = daoMap.get(daoConfig.getDbName());
         if (dao == null) {
             dao = new DbUtils(daoConfig);
@@ -82,25 +77,25 @@ public class DbUtils {
         return dao;
     }
 
-    public static DbUtils create(Context context) throws DbException {
+    public static DbUtils create(Context context) {
         DaoConfig config = new DaoConfig(context);
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String dbName) throws DbException {
+    public static DbUtils create(Context context, String dbName) {
         DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String sdCardPath, String dbName) throws DbException {
+    public static DbUtils create(Context context, String sdCardPath, String dbName) {
         DaoConfig config = new DaoConfig(context);
         config.setSdCardPath(sdCardPath);
         config.setDbName(dbName);
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) throws DbException {
+    public static DbUtils create(Context context, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) {
         DaoConfig config = new DaoConfig(context);
         config.setDbName(dbName);
         config.setDbVersion(dbVersion);
@@ -108,7 +103,7 @@ public class DbUtils {
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String sdCardPath, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) throws DbException {
+    public static DbUtils create(Context context, String sdCardPath, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) {
         DaoConfig config = new DaoConfig(context);
         config.setSdCardPath(sdCardPath);
         config.setDbName(dbName);
@@ -117,7 +112,7 @@ public class DbUtils {
         return getInstance(config);
     }
 
-    public static DbUtils create(DaoConfig daoConfig) throws DbException {
+    public static DbUtils create(DaoConfig daoConfig) {
         return getInstance(daoConfig);
     }
 
@@ -556,13 +551,13 @@ public class DbUtils {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
     }
 
-    class SQLiteDbHelper extends SQLiteOpenHelper {
+    private class SQLiteDbHelper extends SQLiteOpenHelper {
 
         private DbUpgradeListener mDbUpgradeListener;
 
-        public SQLiteDbHelper(Context context, String name, int version, DbUpgradeListener dbUpgradeListener) {
-            super(context, name, null, version);
-            this.mDbUpgradeListener = dbUpgradeListener;
+        public SQLiteDbHelper(DaoConfig config) {
+            super(config.getContext(), config.getDbName(), null, config.getDbVersion());
+            this.mDbUpgradeListener = config.getDbUpgradeListener();
         }
 
         @Override
@@ -583,21 +578,25 @@ public class DbUtils {
         }
     }
 
-    private SQLiteDatabase createDbFileOnSDCard(String sdCardPath, String dbName) throws DbException {
-        File dbFile = new File(sdCardPath, dbName);
-        if (!dbFile.exists()) {
-            try {
-                if (dbFile.createNewFile()) {
-                    return SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+    private SQLiteDatabase createDbFileOnSDCard(DaoConfig config) {
+        SQLiteDatabase result = null;
+
+        File dbFile = new File(config.getSdCardPath(), config.getDbName());
+        boolean dbFileExists = dbFile.exists();
+        result = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+
+        if (result != null) {
+            int oldVersion = result.getVersion();
+            int newVersion = config.getDbVersion();
+            if (oldVersion != newVersion) {
+                if (dbFileExists) {
+                    config.getDbUpgradeListener().onUpgrade(result, oldVersion, newVersion);
                 }
-            } catch (IOException e) {
-                throw new DbException("create db error", e);
+                result.setVersion(newVersion);
             }
-        } else {
-            return SQLiteDatabase.openOrCreateDatabase(dbFile, null);
         }
 
-        return null;
+        return result;
     }
 
     //***************************** private operations with out transaction *****************************
