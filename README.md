@@ -236,7 +236,7 @@ listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true)
 ### 输出日志 LogUtils
 
 ```java
-// 自动添加TAG，格式： className[methodName, lineNumber]
+// 自动添加TAG，格式： className.methodName(L:lineNumber)
 // 可设置全局的allowD，allowE...，控制是否输出log。
 LogUtils.d("wyouflf");
 ```
