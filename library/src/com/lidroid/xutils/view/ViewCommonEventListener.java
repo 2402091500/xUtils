@@ -353,7 +353,7 @@ public class ViewCommonEventListener implements
                                 listener.scroll(a_m_map.get(a));
                             }
                         }
-                        ((AdapterView) view).setOnItemSelectedListener(listener);
+                        ((AbsListView) view).setOnScrollListener(listener);
                     } else if (annotation.annotationType().equals(OnItemSelected.class)) {
                         View view = finder.findViewById((Integer) value);
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);
