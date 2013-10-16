@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class WhereBuilder {
 
-    private List<String> whereItems;
+    private final List<String> whereItems;
 
     private WhereBuilder() {
         this.whereItems = new ArrayList<String>();
@@ -83,9 +83,13 @@ public class WhereBuilder {
         return this;
     }
 
+    public int getWhereItemSize() {
+        return whereItems.size();
+    }
+
     @Override
     public String toString() {
-        if (whereItems == null || whereItems.size() < 1) {
+        if (whereItems.size() < 1) {
             return "";
         }
         StringBuilder sb = new StringBuilder();

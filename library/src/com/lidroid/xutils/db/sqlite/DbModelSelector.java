@@ -125,12 +125,12 @@ public class DbModelSelector {
             }
         }
         result.append(" FROM ").append(selector.tableName);
-        if (selector.whereBuilder != null) {
+        if (selector.whereBuilder != null && selector.whereBuilder.getWhereItemSize() > 0) {
             result.append(" WHERE ").append(selector.whereBuilder.toString());
         }
         if (!TextUtils.isEmpty(groupByColumnName)) {
             result.append(" GROUP BY ").append(groupByColumnName);
-            if (having != null) {
+            if (having != null && having.getWhereItemSize() > 0) {
                 result.append(" HAVING ").append(having.toString());
             }
         }

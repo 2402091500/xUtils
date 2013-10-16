@@ -104,7 +104,7 @@ public class Selector {
         result.append("SELECT ");
         result.append("*");
         result.append(" FROM ").append(tableName);
-        if (whereBuilder != null) {
+        if (whereBuilder != null && whereBuilder.getWhereItemSize() > 0) {
             result.append(" WHERE ").append(whereBuilder.toString());
         }
         if (orderByList != null) {

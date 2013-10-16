@@ -140,7 +140,7 @@ public class SqlInfoBuilder {
         Table table = Table.get(entityType);
         StringBuilder sb = new StringBuilder(buildDeleteSqlByTableName(table.getTableName()));
 
-        if (whereBuilder != null) {
+        if (whereBuilder != null && whereBuilder.getWhereItemSize() > 0) {
             sb.append(" WHERE ").append(whereBuilder.toString());
         }
 
@@ -193,7 +193,7 @@ public class SqlInfoBuilder {
             result.addBindArg(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
-        if (whereBuilder != null) {
+        if (whereBuilder != null && whereBuilder.getWhereItemSize() > 0) {
             sqlBuffer.append(" WHERE ").append(whereBuilder.toString());
         }
 
