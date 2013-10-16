@@ -156,7 +156,7 @@ public class BitmapGlobalConfig {
     }
 
     public void setThreadPoolSize(int threadPoolSize) {
-        if (threadPoolSize != this.threadPoolSize) {
+        if (threadPoolSize > 0 && threadPoolSize != this.threadPoolSize) {
             _dirty_params_bitmapLoadExecutor = true;
             this.threadPoolSize = threadPoolSize;
         }

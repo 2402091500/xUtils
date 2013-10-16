@@ -141,8 +141,8 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configThreadPoolSize(int poolSize) {
-        globalConfig.setThreadPoolSize(poolSize);
+    public BitmapUtils configThreadPoolSize(int threadPoolSize) {
+        globalConfig.setThreadPoolSize(threadPoolSize);
         return this;
     }
 
