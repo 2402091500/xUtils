@@ -17,13 +17,13 @@ package com.lidroid.xutils.bitmap;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.bitmap.download.SimpleDownloader;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.LruDiskCache;
 
 import java.util.concurrent.ExecutorService;
@@ -56,6 +56,8 @@ public class BitmapGlobalConfig {
     private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 默认30天过期
 
     private LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator;
+
+    private BitmapCacheListener bitmapCacheListener;
 
     private Context mContext;
 
@@ -204,12 +206,20 @@ public class BitmapGlobalConfig {
         }
     }
 
+    public BitmapCacheListener getBitmapCacheListener() {
+        return bitmapCacheListener;
+    }
+
+    public void setBitmapCacheListener(BitmapCacheListener bitmapCacheListener) {
+        this.bitmapCacheListener = bitmapCacheListener;
+    }
+
     private int getMemoryClass() {
         return ((ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
     }
 
     ////////////////////////////////// bitmap cache management task ///////////////////////////////////////
-    private class BitmapCacheManagementTask extends AsyncTask<Object, Void, Void> {
+    private class BitmapCacheManagementTask extends CompatibleAsyncTask<Object, Void, Object[]> {
         public static final int MESSAGE_INIT_MEMORY_CACHE = 0;
         public static final int MESSAGE_INIT_DISK_CACHE = 1;
         public static final int MESSAGE_FLUSH = 2;
@@ -222,39 +232,89 @@ public class BitmapGlobalConfig {
         public static final int MESSAGE_CLEAR_DISK_BY_KEY = 9;
 
         @Override
-        protected Void doInBackground(Object... params) {
+        protected Object[] doInBackground(Object... params) {
+            BitmapCache cache = getBitmapCache();
+            if (cache != null) {
+                try {
+                    switch ((Integer) params[0]) {
+                        case MESSAGE_INIT_MEMORY_CACHE:
+                            cache.initMemoryCache();
+                            break;
+                        case MESSAGE_INIT_DISK_CACHE:
+                            cache.initDiskCache();
+                            break;
+                        case MESSAGE_FLUSH:
+                            cache.clearMemoryCache();
+                            cache.flush();
+                            break;
+                        case MESSAGE_CLOSE:
+                            cache.clearMemoryCache();
+                            cache.close();
+                            break;
+                        case MESSAGE_CLEAR:
+                            cache.clearCache();
+                            break;
+                        case MESSAGE_CLEAR_MEMORY:
+                            cache.clearMemoryCache();
+                            break;
+                        case MESSAGE_CLEAR_DISK:
+                            cache.clearDiskCache();
+                            break;
+                        case MESSAGE_CLEAR_BY_KEY:
+                            cache.clearCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                            break;
+                        case MESSAGE_CLEAR_MEMORY_BY_KEY:
+                            cache.clearMemoryCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                            break;
+                        case MESSAGE_CLEAR_DISK_BY_KEY:
+                            cache.clearDiskCache(String.valueOf(params[1]));
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (Exception e) {
+                    LogUtils.e(e.getMessage(), e);
+                }
+            }
+            return params;
+        }
+
+        @Override
+        protected void onPostExecute(Object[] params) {
+            if (bitmapCacheListener == null || params == null || params.length < 1) {
+                return;
+            }
             try {
                 switch ((Integer) params[0]) {
                     case MESSAGE_INIT_MEMORY_CACHE:
-                        initMemoryCacheInBackground();
+                        bitmapCacheListener.onInitMemoryCacheFinished();
                         break;
                     case MESSAGE_INIT_DISK_CACHE:
-                        initDiskInBackground();
+                        bitmapCacheListener.onInitDiskFinished();
                         break;
                     case MESSAGE_FLUSH:
-                        clearMemoryCacheInBackground();
-                        flushCacheInBackground();
+                        bitmapCacheListener.onFlushCacheFinished();
                         break;
                     case MESSAGE_CLOSE:
-                        clearMemoryCacheInBackground();
-                        closeCacheInBackground();
+                        bitmapCacheListener.onCloseCacheFinished();
+                        break;
                     case MESSAGE_CLEAR:
-                        clearCacheInBackground();
+                        bitmapCacheListener.onClearCacheFinished();
                         break;
                     case MESSAGE_CLEAR_MEMORY:
-                        clearMemoryCacheInBackground();
+                        bitmapCacheListener.onClearMemoryCacheFinished();
                         break;
                     case MESSAGE_CLEAR_DISK:
-                        clearDiskCacheInBackground();
+                        bitmapCacheListener.onClearDiskCacheFinished();
                         break;
                     case MESSAGE_CLEAR_BY_KEY:
-                        clearCacheInBackground(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        bitmapCacheListener.onClearCacheFinished(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
                         break;
                     case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                        clearMemoryCacheInBackground(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        bitmapCacheListener.onClearMemoryCacheFinished(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
                         break;
                     case MESSAGE_CLEAR_DISK_BY_KEY:
-                        clearDiskCacheInBackground(String.valueOf(params[1]));
+                        bitmapCacheListener.onClearDiskCacheFinished(String.valueOf(params[1]));
                         break;
                     default:
                         break;
@@ -262,47 +322,6 @@ public class BitmapGlobalConfig {
             } catch (Exception e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            return null;
-        }
-
-        private void initMemoryCacheInBackground() {
-            getBitmapCache().initMemoryCache();
-        }
-
-        private void initDiskInBackground() {
-            getBitmapCache().initDiskCache();
-        }
-
-        private void clearCacheInBackground() {
-            getBitmapCache().clearCache();
-        }
-
-        private void clearMemoryCacheInBackground() {
-            getBitmapCache().clearMemoryCache();
-        }
-
-        private void clearDiskCacheInBackground() {
-            getBitmapCache().clearDiskCache();
-        }
-
-        private void clearCacheInBackground(String uri, BitmapDisplayConfig config) {
-            getBitmapCache().clearCache(uri, config);
-        }
-
-        private void clearMemoryCacheInBackground(String uri, BitmapDisplayConfig config) {
-            getBitmapCache().clearMemoryCache(uri, config);
-        }
-
-        private void clearDiskCacheInBackground(String uri) {
-            getBitmapCache().clearDiskCache(uri);
-        }
-
-        private void flushCacheInBackground() {
-            getBitmapCache().flush();
-        }
-
-        private void closeCacheInBackground() {
-            getBitmapCache().close();
         }
     }
 

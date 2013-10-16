@@ -395,7 +395,6 @@ public class BitmapCache {
      * disk access so this should not be executed on the main/UI thread.
      */
     public void close() {
-        clearMemoryCache();
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache != null) {
                 try {

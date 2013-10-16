@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import com.lidroid.xutils.bitmap.BitmapCacheListener;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
@@ -158,6 +159,11 @@ public class BitmapUtils {
 
     public BitmapUtils configDiskCacheFileNameGenerator(LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
         globalConfig.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
+        return this;
+    }
+
+    public BitmapUtils configBitmapCacheListener(BitmapCacheListener listener) {
+        globalConfig.setBitmapCacheListener(listener);
         return this;
     }
 
