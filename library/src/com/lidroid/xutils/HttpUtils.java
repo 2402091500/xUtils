@@ -129,14 +129,13 @@ public class HttpUtils {
 
     private final static int DEFAULT_RETRY_TIMES = 5;
 
-    private final static int DEFAULT_THREAD_POOL_SIZE = 3;
-
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r, "HttpUtils #" + mCount.getAndIncrement());
             thread.setPriority(Thread.NORM_PRIORITY - 1);
@@ -144,7 +143,9 @@ public class HttpUtils {
         }
     };
 
-    private static Executor executor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE, sThreadFactory);
+    private static int threadPoolSize = 3;
+
+    private static Executor executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
 
     public HttpClient getHttpClient() {
         return this.httpClient;
@@ -210,7 +211,10 @@ public class HttpUtils {
     }
 
     public HttpUtils configRequestThreadPoolSize(int threadPoolSize) {
-        this.executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
+        if (threadPoolSize > 0 && threadPoolSize != HttpUtils.threadPoolSize) {
+            HttpUtils.threadPoolSize = threadPoolSize;
+            HttpUtils.executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
+        }
         return this;
     }
 
