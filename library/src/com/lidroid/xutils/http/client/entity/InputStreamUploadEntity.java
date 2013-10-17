@@ -17,7 +17,6 @@ package com.lidroid.xutils.http.client.entity;
 
 import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
 import com.lidroid.xutils.util.IOUtils;
-
 import org.apache.http.entity.AbstractHttpEntity;
 
 import java.io.IOException;
@@ -75,7 +74,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                     uploadedSize += l;
                     if (callBackHandler != null) {
                         if (!callBackHandler.updateProgress(uploadedSize + 1, uploadedSize, false)) {
-                            return;
+                            break;
                         }
                     }
                 }
@@ -92,7 +91,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                     uploadedSize += l;
                     if (callBackHandler != null) {
                         if (!callBackHandler.updateProgress(length, uploadedSize, false)) {
-                            return;
+                            break;
                         }
                     }
                 }
@@ -112,7 +111,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
 
     /**
      * @deprecated Either use {@link #getContent()} and call {@link java.io.InputStream#close()} on that;
-     * otherwise call {@link #writeTo(java.io.OutputStream)} which is required to free the resources.
+     *             otherwise call {@link #writeTo(java.io.OutputStream)} which is required to free the resources.
      */
     public void consumeContent() throws IOException {
         // If the input stream is from a connection, closing it will read to
