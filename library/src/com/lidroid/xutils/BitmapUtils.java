@@ -315,6 +315,12 @@ public class BitmapUtils {
         private Drawable baseDrawable;
 
         public AsyncBitmapDrawable(Drawable drawable, BitmapLoadTask bitmapWorkerTask) {
+            if (drawable == null) {
+                throw new IllegalArgumentException("drawable may not be null");
+            }
+            if (bitmapWorkerTask == null) {
+                throw new IllegalArgumentException("bitmapWorkerTask may not be null");
+            }
             baseDrawable = drawable;
             bitmapLoadTaskReference = new WeakReference<BitmapLoadTask>(bitmapWorkerTask);
         }
