@@ -24,7 +24,7 @@ public class ViewFinder {
         this.activity = activity;
     }
 
-    private ViewFinder(PreferenceActivity preferenceActivity) {
+    public ViewFinder(PreferenceActivity preferenceActivity) {
         this.preferenceActivity = preferenceActivity;
         this.activity = preferenceActivity;
     }

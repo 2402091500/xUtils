@@ -29,7 +29,7 @@ public class Foreign extends Column {
 
     private String foreignColumnName;
 
-    protected Foreign(Class entityType, Field field) {
+    protected Foreign(Class<?> entityType, Field field) {
         super(entityType, field);
         foreignColumnName = ColumnUtils.getForeignColumnNameByField(field);
     }
@@ -51,7 +51,7 @@ public class Foreign extends Column {
     public void setValue2Entity(Object entity, String valueStr) {
         Object value = null;
         if (valueStr != null) {
-            Class columnType = columnField.getType();
+            Class<?> columnType = columnField.getType();
             Object columnValue = ColumnUtils.valueStr2SimpleTypeFieldValue(getForeignColumnType(), valueStr);
             if (columnType.equals(ForeignLazyLoader.class)) {
                 value = new ForeignLazyLoader(this, columnValue);
@@ -92,19 +92,19 @@ public class Foreign extends Column {
         Object valueObj = getFieldValue(entity);
 
         if (valueObj != null) {
-            Class columnType = columnField.getType();
+            Class<?> columnType = columnField.getType();
             if (columnType.equals(ForeignLazyLoader.class)) {
                 valueObj = ((ForeignLazyLoader) valueObj).getColumnValue();
             } else if (columnType.equals(List.class)) {
                 try {
-                    List foreignEntities = (List) valueObj;
+                    List<?> foreignEntities = (List<?>) valueObj;
                     if (foreignEntities.size() > 0) {
 
                         if (this.db != null) {
                             this.db.saveOrUpdateAll(foreignEntities);
                         }
 
-                        Class foreignEntityType = ColumnUtils.getForeignEntityType(this);
+                        Class<?> foreignEntityType = ColumnUtils.getForeignEntityType(this);
                         Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
                         valueObj = column.getColumnValue(foreignEntities.get(0));
                     }

@@ -138,7 +138,7 @@ public class ColumnUtils {
         return isSimpleColumnType(clazz);
     }
 
-    public static boolean isSimpleColumnType(Class columnType) {
+    public static boolean isSimpleColumnType(Class<?> columnType) {
         return columnType.isPrimitive() ||
                 columnType.equals(String.class) ||
                 columnType.equals(Integer.class) ||
@@ -175,7 +175,7 @@ public class ColumnUtils {
         }
     }
 
-    public static Object valueStr2SimpleTypeFieldValue(Class columnFieldType, final String valueStr) {
+    public static Object valueStr2SimpleTypeFieldValue(Class<?> columnFieldType, final String valueStr) {
         Object value = null;
         if (isSimpleColumnType(columnFieldType) && valueStr != null) {
             if (columnFieldType.equals(String.class) || columnFieldType.equals(CharSequence.class)) {

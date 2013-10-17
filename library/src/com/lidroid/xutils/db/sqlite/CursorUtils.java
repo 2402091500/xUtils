@@ -110,7 +110,7 @@ public class CursorUtils {
          * k2: idValue
          * value: entity
          */
-        private static final DoubleKeyValueMap<Class, String, Object> cache = new DoubleKeyValueMap<Class, String, Object>();
+        private static final DoubleKeyValueMap<Class<?>, String, Object> cache = new DoubleKeyValueMap<Class<?>, String, Object>();
 
         private static long seq = 0;
 

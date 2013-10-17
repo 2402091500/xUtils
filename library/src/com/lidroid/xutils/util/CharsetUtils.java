@@ -17,7 +17,6 @@ package com.lidroid.xutils.util;
 
 import org.apache.http.protocol.HTTP;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**

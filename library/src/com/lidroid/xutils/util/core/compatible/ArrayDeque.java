@@ -492,14 +492,6 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         return removeFirst();
     }
 
-    private void checkInvariants() {
-        // assert elements[tail] == null;
-        // assert head == tail ? elements[head] == null :
-        //     (elements[head] != null &&
-        //      elements[(tail - 1) & (elements.length - 1)] != null);
-        // assert elements[(head - 1) & (elements.length - 1)] == null;
-    }
-
     /**
      * Removes the element at the specified position in the elements array,
      * adjusting head and tail as necessary.  This can result in motion of

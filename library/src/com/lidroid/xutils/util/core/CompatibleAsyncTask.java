@@ -558,6 +558,8 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
                     throw new IllegalStateException("Cannot execute task:"
                             + " the task has already been executed "
                             + "(a task can be executed only once)");
+			    default:
+				    break;
             }
         }
 
@@ -616,7 +618,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
         @Override
         public void handleMessage(Message msg) {
-            AsyncTaskResult result = (AsyncTaskResult) msg.obj;
+            AsyncTaskResult<?> result = (AsyncTaskResult<?>) msg.obj;
             switch (msg.what) {
                 case MESSAGE_POST_RESULT:
                     // There is only one result

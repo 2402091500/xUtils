@@ -18,7 +18,6 @@ package com.lidroid.xutils.util;
 import android.database.Cursor;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  * Author: wyouflf

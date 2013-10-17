@@ -21,7 +21,7 @@ public class Finder extends Column {
 
     private String targetColumnName;
 
-    protected Finder(Class entityType, Field field) {
+    protected Finder(Class<?> entityType, Field field) {
         super(entityType, field);
 
         com.lidroid.xutils.db.annotation.Finder finder = field.getAnnotation(com.lidroid.xutils.db.annotation.Finder.class);
@@ -36,7 +36,7 @@ public class Finder extends Column {
     @Override
     public void setValue2Entity(Object entity, String valueStr) {
         Object value = null;
-        Class columnType = columnField.getType();
+        Class<?> columnType = columnField.getType();
         Object finderValue = TableUtils.getColumnOrId(entity.getClass(), this.valueColumnName).getColumnValue(entity);
         if (columnType.equals(FinderLazyLoader.class)) {
             value = new FinderLazyLoader(this, finderValue);

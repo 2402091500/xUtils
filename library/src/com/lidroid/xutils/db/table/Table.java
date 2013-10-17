@@ -34,13 +34,13 @@ public class Table {
      */
     private static final HashMap<String, Table> tableMap = new HashMap<String, Table>();
 
-    private Table(Class entityType) {
+    private Table(Class<?> entityType) {
         this.tableName = TableUtils.getTableName(entityType);
         this.id = TableUtils.getId(entityType);
         this.columnMap = TableUtils.getColumnMap(entityType);
     }
 
-    public static synchronized Table get(Class entityType) {
+    public static synchronized Table get(Class<?> entityType) {
 
         Table table = tableMap.get(entityType.getCanonicalName());
         if (table == null) {

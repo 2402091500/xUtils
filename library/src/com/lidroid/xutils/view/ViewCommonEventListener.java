@@ -322,10 +322,10 @@ public class ViewCommonEventListener implements
                         view.setOnLongClickListener(new ViewCommonEventListener(handler).longClick(method));
                     } else if (annotation.annotationType().equals(OnItemClick.class)) {
                         View view = finder.findViewById((Integer) value);
-                        ((AdapterView) view).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(method));
+                        ((AdapterView<?>) view).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(method));
                     } else if (annotation.annotationType().equals(OnItemLongClick.class)) {
                         View view = finder.findViewById((Integer) value);
-                        ((AdapterView) view).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(method));
+                        ((AdapterView<?>) view).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(method));
                     } else if (annotation.annotationType().equals(OnCheckedChange.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view instanceof RadioGroup) {
@@ -365,7 +365,7 @@ public class ViewCommonEventListener implements
                                 listener.noSelected(a_m_map.get(a));
                             }
                         }
-                        ((AdapterView) view).setOnItemSelectedListener(listener);
+                        ((AdapterView<?>) view).setOnItemSelectedListener(listener);
                     } else if (annotation.annotationType().equals(OnProgressChanged.class)) {
                         View view = finder.findViewById((Integer) value);
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);

@@ -105,7 +105,7 @@ abstract class DecompressingEntity extends HttpEntityWrapper implements UploadEn
                 uploadedSize += len;
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(uncompressedLength, uploadedSize, false)) {
-                        return;
+                        break;
                     }
                 }
             }

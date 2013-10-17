@@ -30,7 +30,7 @@ public class Column {
 
     protected Field columnField;
 
-    protected Column(Class entityType, Field field) {
+    protected Column(Class<?> entityType, Field field) {
         this.columnField = field;
         this.columnName = ColumnUtils.getColumnNameByField(field);
         this.defaultValue = ColumnUtils.getColumnDefaultValue(field);
@@ -43,7 +43,7 @@ public class Column {
 
         Object value = null;
         if (valueStr != null) {
-            Class columnType = columnField.getType();
+            Class<?> columnType = columnField.getType();
             value = ColumnUtils.valueStr2SimpleTypeFieldValue(columnType, valueStr);
         }
 
