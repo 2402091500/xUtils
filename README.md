@@ -225,8 +225,9 @@ handler.stop();
 ## BitmapUtils 使用方法
 
 ```java
-BitmapUtils.create(this).display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
-//BitmapUtils.create(this).display(testImageView, "/sdcard/test.jpg"); //支持加载本地图片
+BitmapUtils bitmapUtils = new BitmapUtils(this);
+bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
+//bitmapUtils.display(testImageView, "/sdcard/test.jpg"); //支持加载本地图片
 
 // 使用ListView等容器展示图片时可通过PauseOnScrollListener控制滑动和快速滑动过程中时候暂停加载图片
 listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
