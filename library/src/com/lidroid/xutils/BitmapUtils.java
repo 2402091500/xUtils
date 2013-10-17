@@ -312,7 +312,7 @@ public class BitmapUtils {
 
         private final WeakReference<BitmapLoadTask> bitmapLoadTaskReference;
 
-        private Drawable baseDrawable;
+        private final Drawable baseDrawable;
 
         public AsyncBitmapDrawable(Drawable drawable, BitmapLoadTask bitmapWorkerTask) {
             if (drawable == null) {
