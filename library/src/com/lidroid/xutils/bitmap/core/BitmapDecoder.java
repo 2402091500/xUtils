@@ -40,7 +40,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeResource(res, resId, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -59,7 +59,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeFile(filename, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -78,7 +78,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -97,7 +97,7 @@ public class BitmapDecoder {
         }
         try {
             return BitmapFactory.decodeByteArray(data, 0, data.length, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -109,7 +109,7 @@ public class BitmapDecoder {
         options.inInputShareable = true;
         try {
             return BitmapFactory.decodeResource(res, resId, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -121,7 +121,7 @@ public class BitmapDecoder {
         options.inInputShareable = true;
         try {
             return BitmapFactory.decodeFile(filename, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -133,7 +133,7 @@ public class BitmapDecoder {
         options.inInputShareable = true;
         try {
             return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
@@ -145,7 +145,7 @@ public class BitmapDecoder {
         options.inInputShareable = true;
         try {
             return BitmapFactory.decodeByteArray(data, 0, data.length, options);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return null;
         }
