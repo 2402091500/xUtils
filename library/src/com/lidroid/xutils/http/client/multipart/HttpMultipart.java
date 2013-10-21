@@ -202,17 +202,19 @@ class HttpMultipart {
                 case BROWSER_COMPATIBLE:
                     // Only write Content-Disposition
                     // Use content charset
-                    MinimalField cd = part.getHeader().getField(MIME.CONTENT_DISPOSITION);
+                    MinimalField cd = header.getField(MIME.CONTENT_DISPOSITION);
                     writeField(cd, this.charset, out);
                     callBackInfo.pos += encode(this.charset,
                             cd.getName() + cd.getBody()).length() + FIELD_SEP.length() + CR_LF.length();
                     String filename = part.getBody().getFilename();
                     if (filename != null) {
-                        MinimalField ct = part.getHeader().getField(MIME.CONTENT_TYPE);
+                        MinimalField ct = header.getField(MIME.CONTENT_TYPE);
                         writeField(ct, this.charset, out);
                         callBackInfo.pos += encode(this.charset,
                                 ct.getName() + ct.getBody()).length() + FIELD_SEP.length() + CR_LF.length();
                     }
+                    break;
+                default:
                     break;
             }
             writeBytes(CR_LF, out);
