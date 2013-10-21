@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.util;
 
+import android.text.TextUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
@@ -25,6 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 
 /**
@@ -64,7 +66,16 @@ public class OtherUtils {
                 }
             }
         }
-        return result;
+
+        boolean isSupportedCharset =  false;
+        if (!TextUtils.isEmpty(result)){
+            try {
+                isSupportedCharset = Charset.isSupported(result);
+            } catch (Exception e) {
+            }
+        }
+
+        return isSupportedCharset ? result : null;
     }
 
     public static StackTraceElement getCurrentStackTraceElement() {
