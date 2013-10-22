@@ -83,6 +83,11 @@ public class WhereBuilder {
         return this;
     }
 
+    public WhereBuilder appendExpression(String expr) {
+        whereItems.add(" " + expr + " ");
+        return this;
+    }
+
     public int getWhereItemSize() {
         return whereItems.size();
     }
@@ -101,24 +106,33 @@ public class WhereBuilder {
 
     private void appendCondition(String conj, String columnName, String op, Object value) {
         StringBuilder sqlSb = new StringBuilder();
+
+        // append conj
         if (!TextUtils.isEmpty(conj)) {
             sqlSb.append(" " + conj + " ");
         }
+
+        // append columnName
+        sqlSb.append(columnName);
+
+        // convert op
         if ("!=".equals(op)) {
             op = "<>";
         } else if ("==".equals(op)) {
             op = "=";
         }
+
+        // append op & value
         if (value == null) {
             if ("=".equals(op)) {
-                sqlSb.append(columnName).append(" IS NULL");
+                sqlSb.append(" IS NULL");
             } else if ("<>".equals(op)) {
-                sqlSb.append(columnName).append(" IS NOT NULL");
+                sqlSb.append(" IS NOT NULL");
             } else {
-                sqlSb.append(columnName).append(" " + op + " NULL");
+                sqlSb.append(" " + op + " NULL");
             }
         } else {
-            sqlSb.append(columnName).append(" " + op + " ");
+            sqlSb.append(" " + op + " ");
             value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
             if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
                 String valueStr = value.toString();
