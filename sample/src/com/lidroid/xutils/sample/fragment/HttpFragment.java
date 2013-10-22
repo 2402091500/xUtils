@@ -96,16 +96,16 @@ public class HttpFragment extends Fragment {
     //@OnClick(R.id.download_btn)
     public void testUpload(View view) {
         RequestParams params = new RequestParams();
-        params.addQueryStringParameter("method", "upload");
-        params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
+        //params.addQueryStringParameter("method", "upload");
+        //params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
         // 请在百度的开放api测试页面找到自己的access_token
-        params.addQueryStringParameter("access_token",
-                "3.9b885b6c56b8798ab69b3ba39238e4fc.2592000.1384929178.3590808424-248414");
+        //params.addQueryStringParameter("access_token",
+        //        "3.9b885b6c56b8798ab69b3ba39238e4fc.2592000.1384929178.3590808424-248414");
         params.addBodyParameter("file", new File("/sdcard/test.zip"));
 
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.POST,
-                "https://c.pcs.baidu.com/rest/2.0/pcs/file",
+                "http://192.168.1.6:8080/UploadServlet",
                 params,
                 new RequestCallBack<String>() {
 
