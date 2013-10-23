@@ -55,22 +55,32 @@ public class Selector {
     }
 
     public Selector and(String columnName, String op, Object value) {
-        this.whereBuilder.append(columnName, op, value);
+        this.whereBuilder.and(columnName, op, value);
+        return this;
+    }
+
+    public Selector and(WhereBuilder where) {
+        this.whereBuilder.expr("AND (" + where.toString() + ")");
         return this;
     }
 
     public Selector or(String columnName, String op, Object value) {
-        this.whereBuilder.appendOR(columnName, op, value);
+        this.whereBuilder.or(columnName, op, value);
+        return this;
+    }
+
+    public Selector or(WhereBuilder where) {
+        this.whereBuilder.expr("OR (" + where.toString() + ")");
         return this;
     }
 
     public Selector expr(String expr) {
-        this.whereBuilder.appendExpression(expr);
+        this.whereBuilder.expr(expr);
         return this;
     }
 
     public Selector expr(String columnName, String op, Object value) {
-        this.whereBuilder.appendExpression(columnName, op, value);
+        this.whereBuilder.expr(columnName, op, value);
         return this;
     }
 
