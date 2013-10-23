@@ -28,7 +28,7 @@ public class HttpGetCache {
      * key: url
      * value: response result
      */
-    private LruMemoryCache<String, String> mMemoryCache;
+    private final LruMemoryCache<String, String> mMemoryCache;
 
     private final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
@@ -90,10 +90,7 @@ public class HttpGetCache {
         if (expiry < MIN_EXPIRY_TIME) {
             expiry = MIN_EXPIRY_TIME;
         }
-
-        if (mMemoryCache != null) {
-            mMemoryCache.put(url, result, System.currentTimeMillis() + expiry);
-        }
+        mMemoryCache.put(url, result, System.currentTimeMillis() + expiry);
     }
 
     public String get(String url) {
