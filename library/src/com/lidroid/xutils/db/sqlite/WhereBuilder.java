@@ -112,9 +112,11 @@ public class WhereBuilder {
     private void appendCondition(String conj, String columnName, String op, Object value) {
         StringBuilder sqlSb = new StringBuilder();
 
+        sqlSb.append(" ");
+
         // append conj
         if (!TextUtils.isEmpty(conj)) {
-            sqlSb.append(" " + conj + " ");
+            sqlSb.append(conj + " ");
         }
 
         // append columnName
