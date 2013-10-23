@@ -17,6 +17,7 @@ package com.lidroid.xutils.http.client.callback;
 
 import com.lidroid.xutils.util.IOUtils;
 
+import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.HttpEntity;
 
 import java.io.BufferedReader;
@@ -44,7 +45,7 @@ public class StringDownloadHandler {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
-                current += line.getBytes(charset).length;
+                current += OtherUtils.sizeOfString(line, charset);
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
                         return sb.toString();

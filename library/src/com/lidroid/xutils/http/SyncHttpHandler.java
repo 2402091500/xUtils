@@ -93,7 +93,7 @@ public class SyncHttpHandler {
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } catch (HttpException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 exception = new IOException(e.getMessage());
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             } finally {

@@ -26,6 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 
@@ -67,8 +68,8 @@ public class OtherUtils {
             }
         }
 
-        boolean isSupportedCharset =  false;
-        if (!TextUtils.isEmpty(result)){
+        boolean isSupportedCharset = false;
+        if (!TextUtils.isEmpty(result)) {
             try {
                 isSupportedCharset = Charset.isSupported(result);
             } catch (Exception e) {
@@ -76,6 +77,29 @@ public class OtherUtils {
         }
 
         return isSupportedCharset ? result : null;
+    }
+
+    private static final int STRING_BUFFER_LENGTH = 100;
+
+    public static long sizeOfString(String str, String charset) throws UnsupportedEncodingException {
+        if (TextUtils.isEmpty(str)) {
+            return 0;
+        }
+        int len = str.length();
+        if (len < STRING_BUFFER_LENGTH) {
+            return str.getBytes(charset).length;
+        }
+        long size = 0;
+        for (int i = 0; i < str.length(); i += STRING_BUFFER_LENGTH) {
+            String temp = getSubString(str, i, i + STRING_BUFFER_LENGTH);
+            size += temp.getBytes(charset).length;
+        }
+        return size;
+    }
+
+    // get the sub string for large string
+    public static String getSubString(String str, int start, int end) {
+        return new String(str.substring(start, end));
     }
 
     public static StackTraceElement getCurrentStackTraceElement() {
