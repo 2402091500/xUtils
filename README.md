@@ -62,13 +62,15 @@ Parent entity = db.findById(Parent.class, parent.getId());
 Parent entity = db.findFirst(entity);//通过entity的属性查找
 List<Parent> list = db.findAll(entity);//通过entity的属性查找
 Parent Parent = db.findFirst(Selector.from(Parent.class).where("name","=","test"));
+
+// WHERE id<54 AND (age>20 OR age<30) ORDER BY id LIMIT pageSize OFFSET pageOffset
 List<Parent> list = db.findAll(Selector.from(Parent.class)
-                                   .where("id","<",54)
-                                   .and("age",">",30)
-                                   .or("age","<",20)
+                                   .where("id" ,"<", 54)
+                                   .and(WhereBuilder.b("age", ">", 20).or("age", " < ", 30))
                                    .orderBy("id")
-                                   .limit(10)
-                                   .offset(0));
+                                   .limit(pageSize)
+                                   .offset(pageSize * pageIndex));
+
 DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
 ...
