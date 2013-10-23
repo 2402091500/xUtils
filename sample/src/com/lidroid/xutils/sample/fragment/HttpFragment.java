@@ -51,7 +51,7 @@ public class HttpFragment extends Fragment {
     @ViewInject(R.id.result_txt)
     private TextView resultText;
 
-    //@OnClick(R.id.download_btn)
+    @OnClick(R.id.download_btn)
     public void download(View view) {
         HttpUtils http = new HttpUtils();
         handler = http.download(
@@ -132,7 +132,7 @@ public class HttpFragment extends Fragment {
                 });
     }
 
-    @OnClick(R.id.download_btn)
+    //@OnClick(R.id.download_btn)
     public void testGet(View view) {
         HttpUtils http = new HttpUtils();
         http.configCurrentHttpGetCacheExpiry(1000 * 10);
