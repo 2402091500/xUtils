@@ -15,7 +15,10 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.text.TextUtils;
+
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class Table {
@@ -49,6 +52,26 @@ public class Table {
         }
 
         return table;
+    }
+
+    public static synchronized void remove(Class<?> entityType) {
+        tableMap.remove(entityType.getCanonicalName());
+    }
+
+    public static synchronized void remove(String tableName) {
+        if (tableMap.size() > 0) {
+            String key = null;
+            for (Map.Entry<String, Table> entry : tableMap.entrySet()) {
+                Table table = entry.getValue();
+                if (table != null && table.getTableName().equals(tableName)) {
+                    key = entry.getKey();
+                    break;
+                }
+            }
+            if (TextUtils.isEmpty(key)) {
+                tableMap.remove(key);
+            }
+        }
     }
 
     public String getTableName() {

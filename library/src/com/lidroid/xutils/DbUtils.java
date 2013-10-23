@@ -692,7 +692,9 @@ public class DbUtils {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     try {
-                        execNonQuery("DROP TABLE " + cursor.getString(0));
+                        String tableName = cursor.getString(0);
+                        execNonQuery("DROP TABLE " + tableName);
+                        Table.remove(tableName);
                     } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
@@ -707,6 +709,7 @@ public class DbUtils {
         if (!tableIsExist(entityType)) return;
         Table table = Table.get(entityType);
         execNonQuery("DROP TABLE " + table.getTableName());
+        Table.remove(entityType);
     }
 
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
