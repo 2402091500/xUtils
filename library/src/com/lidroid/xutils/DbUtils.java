@@ -310,12 +310,17 @@ public class DbUtils {
         }
     }
 
-    public void update(Object entity) throws DbException {
+    /**
+     * @param entity
+     * @param updateColumnNames if null, update all columns.
+     * @throws DbException
+     */
+    public void update(Object entity, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
-            updateWithoutTransaction(entity);
+            updateWithoutTransaction(entity, updateColumnNames);
 
             setTransactionSuccessful();
         } finally {
@@ -323,13 +328,18 @@ public class DbUtils {
         }
     }
 
-    public void updateAll(List<?> entities) throws DbException {
+    /**
+     * @param entities
+     * @param updateColumnNames if null, update all columns.
+     * @throws DbException
+     */
+    public void updateAll(List<?> entities, String... updateColumnNames) throws DbException {
         if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
             for (Object entity : entities) {
-                updateWithoutTransaction(entity);
+                updateWithoutTransaction(entity, updateColumnNames);
             }
 
             setTransactionSuccessful();
@@ -338,12 +348,18 @@ public class DbUtils {
         }
     }
 
-    public void update(Object entity, WhereBuilder whereBuilder) throws DbException {
+    /**
+     * @param entity
+     * @param whereBuilder
+     * @param updateColumnNames if null, update all columns.
+     * @throws DbException
+     */
+    public void update(Object entity, WhereBuilder whereBuilder, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
-            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, whereBuilder));
+            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, whereBuilder, updateColumnNames));
 
             setTransactionSuccessful();
         } finally {
@@ -653,8 +669,8 @@ public class DbUtils {
         execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
     }
 
-    private void updateWithoutTransaction(Object entity) throws DbException {
-        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity));
+    private void updateWithoutTransaction(Object entity, String... updateColumnNames) throws DbException {
+        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, updateColumnNames));
     }
 
     //************************************************ tools ***********************************
