@@ -90,8 +90,10 @@ public class OtherUtils {
             return str.getBytes(charset).length;
         }
         long size = 0;
-        for (int i = 0; i < str.length(); i += STRING_BUFFER_LENGTH) {
-            String temp = getSubString(str, i, i + STRING_BUFFER_LENGTH);
+        for (int i = 0; i < len; i += STRING_BUFFER_LENGTH) {
+            int end = i + STRING_BUFFER_LENGTH;
+            end = end < len ? end : len;
+            String temp = getSubString(str, i, end);
             size += temp.getBytes(charset).length;
         }
         return size;
