@@ -269,6 +269,20 @@ public class DbUtils {
         }
     }
 
+    public void deleteAll(Class<?> entityType) throws DbException {
+        if (!tableIsExist(entityType)) return;
+        try {
+            beginTransaction();
+
+            SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, null);
+            execNonQuery(sql);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
     public void deleteById(Class<?> entityType, Object idValue) throws DbException {
         if (!tableIsExist(entityType)) return;
         try {
