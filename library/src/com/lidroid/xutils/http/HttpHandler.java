@@ -236,30 +236,28 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         return null;
     }
 
-    private boolean mStop = false;
+    private boolean mStopped = false;
 
     /**
      * stop request task.
      */
     @Override
     public void stop() {
-        this.mStop = true;
+        this.mStopped = true;
         if (!this.isCancelled()) {
             this.cancel(true);
         }
     }
 
-    public boolean isStop() {
-        return mStop;
+    @Override
+    public boolean isStopped() {
+        return mStopped;
     }
 
     private long lastUpdateTime;
 
     @Override
     public boolean updateProgress(long total, long current, boolean forceUpdateUI) {
-        if (mStop) {
-            return !mStop;
-        }
         if (callback != null) {
             if (forceUpdateUI) {
                 publishProgress(UPDATE_LOADING, total, current);
@@ -271,7 +269,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 }
             }
         }
-        return !mStop;
+        return !mStopped;
     }
 
 }
