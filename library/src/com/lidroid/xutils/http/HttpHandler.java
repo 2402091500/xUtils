@@ -242,9 +242,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     @Override
     public void stop() {
         this.mStop = true;
-        if (request != null && !request.isAborted()) {
-            request.abort();
-        }
         if (!this.isCancelled()) {
             this.cancel(true);
         }
