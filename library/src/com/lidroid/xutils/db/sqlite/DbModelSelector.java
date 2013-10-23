@@ -73,6 +73,11 @@ public class DbModelSelector {
         return this;
     }
 
+    public DbModelSelector expr(String columnName, String op, Object value) {
+        selector.expr(columnName, op, value);
+        return this;
+    }
+
     public DbModelSelector groupBy(String columnName) {
         this.groupByColumnName = columnName;
         return this;

@@ -88,6 +88,11 @@ public class WhereBuilder {
         return this;
     }
 
+    public WhereBuilder appendExpression(String columnName, String op, Object value) {
+        appendCondition(null, columnName, op, value);
+        return this;
+    }
+
     public int getWhereItemSize() {
         return whereItems.size();
     }

@@ -69,6 +69,11 @@ public class Selector {
         return this;
     }
 
+    public Selector expr(String columnName, String op, Object value) {
+        this.whereBuilder.appendExpression(columnName, op, value);
+        return this;
+    }
+
     public DbModelSelector groupBy(String columnName) {
         return new DbModelSelector(this, columnName);
     }
