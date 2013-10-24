@@ -89,7 +89,10 @@ public class ViewUtils {
                 if (viewInject != null) {
                     try {
                         field.setAccessible(true);
-                        field.set(handler, finder.findViewById(viewInject.value()));
+                        View view = finder.findViewById(viewInject.value());
+                        if (view != null) {
+                            field.set(handler, view);
+                        }
                     } catch (Exception e) {
                         LogUtils.e(e.getMessage(), e);
                     }
