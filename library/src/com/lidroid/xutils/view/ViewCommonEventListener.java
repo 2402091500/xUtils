@@ -316,18 +316,23 @@ public class ViewCommonEventListener implements
                     Method method = annotation_method_map.get(annotation);
                     if (annotation.annotationType().equals(OnClick.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         view.setOnClickListener(new ViewCommonEventListener(handler).click(method));
                     } else if (annotation.annotationType().equals(OnLongClick.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         view.setOnLongClickListener(new ViewCommonEventListener(handler).longClick(method));
                     } else if (annotation.annotationType().equals(OnItemClick.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ((AdapterView<?>) view).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(method));
                     } else if (annotation.annotationType().equals(OnItemLongClick.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ((AdapterView<?>) view).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(method));
                     } else if (annotation.annotationType().equals(OnCheckedChange.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         if (view instanceof RadioGroup) {
                             ((RadioGroup) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).radioGroupCheckedChanged(method));
                         } else if (view instanceof CompoundButton) {
@@ -335,15 +340,19 @@ public class ViewCommonEventListener implements
                         }
                     } else if (annotation.annotationType().equals(OnPreferenceChange.class)) {
                         Preference preference = finder.findPreference(value.toString());
+                        if (preference == null) continue;
                         preference.setOnPreferenceChangeListener(new ViewCommonEventListener(handler).preferenceChange(method));
                     } else if (annotation.annotationType().equals(OnTabChange.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ((TabHost) view).setOnTabChangedListener(new ViewCommonEventListener(handler).tabChanged(method));
                     } else if (annotation.annotationType().equals(OnScrollChanged.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler).scrollChanged(method));
                     } else if (annotation.annotationType().equals(OnScrollStateChanged.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
@@ -356,6 +365,7 @@ public class ViewCommonEventListener implements
                         ((AbsListView) view).setOnScrollListener(listener);
                     } else if (annotation.annotationType().equals(OnItemSelected.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
@@ -368,6 +378,7 @@ public class ViewCommonEventListener implements
                         ((AdapterView<?>) view).setOnItemSelectedListener(listener);
                     } else if (annotation.annotationType().equals(OnProgressChanged.class)) {
                         View view = finder.findViewById((Integer) value);
+                        if (view == null) continue;
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler);
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
