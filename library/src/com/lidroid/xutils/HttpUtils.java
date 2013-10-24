@@ -199,6 +199,11 @@ public class HttpUtils {
         return this;
     }
 
+    public HttpUtils configRegisterScheme(Scheme scheme) {
+        this.httpClient.getConnectionManager().getSchemeRegistry().register(scheme);
+        return this;
+    }
+
     public HttpUtils configSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
         Scheme scheme = new Scheme("https", sslSocketFactory, 443);
         this.httpClient.getConnectionManager().getSchemeRegistry().register(scheme);
