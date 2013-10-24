@@ -52,6 +52,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     }
 
     private HttpRequestBase request;
+    private boolean isUploading = true;
     private final RequestCallBack<T> callback;
 
     private int retriedTimes = 0;
@@ -175,11 +176,11 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 if (callback != null) {
                     callback.onLoading(
                             Long.valueOf(String.valueOf(values[1])),
-                            Long.valueOf(String.valueOf(values[2])));
+                            Long.valueOf(String.valueOf(values[2])),
+                            isUploading);
                 }
                 break;
             case UPDATE_FAILURE:
-                this.stop();
                 if (callback != null) {
                     callback.onFailure((HttpException) values[1], (String) values[2]);
                 }
@@ -205,6 +206,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
             HttpEntity entity = response.getEntity();
             Object responseBody = null;
             if (entity != null) {
+                isUploading = false;
                 lastUpdateTime = SystemClock.uptimeMillis();
                 if (isDownloadingFile) {
                     String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
@@ -244,6 +246,9 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     @Override
     public void stop() {
         this.mStopped = true;
+        if (!request.isAborted()) {
+            request.abort();
+        }
         if (!this.isCancelled()) {
             this.cancel(true);
         }

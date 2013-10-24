@@ -67,7 +67,7 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onLoading(long total, long current) {
+                    public void onLoading(long total, long current, boolean isUploading) {
                         resultText.setText(current + "/" + total);
                     }
 
@@ -115,7 +115,7 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onLoading(long total, long current) {
+                    public void onLoading(long total, long current, boolean isUploading) {
                         resultText.setText(current + "/" + total);
                     }
 
@@ -146,7 +146,7 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onLoading(long total, long current) {
+                    public void onLoading(long total, long current, boolean isUploading) {
                         resultText.setText(current + "/" + total);
                     }
 
@@ -181,7 +181,7 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onLoading(long total, long current) {
+                    public void onLoading(long total, long current, boolean isUploading) {
                         resultText.setText(current + "/" + total);
                     }
 

@@ -29,7 +29,7 @@ public abstract class RequestCallBack<T> {
     public void onStart() {
     }
 
-    public void onLoading(long total, long current) {
+    public void onLoading(long total, long current, boolean isUploading) {
     }
 
     public abstract void onSuccess(T result);
