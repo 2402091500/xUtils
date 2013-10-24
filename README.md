@@ -117,7 +117,7 @@ http.send(HttpRequest.HttpMethod.GET,
     "http://www.lidroid.com",
     new RequestCallBack<String>(){
         @Override
-        public void onLoading(long total, long current) {
+        public void onLoading(long total, long current, boolean isUploading) {
             testTextView.setText(current + "/" + total);
         }
 
@@ -167,7 +167,7 @@ http.send(HttpRequest.HttpMethod.POST,
         }
 
         @Override
-        public void onLoading(long total, long current) {
+        public void onLoading(long total, long current, boolean isUploading) {
             testTextView.setText(current + "/" + total);
         }
 
@@ -201,7 +201,7 @@ HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/ht
         }
 
         @Override
-        public void onLoading(long total, long current) {
+        public void onLoading(long total, long current, boolean isUploading) {
             testTextView.setText(current + "/" + total);
         }
 
