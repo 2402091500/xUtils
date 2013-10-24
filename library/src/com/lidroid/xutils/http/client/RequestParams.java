@@ -249,7 +249,7 @@ public class RequestParams {
 
             MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-            if (bodyParams != null) {
+            if (bodyParams != null && !bodyParams.isEmpty()) {
                 for (NameValuePair param : bodyParams.values()) {
                     try {
                         multipartEntity.addPart(param.getName(), new StringBody(param.getValue()));
@@ -264,7 +264,7 @@ public class RequestParams {
             }
 
             result = multipartEntity;
-        } else if (bodyParams != null) {
+        } else if (bodyParams != null && !bodyParams.isEmpty()) {
             result = new BodyParamsEntity(new ArrayList<NameValuePair>(bodyParams.values()), charset);
         }
 
@@ -272,7 +272,10 @@ public class RequestParams {
     }
 
     public List<NameValuePair> getQueryStringParams() {
-        return new ArrayList<NameValuePair>(queryStringParams.values());
+        if (queryStringParams != null && !queryStringParams.isEmpty()) {
+            return new ArrayList<NameValuePair>(queryStringParams.values());
+        }
+        return null;
     }
 
     public List<HeaderItem> getHeaders() {
