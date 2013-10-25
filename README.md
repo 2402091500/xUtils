@@ -168,7 +168,11 @@ http.send(HttpRequest.HttpMethod.POST,
 
         @Override
         public void onLoading(long total, long current, boolean isUploading) {
-            testTextView.setText(current + "/" + total);
+            if (isUploading) {
+                testTextView.setText("upload: " + current + "/" + total);
+            } else {
+                testTextView.setText("reply: " + current + "/" + total);
+            }
         }
 
         @Override

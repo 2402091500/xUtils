@@ -116,7 +116,11 @@ public class HttpFragment extends Fragment {
 
                     @Override
                     public void onLoading(long total, long current, boolean isUploading) {
-                        resultText.setText(current + "/" + total);
+                        if (isUploading) {
+                            resultText.setText("upload: " + current + "/" + total);
+                        } else {
+                            resultText.setText("reply: " + current + "/" + total);
+                        }
                     }
 
                     @Override
