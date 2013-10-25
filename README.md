@@ -177,7 +177,7 @@ http.send(HttpRequest.HttpMethod.POST,
 
         @Override
         public void onSuccess(String result) {
-            testTextView.setText("upload response:" + result.getPath());
+            testTextView.setText("reply: " + result);
         }
 
         @Override
