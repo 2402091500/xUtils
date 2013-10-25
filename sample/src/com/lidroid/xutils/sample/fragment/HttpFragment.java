@@ -125,7 +125,7 @@ public class HttpFragment extends Fragment {
 
                     @Override
                     public void onSuccess(String result) {
-                        resultText.setText("upload response:" + result);
+                        resultText.setText("reply: " + result);
                     }
 
 
