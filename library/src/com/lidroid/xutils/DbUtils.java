@@ -650,16 +650,22 @@ public class DbUtils {
 
     private boolean saveBindingIdWithoutTransaction(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null && entityKvList.size() > 0) {
-            Table table = Table.get(entity.getClass());
-            ContentValues cv = new ContentValues();
-            DbUtils.fillContentValues(cv, entityKvList);
-            Long id = database.insert(table.getTableName(), null, cv);
-            if (id == -1) {
-                return false;
+        Table table = Table.get(entity.getClass());
+        Id idColumn = table.getId();
+        if (idColumn.isAutoIncrement()) {
+            List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+            if (entityKvList != null && entityKvList.size() > 0) {
+                ContentValues cv = new ContentValues();
+                DbUtils.fillContentValues(cv, entityKvList);
+                Long id = database.insert(table.getTableName(), null, cv);
+                if (id == -1) {
+                    return false;
+                }
+                idColumn.setValue2Entity(entity, id.toString());
+                return true;
             }
-            table.getId().setValue2Entity(entity, id.toString());
+        } else {
+            execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
             return true;
         }
         return false;
