@@ -78,6 +78,7 @@ public class BitmapGlobalConfig {
      * @param diskCachePath If null, use default appCacheDir+"/xBitmapCache"
      */
     public BitmapGlobalConfig(Context context, String diskCachePath) {
+        if (context == null) throw new IllegalArgumentException("context may not be null");
         this.mContext = context;
         this.diskCachePath = diskCachePath;
         initBitmapCache();
