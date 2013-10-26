@@ -40,6 +40,13 @@ public class HttpFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        downloadBtn.setEnabled(handler == null || handler.isStopped());
+        stopBtn.setEnabled(!downloadBtn.isEnabled());
+    }
+
     @ViewInject(R.id.download_addr_edit)
     private EditText downloadAddrEdit;
 
@@ -56,11 +63,12 @@ public class HttpFragment extends Fragment {
     public void download(View view) {
 
         downloadBtn.setEnabled(false);
+        stopBtn.setEnabled(true);
 
         HttpUtils http = new HttpUtils();
         handler = http.download(
                 downloadAddrEdit.getText().toString(),
-                "/sdcard/fileexplorer.apk",
+                "/sdcard/shenmo.apk",
                 true, // 如果目标文件存在，接着未完成的部分继续下载。
                 true, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                 new RequestCallBack<File>() {
@@ -78,13 +86,15 @@ public class HttpFragment extends Fragment {
                     @Override
                     public void onSuccess(ResponseInfo<File> responseInfo) {
                         resultText.setText("downloaded:" + responseInfo.result.getPath());
-                        downloadBtn.setEnabled(true);
+                        downloadBtn.setEnabled(false);
+                        stopBtn.setEnabled(false);
                     }
 
                     @Override
                     public void onFailure(HttpException error, String msg) {
                         resultText.setText(error.getExceptionCode() + ":" + msg);
                         downloadBtn.setEnabled(true);
+                        stopBtn.setEnabled(false);
                     }
                 });
     }
@@ -93,8 +103,9 @@ public class HttpFragment extends Fragment {
     public void stop(View view) {
         if (handler != null) {
             handler.stop();
-            resultText.setText("stopped");
+            resultText.setText(resultText.getText() + " stopped");
             downloadBtn.setEnabled(true);
+            stopBtn.setEnabled(false);
         }
     }
 
