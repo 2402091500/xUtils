@@ -122,8 +122,8 @@ http.send(HttpRequest.HttpMethod.GET,
         }
 
         @Override
-        public void onSuccess(String result) {
-            textView.setText(result);
+        public void onSuccess(ResponseInfo<String> responseInfo) {
+            textView.setText(responseInfo.result);
         }
 
         @Override
@@ -176,8 +176,8 @@ http.send(HttpRequest.HttpMethod.POST,
         }
 
         @Override
-        public void onSuccess(String result) {
-            testTextView.setText("reply: " + result);
+        public void onSuccess(ResponseInfo<String> responseInfo) {
+            testTextView.setText("reply: " + responseInfo.result);
         }
 
         @Override
@@ -210,8 +210,8 @@ HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/ht
         }
 
         @Override
-        public void onSuccess(File result) {
-            testTextView.setText("downloaded:" + result.getPath());
+        public void onSuccess(ResponseInfo<File> responseInfo) {
+            testTextView.setText("downloaded:" + responseInfo.result.getPath());
         }
 
 
