@@ -90,7 +90,7 @@ public class RetryHandler implements HttpRequestRetryHandler {
                     retry = false;
                     LogUtils.e("retry error, curr request is null");
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 retry = false;
                 LogUtils.e("retry error", e);
             }

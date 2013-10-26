@@ -68,7 +68,7 @@ public class CursorUtils {
                 }
             }
             return entity;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
 

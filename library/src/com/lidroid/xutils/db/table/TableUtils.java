@@ -92,7 +92,7 @@ public class TableUtils {
             if (!Object.class.equals(entityType.getSuperclass())) {
                 addColumns2Map(entityType.getSuperclass(), primaryKeyFieldName, columnMap);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
@@ -178,7 +178,7 @@ public class TableUtils {
             } else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
         return null;

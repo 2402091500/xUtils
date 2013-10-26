@@ -731,7 +731,7 @@ public class DbUtils {
                         String tableName = cursor.getString(0);
                         execNonQuery("DROP TABLE " + tableName);
                         Table.remove(tableName);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         LogUtils.e(e.getMessage(), e);
                     }
                 }
@@ -782,7 +782,7 @@ public class DbUtils {
             } else {
                 database.execSQL(sqlInfo.getSql());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DbException(e);
         }
     }
@@ -791,7 +791,7 @@ public class DbUtils {
         debugSql(sql);
         try {
             database.execSQL(sql);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DbException(e);
         }
     }
@@ -800,7 +800,7 @@ public class DbUtils {
         debugSql(sqlInfo.getSql());
         try {
             return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindArgsAsStrArray());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DbException(e);
         }
     }
@@ -809,7 +809,7 @@ public class DbUtils {
         debugSql(sql);
         try {
             return database.rawQuery(sql, null);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DbException(e);
         }
     }

@@ -57,14 +57,14 @@ public class Finder extends Column {
         if (setMethod != null) {
             try {
                 setMethod.invoke(entity, value);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         } else {
             try {
                 this.columnField.setAccessible(true);
                 this.columnField.set(entity, value);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         }
@@ -86,14 +86,14 @@ public class Finder extends Column {
             if (getMethod != null) {
                 try {
                     valueObj = getMethod.invoke(entity);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
                     valueObj = this.columnField.get(entity);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }

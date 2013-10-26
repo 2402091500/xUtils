@@ -60,7 +60,7 @@ public class BitmapCache {
         if (mMemoryCache != null) {
             try {
                 clearMemoryCache();
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
         mMemoryCache = new LruMemoryCache<String, SoftReference<Bitmap>>(globalConfig.getMemoryCacheSize()) {
@@ -97,7 +97,7 @@ public class BitmapCache {
                 try {
                     mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
                     mDiskLruCache.setDiskCacheFileNameGenerator(globalConfig.getDiskCacheFileNameGenerator());
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     mDiskLruCache = null;
                     LogUtils.e(e.getMessage(), e);
                 }
@@ -141,7 +141,7 @@ public class BitmapCache {
                     while (!isDiskCacheReadied) {
                         try {
                             mDiskCacheLock.wait();
-                        } catch (InterruptedException e) {
+                        } catch (Throwable e) {
                         }
                     }
 
@@ -183,7 +183,7 @@ public class BitmapCache {
             Bitmap bitmap = decodeBitmapMeta(bitmapMeta, config);
 
             return addBitmapToMemoryCache(bitmap, uri, config, bitmapMeta.expiryTimestamp);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(outputStream);
@@ -243,7 +243,7 @@ public class BitmapCache {
             while (!isDiskCacheReadied) {
                 try {
                     mDiskCacheLock.wait();
-                } catch (InterruptedException e) {
+                } catch (Throwable e) {
                 }
             }
             if (mDiskLruCache != null) {
@@ -265,7 +265,7 @@ public class BitmapCache {
 
                         return addBitmapToMemoryCache(bitmap, uri, config, mDiskLruCache.getExpiryTimestamp(uri));
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 } finally {
                     IOUtils.closeQuietly(snapshot);
@@ -295,7 +295,7 @@ public class BitmapCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
                 mDiskLruCache = null;
@@ -323,7 +323,7 @@ public class BitmapCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.remove(uri);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
@@ -339,7 +339,7 @@ public class BitmapCache {
             if (mDiskLruCache != null) {
                 try {
                     mDiskLruCache.flush();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
@@ -358,7 +358,7 @@ public class BitmapCache {
                         mDiskLruCache.close();
                         mDiskLruCache = null;
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }

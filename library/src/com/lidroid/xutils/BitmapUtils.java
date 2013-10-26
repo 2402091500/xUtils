@@ -493,7 +493,7 @@ public class BitmapUtils {
                 while (pauseTask && !this.isCancelled()) {
                     try {
                         pauseTaskLock.wait();
-                    } catch (InterruptedException e) {
+                    } catch (Throwable e) {
                     }
                 }
             }

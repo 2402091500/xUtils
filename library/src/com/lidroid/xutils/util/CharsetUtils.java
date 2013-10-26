@@ -17,8 +17,6 @@ package com.lidroid.xutils.util;
 
 import org.apache.http.protocol.HTTP;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created by wyouflf on 13-8-30.
  */
@@ -31,7 +29,7 @@ public class CharsetUtils {
         try {
             String oldCharset = getEncoding(str, judgeCharsetLength);
             return new String(str.getBytes(oldCharset), charset);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LogUtils.w(ex);
             return str;
         }
@@ -52,7 +50,7 @@ public class CharsetUtils {
         try {
             String temp = str.length() > judgeCharsetLength ? str.substring(0, judgeCharsetLength) : str;
             return temp.equals(new String(temp.getBytes(charset), charset));
-        } catch (UnsupportedEncodingException e) {
+        } catch (Throwable e) {
             return false;
         }
     }

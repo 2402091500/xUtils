@@ -140,7 +140,7 @@ public class CookieUtils implements CookieStore {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(os);
             outputStream.writeObject(cookie);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return null;
         }
 
@@ -154,7 +154,7 @@ public class CookieUtils implements CookieStore {
         try {
             ObjectInputStream ois = new ObjectInputStream(is);
             cookie = ((SerializableCookie) ois.readObject()).getCookie();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
 

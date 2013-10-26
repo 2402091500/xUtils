@@ -93,7 +93,7 @@ public class ViewUtils {
                             field.setAccessible(true);
                             field.set(handler, view);
                         }
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         LogUtils.e(e.getMessage(), e);
                     }
                 }
@@ -124,7 +124,7 @@ public class ViewUtils {
                                     } else {
                                         value_annotation_method_map.put(value, annotation, method);
                                     }
-                                } catch (Exception e) {
+                                } catch (Throwable e) {
                                     LogUtils.e(e.getMessage(), e);
                                 }
                             } else {

@@ -284,7 +284,7 @@ public class BitmapGlobalConfig {
                     default:
                         break;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
             return params;
@@ -335,7 +335,7 @@ public class BitmapGlobalConfig {
                     default:
                         break;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         }

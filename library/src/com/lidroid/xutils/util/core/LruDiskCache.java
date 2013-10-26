@@ -220,7 +220,7 @@ public final class LruDiskCache implements Closeable {
                 cache.journalWriter = new BufferedWriter(
                         new OutputStreamWriter(new FileOutputStream(cache.journalFile, true), HTTP.US_ASCII));
                 return cache;
-            } catch (IOException journalIsCorrupt) {
+            } catch (Throwable journalIsCorrupt) {
                 LogUtils.e("DiskLruCache "
                         + directory
                         + " is corrupt: "
@@ -308,7 +308,7 @@ public final class LruDiskCache implements Closeable {
                         entry.expiryTimestamp = Long.MAX_VALUE;
                         entry.setLengths(parts, 0);
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new IOException("unexpected journal line: " + line);
                 }
             }
@@ -908,7 +908,7 @@ public final class LruDiskCache implements Closeable {
             if (!committed) {
                 try {
                     abort();
-                } catch (IOException ignored) {
+                } catch (Throwable ignored) {
                 }
             }
         }
@@ -922,7 +922,7 @@ public final class LruDiskCache implements Closeable {
             public void write(int oneByte) {
                 try {
                     out.write(oneByte);
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     hasErrors = true;
                 }
             }
@@ -932,7 +932,7 @@ public final class LruDiskCache implements Closeable {
                 try {
                     out.write(buffer, offset, length);
                     out.flush();
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     hasErrors = true;
                 }
             }
@@ -941,7 +941,7 @@ public final class LruDiskCache implements Closeable {
             public void close() {
                 try {
                     out.close();
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     hasErrors = true;
                 }
             }
@@ -950,7 +950,7 @@ public final class LruDiskCache implements Closeable {
             public void flush() {
                 try {
                     out.flush();
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     hasErrors = true;
                 }
             }

@@ -33,7 +33,7 @@ public class IOUtils {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
     }
@@ -42,7 +42,7 @@ public class IOUtils {
         if (cursor != null) {
             try {
                 cursor.close();
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
     }

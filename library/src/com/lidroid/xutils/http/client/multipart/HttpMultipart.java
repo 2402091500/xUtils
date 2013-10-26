@@ -279,7 +279,7 @@ class HttpMultipart {
             doWriteTo(this.mode, out, false);
             byte[] extra = out.toByteArray();
             return contentLen + extra.length;
-        } catch (IOException ex) {
+        } catch (Throwable ex) {
             // Should never happen
             return -1;
         }

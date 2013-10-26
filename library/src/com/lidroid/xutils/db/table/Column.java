@@ -50,14 +50,14 @@ public class Column {
         if (setMethod != null) {
             try {
                 setMethod.invoke(entity, value == null ? defaultValue : value);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         } else {
             try {
                 this.columnField.setAccessible(true);
                 this.columnField.set(entity, value == null ? defaultValue : value);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         }
@@ -70,14 +70,14 @@ public class Column {
             if (getMethod != null) {
                 try {
                     resultObj = getMethod.invoke(entity);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
                     resultObj = this.columnField.get(entity);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }

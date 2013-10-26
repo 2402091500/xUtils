@@ -47,7 +47,7 @@ public class BitmapCommonUtils {
         try {
             final StatFs stats = new StatFs(dir.getPath());
             return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
             return -1;
         }
