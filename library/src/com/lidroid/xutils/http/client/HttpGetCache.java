@@ -30,7 +30,7 @@ public class HttpGetCache {
      */
     private final LruMemoryCache<String, String> mMemoryCache;
 
-    private final static int DEFAULT_CACHE_SIZE = 1024 * 1024 * 1;// 1M
+    private final static int DEFAULT_CACHE_SIZE = 1024 * 100;// string length
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
     private final static long MIN_EXPIRY_TIME = 200;
 
@@ -47,9 +47,9 @@ public class HttpGetCache {
         this(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
     }
 
-    public HttpGetCache(int cacheSize, long defaultExpiryTime) {
-        if (cacheSize > DEFAULT_CACHE_SIZE) {
-            this.cacheSize = cacheSize;
+    public HttpGetCache(int strLength, long defaultExpiryTime) {
+        if (strLength > DEFAULT_CACHE_SIZE) {
+            this.cacheSize = strLength;
         }
         HttpGetCache.setDefaultExpiryTime(defaultExpiryTime);
 
@@ -62,9 +62,9 @@ public class HttpGetCache {
         };
     }
 
-    public void setCacheSize(int cacheSize) {
-        if (cacheSize > DEFAULT_CACHE_SIZE) {
-            mMemoryCache.setMaxSize(cacheSize);
+    public void setCacheSize(int strLength) {
+        if (strLength > DEFAULT_CACHE_SIZE) {
+            mMemoryCache.setMaxSize(strLength);
         }
     }
 
