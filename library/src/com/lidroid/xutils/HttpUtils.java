@@ -262,36 +262,66 @@ public class HttpUtils {
 
     public HttpHandler<File> download(String url, String target,
                                       RequestCallBack<File> callback) {
-        return download(url, target, null, false, false, callback);
+        return download(HttpRequest.HttpMethod.GET, url, target, null, false, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
                                       boolean autoResume, RequestCallBack<File> callback) {
-        return download(url, target, null, autoResume, false, callback);
+        return download(HttpRequest.HttpMethod.GET, url, target, null, autoResume, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
                                       boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
-        return download(url, target, null, autoResume, autoRename, callback);
+        return download(HttpRequest.HttpMethod.GET, url, target, null, autoResume, autoRename, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
                                       RequestParams params, RequestCallBack<File> callback) {
-        return download(url, target, params, false, false, callback);
+        return download(HttpRequest.HttpMethod.GET, url, target, params, false, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
                                       RequestParams params, boolean autoResume, RequestCallBack<File> callback) {
-        return download(url, target, params, autoResume, false, callback);
+        return download(HttpRequest.HttpMethod.GET, url, target, params, autoResume, false, callback);
     }
 
     public HttpHandler<File> download(String url, String target,
+                                      RequestParams params, boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
+        return download(HttpRequest.HttpMethod.GET, url, target, params, autoResume, autoRename, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+                                      RequestCallBack<File> callback) {
+        return download(method, url, target, null, false, false, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+                                      boolean autoResume, RequestCallBack<File> callback) {
+        return download(method, url, target, null, autoResume, false, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+                                      boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
+        return download(method, url, target, null, autoResume, autoRename, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+                                      RequestParams params, RequestCallBack<File> callback) {
+        return download(method, url, target, params, false, false, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+                                      RequestParams params, boolean autoResume, RequestCallBack<File> callback) {
+        return download(method, url, target, params, autoResume, false, callback);
+    }
+
+    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
                                       RequestParams params, boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
 
         if (url == null) throw new IllegalArgumentException("url may not be null");
         if (target == null) throw new IllegalArgumentException("target may not be null");
 
-        HttpRequest request = new HttpRequest(HttpRequest.HttpMethod.GET, url);
+        HttpRequest request = new HttpRequest(method, url);
 
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, defaultResponseTextCharset, callback);
 
