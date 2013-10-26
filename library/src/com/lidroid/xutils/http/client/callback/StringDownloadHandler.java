@@ -47,7 +47,6 @@ public class StringDownloadHandler {
                 current += OtherUtils.sizeOfString(line, charset);
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
-                        callBackHandler.updateProgress(total, current, true);
                         return sb.toString();
                     }
                 }

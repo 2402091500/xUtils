@@ -68,8 +68,6 @@ public class FileDownloadHandler {
                 current += len;
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
-                        fileOutputStream.flush();
-                        callBackHandler.updateProgress(total, current, true);
                         return targetFile;
                     }
                 }

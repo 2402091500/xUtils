@@ -278,8 +278,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     @Override
     public boolean updateProgress(long total, long current, boolean forceUpdateUI) {
-        if (callback != null) {
-            if (forceUpdateUI || mStopped) {
+        if (callback != null && !mStopped) {
+            if (forceUpdateUI) {
                 this.publishProgress(UPDATE_LOADING, total, current);
             } else {
                 long currTime = SystemClock.uptimeMillis();
