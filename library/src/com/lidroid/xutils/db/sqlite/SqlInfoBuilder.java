@@ -19,10 +19,7 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.exception.DbException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Build "insert", "replace",，"update", "delete" and "create" sql.
@@ -155,9 +152,10 @@ public class SqlInfoBuilder {
         List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
         if (keyValueList.size() == 0) return null;
 
-        List<String> updateColumnNameList = null;
+        HashSet<String> updateColumnNameSet = null;
         if (updateColumnNames != null && updateColumnNames.length > 0) {
-            updateColumnNameList = Arrays.asList(updateColumnNames);
+            updateColumnNameSet = new HashSet<String>(updateColumnNames.length);
+            Collections.addAll(updateColumnNameSet, updateColumnNames);
         }
 
         Table table = Table.get(entity.getClass());
@@ -173,7 +171,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(table.getTableName());
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            if (updateColumnNameList == null || updateColumnNameList.contains(kv.getValue())) {
+            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getValue())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
                 result.addBindArg(kv.getValue());
             }
@@ -190,9 +188,10 @@ public class SqlInfoBuilder {
         List<KeyValue> keyValueList = entity2KeyValueList(db, entity);
         if (keyValueList.size() == 0) return null;
 
-        List<String> updateColumnNameList = null;
+        HashSet<String> updateColumnNameSet = null;
         if (updateColumnNames != null && updateColumnNames.length > 0) {
-            updateColumnNameList = Arrays.asList(updateColumnNames);
+            updateColumnNameSet = new HashSet<String>(updateColumnNames.length);
+            Collections.addAll(updateColumnNameSet, updateColumnNames);
         }
 
         Table table = Table.get(entity.getClass());
@@ -202,7 +201,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(table.getTableName());
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            if (updateColumnNameList == null || updateColumnNameList.contains(kv.getValue())) {
+            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getValue())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
                 result.addBindArg(kv.getValue());
             }
