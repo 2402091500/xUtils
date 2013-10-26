@@ -32,7 +32,7 @@ public abstract class RequestCallBack<T> {
     public void onLoading(long total, long current, boolean isUploading) {
     }
 
-    public abstract void onSuccess(T result);
+    public abstract void onSuccess(ResponseInfo<T> responseInfo);
 
     public void onFailure(HttpException error, String msg) {
     }

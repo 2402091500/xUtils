@@ -13,6 +13,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestCallBack;
+import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RequestParams;
 import com.lidroid.xutils.http.client.ResponseStream;
@@ -72,8 +73,8 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onSuccess(File result) {
-                        resultText.setText("downloaded:" + result.getPath());
+                    public void onSuccess(ResponseInfo<File> responseInfo) {
+                        resultText.setText("downloaded:" + responseInfo.result.getPath());
                     }
 
                     @Override
@@ -124,8 +125,8 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onSuccess(String result) {
-                        resultText.setText("reply: " + result);
+                    public void onSuccess(ResponseInfo<String> responseInfo) {
+                        resultText.setText("reply: " + responseInfo.result);
                     }
 
 
@@ -155,8 +156,8 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onSuccess(String result) {
-                        resultText.setText("response:" + result);
+                    public void onSuccess(ResponseInfo<String> responseInfo) {
+                        resultText.setText("response:" + responseInfo.result);
                     }
 
 
@@ -167,6 +168,7 @@ public class HttpFragment extends Fragment {
                 });
     }
 
+    //@OnClick(R.id.download_btn)
     public void testPost(View view) {
         RequestParams params = new RequestParams();
         params.addQueryStringParameter("method", "mkdir");
@@ -190,8 +192,8 @@ public class HttpFragment extends Fragment {
                     }
 
                     @Override
-                    public void onSuccess(String result) {
-                        resultText.setText("upload response:" + result);
+                    public void onSuccess(ResponseInfo<String> responseInfo) {
+                        resultText.setText("upload response:" + responseInfo.result);
                     }
 
 
