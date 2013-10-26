@@ -54,6 +54,9 @@ public class HttpFragment extends Fragment {
 
     @OnClick(R.id.download_btn)
     public void download(View view) {
+
+        downloadBtn.setEnabled(false);
+
         HttpUtils http = new HttpUtils();
         handler = http.download(
                 downloadAddrEdit.getText().toString(),
@@ -75,11 +78,13 @@ public class HttpFragment extends Fragment {
                     @Override
                     public void onSuccess(ResponseInfo<File> responseInfo) {
                         resultText.setText("downloaded:" + responseInfo.result.getPath());
+                        downloadBtn.setEnabled(true);
                     }
 
                     @Override
                     public void onFailure(HttpException error, String msg) {
                         resultText.setText(error.getExceptionCode() + ":" + msg);
+                        downloadBtn.setEnabled(true);
                     }
                 });
     }
@@ -89,6 +94,7 @@ public class HttpFragment extends Fragment {
         if (handler != null) {
             handler.stop();
             resultText.setText("stopped");
+            downloadBtn.setEnabled(true);
         }
     }
 
