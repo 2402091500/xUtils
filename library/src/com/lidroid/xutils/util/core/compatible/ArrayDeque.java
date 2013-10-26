@@ -819,7 +819,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     private static <T> T[] copyOfRange(T[] original, int start, int end) {
         int originalLength = original.length; // For exception priority compatibility.
         if (start > end) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("start > end");
         }
         if (start < 0 || start > originalLength) {
             throw new ArrayIndexOutOfBoundsException();

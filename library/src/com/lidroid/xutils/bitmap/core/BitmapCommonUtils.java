@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.StatFs;
+import android.util.DisplayMetrics;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
@@ -51,5 +52,26 @@ public class BitmapCommonUtils {
             return -1;
         }
 
+    }
+
+    private static int screenWidth = 0;
+    private static int screenHeight = 0;
+
+    public static int getScreenWidth(Context context) {
+        if (screenWidth == 0) {
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            screenWidth = displayMetrics.widthPixels;
+            screenHeight = displayMetrics.heightPixels;
+        }
+        return screenWidth;
+    }
+
+    public static int getScreenHeight(Context context) {
+        if (screenHeight == 0) {
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            screenWidth = displayMetrics.widthPixels;
+            screenHeight = displayMetrics.heightPixels;
+        }
+        return screenHeight;
     }
 }

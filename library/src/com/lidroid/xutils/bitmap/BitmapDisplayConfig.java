@@ -20,10 +20,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
+import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 
 public class BitmapDisplayConfig {
 
@@ -46,14 +46,13 @@ public class BitmapDisplayConfig {
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
     public BitmapDisplayConfig(Context context) {
+        if (context == null) throw new IllegalArgumentException("context may not be null");
         mContext = context;
     }
 
     public int getBitmapMaxWidth() {
         if (bitmapMaxWidth == 0) {// default max width = screen_width/3
-            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-            bitmapMaxWidth = (int) Math.floor(displayMetrics.widthPixels / 3);
-            bitmapMaxHeight = bitmapMaxHeight == 0 ? bitmapMaxWidth : bitmapMaxHeight;
+            bitmapMaxWidth = BitmapCommonUtils.getScreenWidth(mContext) / 3;
         }
         return bitmapMaxWidth;
     }
@@ -64,9 +63,7 @@ public class BitmapDisplayConfig {
 
     public int getBitmapMaxHeight() {
         if (bitmapMaxHeight == 0) {// default max height = screen_width/3
-            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-            bitmapMaxHeight = (int) Math.floor(displayMetrics.widthPixels / 3);
-            bitmapMaxWidth = bitmapMaxWidth == 0 ? bitmapMaxHeight : bitmapMaxWidth;
+            bitmapMaxHeight = BitmapCommonUtils.getScreenHeight(mContext) / 3;
         }
         return bitmapMaxHeight;
     }

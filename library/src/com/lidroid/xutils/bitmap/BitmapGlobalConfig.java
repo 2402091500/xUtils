@@ -29,6 +29,7 @@ import com.lidroid.xutils.util.core.LruDiskCache;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Author: wyouflf
@@ -58,6 +59,17 @@ public class BitmapGlobalConfig {
     private LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator;
 
     private BitmapCacheListener bitmapCacheListener;
+
+    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, "BitmapUtils #" + mCount.getAndIncrement());
+            thread.setPriority(Thread.NORM_PRIORITY - 1);
+            return thread;
+        }
+    };
 
     private Context mContext;
 
@@ -102,7 +114,9 @@ public class BitmapGlobalConfig {
 
     public void setDefaultCacheExpiry(long defaultCacheExpiry) {
         this.defaultCacheExpiry = defaultCacheExpiry;
-        this.getDownloader().setDefaultExpiry(defaultCacheExpiry);
+        if (this.downloader != null) {
+            downloader.setDefaultExpiry(defaultCacheExpiry);
+        }
     }
 
     public BitmapCache getBitmapCache() {
@@ -166,14 +180,7 @@ public class BitmapGlobalConfig {
 
     public ExecutorService getBitmapLoadExecutor() {
         if (_dirty_params_bitmapLoadExecutor || bitmapLoadExecutor == null) {
-            bitmapLoadExecutor = Executors.newFixedThreadPool(getThreadPoolSize(), new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r);
-                    t.setPriority(Thread.NORM_PRIORITY - 1);
-                    return t;
-                }
-            });
+            bitmapLoadExecutor = Executors.newFixedThreadPool(getThreadPoolSize(), sThreadFactory);
             _dirty_params_bitmapLoadExecutor = false;
         }
         return bitmapLoadExecutor;
@@ -233,57 +240,58 @@ public class BitmapGlobalConfig {
 
         @Override
         protected Object[] doInBackground(Object... params) {
+            if (params == null || params.length < 1) return params;
             BitmapCache cache = getBitmapCache();
-            if (cache != null) {
-                try {
-                    switch ((Integer) params[0]) {
-                        case MESSAGE_INIT_MEMORY_CACHE:
-                            cache.initMemoryCache();
-                            break;
-                        case MESSAGE_INIT_DISK_CACHE:
-                            cache.initDiskCache();
-                            break;
-                        case MESSAGE_FLUSH:
-                            cache.clearMemoryCache();
-                            cache.flush();
-                            break;
-                        case MESSAGE_CLOSE:
-                            cache.clearMemoryCache();
-                            cache.close();
-                            break;
-                        case MESSAGE_CLEAR:
-                            cache.clearCache();
-                            break;
-                        case MESSAGE_CLEAR_MEMORY:
-                            cache.clearMemoryCache();
-                            break;
-                        case MESSAGE_CLEAR_DISK:
-                            cache.clearDiskCache();
-                            break;
-                        case MESSAGE_CLEAR_BY_KEY:
-                            cache.clearCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
-                            break;
-                        case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                            cache.clearMemoryCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
-                            break;
-                        case MESSAGE_CLEAR_DISK_BY_KEY:
-                            cache.clearDiskCache(String.valueOf(params[1]));
-                            break;
-                        default:
-                            break;
-                    }
-                } catch (Exception e) {
-                    LogUtils.e(e.getMessage(), e);
+            if (cache == null) return params;
+            try {
+                switch ((Integer) params[0]) {
+                    case MESSAGE_INIT_MEMORY_CACHE:
+                        cache.initMemoryCache();
+                        break;
+                    case MESSAGE_INIT_DISK_CACHE:
+                        cache.initDiskCache();
+                        break;
+                    case MESSAGE_FLUSH:
+                        cache.clearMemoryCache();
+                        cache.flush();
+                        break;
+                    case MESSAGE_CLOSE:
+                        cache.clearMemoryCache();
+                        cache.close();
+                        break;
+                    case MESSAGE_CLEAR:
+                        cache.clearCache();
+                        break;
+                    case MESSAGE_CLEAR_MEMORY:
+                        cache.clearMemoryCache();
+                        break;
+                    case MESSAGE_CLEAR_DISK:
+                        cache.clearDiskCache();
+                        break;
+                    case MESSAGE_CLEAR_BY_KEY:
+                        if (params.length != 3) return params;
+                        cache.clearCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        break;
+                    case MESSAGE_CLEAR_MEMORY_BY_KEY:
+                        if (params.length != 3) return params;
+                        cache.clearMemoryCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        break;
+                    case MESSAGE_CLEAR_DISK_BY_KEY:
+                        if (params.length != 2) return params;
+                        cache.clearDiskCache(String.valueOf(params[1]));
+                        break;
+                    default:
+                        break;
                 }
+            } catch (Exception e) {
+                LogUtils.e(e.getMessage(), e);
             }
             return params;
         }
 
         @Override
         protected void onPostExecute(Object[] params) {
-            if (bitmapCacheListener == null || params == null || params.length < 1) {
-                return;
-            }
+            if (bitmapCacheListener == null || params == null || params.length < 1) return;
             try {
                 switch ((Integer) params[0]) {
                     case MESSAGE_INIT_MEMORY_CACHE:
@@ -308,12 +316,19 @@ public class BitmapGlobalConfig {
                         bitmapCacheListener.onClearDiskCacheFinished();
                         break;
                     case MESSAGE_CLEAR_BY_KEY:
-                        bitmapCacheListener.onClearCacheFinished(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        if (params.length != 3) return;
+                        bitmapCacheListener.onClearCacheFinished(
+                                String.valueOf(params[1]),
+                                (BitmapDisplayConfig) params[2]);
                         break;
                     case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                        bitmapCacheListener.onClearMemoryCacheFinished(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        if (params.length != 3) return;
+                        bitmapCacheListener.onClearMemoryCacheFinished(
+                                String.valueOf(params[1]),
+                                (BitmapDisplayConfig) params[2]);
                         break;
                     case MESSAGE_CLEAR_DISK_BY_KEY:
+                        if (params.length != 2) return;
                         bitmapCacheListener.onClearDiskCacheFinished(String.valueOf(params[1]));
                         break;
                     default:
