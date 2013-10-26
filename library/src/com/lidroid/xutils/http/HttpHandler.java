@@ -223,6 +223,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                 isUploading = false;
                 lastUpdateTime = SystemClock.uptimeMillis();
                 if (isDownloadingFile) {
+                    autoResume = autoResume && OtherUtils.isSupportRange(response);
                     String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
                     result = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
                 } else {
