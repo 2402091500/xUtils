@@ -237,6 +237,8 @@ public class HttpUtils {
 
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType,
                                    RequestCallBack<T> callBack) {
+        if (url == null) throw new IllegalArgumentException("url may not be null");
+
         HttpRequest request = new HttpRequest(method, url);
         return sendRequest(request, params, contentType, callBack);
     }
@@ -250,6 +252,8 @@ public class HttpUtils {
     }
 
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
+        if (url == null) throw new IllegalArgumentException("url may not be null");
+
         HttpRequest request = new HttpRequest(method, url);
         return sendSyncRequest(request, params, contentType);
     }
@@ -283,6 +287,9 @@ public class HttpUtils {
 
     public HttpHandler<File> download(String url, String target,
                                       RequestParams params, boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
+
+        if (url == null) throw new IllegalArgumentException("url may not be null");
+        if (target == null) throw new IllegalArgumentException("target may not be null");
 
         HttpRequest request = new HttpRequest(HttpRequest.HttpMethod.GET, url);
 
