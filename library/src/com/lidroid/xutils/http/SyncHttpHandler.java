@@ -98,10 +98,9 @@ public class SyncHttpHandler {
                 exception = new IOException(e.getMessage());
                 exception.initCause(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
-            } finally {
-                if (!retry && exception != null) {
-                    throw new HttpException(exception);
-                }
+            }
+            if (!retry && exception != null) {
+                throw new HttpException(exception);
             }
         }
         return null;

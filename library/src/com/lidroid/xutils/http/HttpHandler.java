@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 
-public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> implements RequestCallBackHandler {
+public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> implements RequestCallBackHandler {
 
     private final AbstractHttpClient client;
     private final HttpContext context;
@@ -79,6 +79,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     }
 
     // 执行请求
+    @SuppressWarnings("unchecked")
     private ResponseInfo<T> sendRequest(HttpRequestBase request) throws HttpException {
         if (autoResume && isDownloadingFile) {
             File downloadFile = new File(fileSavePath);
@@ -130,23 +131,25 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
                 exception = new IOException(e.getMessage());
                 exception.initCause(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
-            } finally {
-                if (!retry && exception != null) {
-                    throw new HttpException(exception);
-                }
+            }
+            if (!retry && exception != null) {
+                throw new HttpException(exception);
             }
         }
         return null;
     }
 
     @Override
-    protected Object doInBackground(Object... params) {
-        if (params != null && params.length > 3) {
+    protected Void doInBackground(Object... params) {
+        if (params == null || params.length < 1) return null;
+
+        if (params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
             isDownloadingFile = fileSavePath != null;
             autoResume = (Boolean) params[2];
             autoRename = (Boolean) params[3];
         }
+
         try {
             this.publishProgress(UPDATE_START);
             request = (HttpRequestBase) params[0];
@@ -167,8 +170,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
     private final static int UPDATE_FAILURE = 3;
     private final static int UPDATE_SUCCESS = 4;
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
         if (values == null || values.length < 1) return;
         switch ((Integer) values[0]) {
@@ -204,6 +207,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Object> 
         super.onProgressUpdate(values);
     }
 
+    @SuppressWarnings("unchecked")
     private ResponseInfo<T> handleResponse(HttpResponse response) throws HttpException, IOException {
         if (response == null) {
             throw new HttpException("response is null");
