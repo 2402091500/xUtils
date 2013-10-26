@@ -16,7 +16,6 @@
 package com.lidroid.xutils.http.client.callback;
 
 import com.lidroid.xutils.util.IOUtils;
-
 import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.HttpEntity;
 
@@ -48,6 +47,7 @@ public class StringDownloadHandler {
                 current += OtherUtils.sizeOfString(line, charset);
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
+                        callBackHandler.updateProgress(total, current, true);
                         return sb.toString();
                     }
                 }
