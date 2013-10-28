@@ -173,7 +173,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     @Override
     @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
-        if (values == null || values.length < 1) return;
+        if (mStopped || values == null || values.length < 1) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
                 if (callback != null) {
@@ -204,7 +204,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             default:
                 break;
         }
-        super.onProgressUpdate(values);
     }
 
     @SuppressWarnings("unchecked")
@@ -262,10 +261,16 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     public void stop() {
         this.mStopped = true;
         if (!request.isAborted()) {
-            request.abort();
+            try {
+                request.abort();
+            } catch (Throwable e) {
+            }
         }
         if (!this.isCancelled()) {
-            this.cancel(true);
+            try {
+                this.cancel(true);
+            } catch (Throwable e) {
+            }
         }
     }
 

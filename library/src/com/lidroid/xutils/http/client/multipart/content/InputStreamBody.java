@@ -20,6 +20,7 @@ import com.lidroid.xutils.util.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
 /**
@@ -64,7 +65,7 @@ public class InputStreamBody extends AbstractContentBody {
                 out.write(tmp, 0, l);
                 callBackInfo.pos += l;
                 if (!callBackInfo.doCallBack(false)) {
-                    break;
+                    throw new InterruptedIOException("stop");
                 }
             }
             out.flush();

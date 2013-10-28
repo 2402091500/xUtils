@@ -54,7 +54,7 @@ public class FileDownloadHandler {
             long total = entity.getContentLength() + current;
 
             if (callBackHandler != null && !callBackHandler.updateProgress(total, current, true)) {
-                return null;
+                return targetFile;
             }
 
 

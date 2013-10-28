@@ -98,8 +98,6 @@ public class RetryHandler implements HttpRequestRetryHandler {
 
         if (retry) {
             SystemClock.sleep(RETRY_SLEEP_INTERVAL); // sleep a while and retry http request again.
-        } else {
-            LogUtils.e(exception.getMessage(), exception);
         }
 
         return retry;

@@ -20,11 +20,7 @@ import com.lidroid.xutils.util.IOUtils;
 
 import org.apache.http.entity.FileEntity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +53,7 @@ public class FileUploadEntity extends FileEntity implements UploadEntity {
                 uploadedSize += len;
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(fileSize, uploadedSize, false)) {
-                        break;
+                        throw new InterruptedIOException("stop");
                     }
                 }
             }

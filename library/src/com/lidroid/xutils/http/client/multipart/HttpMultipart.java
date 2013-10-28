@@ -20,6 +20,7 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -180,7 +181,7 @@ class HttpMultipart {
         ByteArrayBuffer boundary = encode(this.charset, getBoundary());
         for (FormBodyPart part : this.parts) {
             if (!callBackInfo.doCallBack(true)) {
-                return;
+                throw new InterruptedIOException("stop");
             }
             writeBytes(TWO_DASHES, out);
             callBackInfo.pos += TWO_DASHES.length();
