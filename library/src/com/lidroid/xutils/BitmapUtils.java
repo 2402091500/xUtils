@@ -516,9 +516,16 @@ public class BitmapUtils {
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
                 if (bitmap != null) {
-                    displayConfig.getImageLoadCallBack().loadCompleted(this.uri, imageView, new BitmapDrawable(bitmap), displayConfig);
+                    displayConfig.getImageLoadCallBack().loadCompleted(
+                            this.uri,
+                            imageView,
+                            new BitmapDrawable(context.getResources(), bitmap),
+                            displayConfig);
                 } else {
-                    displayConfig.getImageLoadCallBack().loadFailed(this.uri, imageView, displayConfig.getLoadFailedDrawable());
+                    displayConfig.getImageLoadCallBack().loadFailed(
+                            this.uri,
+                            imageView,
+                            displayConfig.getLoadFailedDrawable());
                 }
             }
         }
