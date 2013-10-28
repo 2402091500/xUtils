@@ -34,6 +34,5 @@ public abstract class RequestCallBack<T> {
 
     public abstract void onSuccess(ResponseInfo<T> responseInfo);
 
-    public void onFailure(HttpException error, String msg) {
-    }
+    public abstract void onFailure(HttpException error, String msg);
 }
