@@ -188,7 +188,7 @@ public class BitmapUtils {
         }
 
         if (TextUtils.isEmpty(uri)) {
-            displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedDrawable());
+            displayConfig.getImageLoadCallBack().loadFailed(uri, imageView, displayConfig.getLoadFailedDrawable());
             return;
         }
 
@@ -516,9 +516,9 @@ public class BitmapUtils {
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
                 if (bitmap != null) {
-                    displayConfig.getImageLoadCallBack().loadCompleted(imageView, new BitmapDrawable(bitmap), displayConfig);
+                    displayConfig.getImageLoadCallBack().loadCompleted(this.uri, imageView, new BitmapDrawable(bitmap), displayConfig);
                 } else {
-                    displayConfig.getImageLoadCallBack().loadFailed(imageView, displayConfig.getLoadFailedDrawable());
+                    displayConfig.getImageLoadCallBack().loadFailed(this.uri, imageView, displayConfig.getLoadFailedDrawable());
                 }
             }
         }

@@ -24,18 +24,20 @@ public interface ImageLoadCallBack {
     /**
      * Call back when bitmap has loaded.
      *
+     * @param uri
      * @param imageView
      * @param drawable
      * @param config
      */
-    void loadCompleted(ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
+    void loadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
 
     /**
      * Call back when bitmap failed to load.
      *
+     * @param uri
      * @param imageView
      * @param drawable
      */
-    void loadFailed(ImageView imageView, Drawable drawable);
+    void loadFailed(String uri, ImageView imageView, Drawable drawable);
 
 }
