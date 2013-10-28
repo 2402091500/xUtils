@@ -427,7 +427,10 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                wb.and(keyValue.getKey(), "=", keyValue.getValue());
+                Object value = keyValue.getValue();
+                if (value != null) {
+                    wb.and(keyValue.getKey(), "=", value);
+                }
             }
             selector.where(wb);
         }
@@ -467,7 +470,10 @@ public class DbUtils {
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
             for (KeyValue keyValue : entityKvList) {
-                wb.and(keyValue.getKey(), "=", keyValue.getValue());
+                Object value = keyValue.getValue();
+                if (value != null) {
+                    wb.and(keyValue.getKey(), "=", value);
+                }
             }
             selector.where(wb);
         }
