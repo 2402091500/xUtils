@@ -637,10 +637,15 @@ public class DbUtils {
 
     //***************************** private operations with out transaction *****************************
     private void saveOrUpdateWithoutTransaction(Object entity) throws DbException {
-        if (TableUtils.getIdValue(entity) != null) {
-            updateWithoutTransaction(entity);
+        Id id = TableUtils.getId(entity.getClass());
+        if (id.isAutoIncrement()) {
+            if (TableUtils.getIdValue(entity) != null) {
+                updateWithoutTransaction(entity);
+            } else {
+                saveBindingIdWithoutTransaction(entity);
+            }
         } else {
-            saveBindingIdWithoutTransaction(entity);
+            replaceWithoutTransaction(entity);
         }
     }
 
