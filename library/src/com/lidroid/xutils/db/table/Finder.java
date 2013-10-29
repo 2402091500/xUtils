@@ -74,7 +74,6 @@ public class Finder extends Column {
         return targetColumnName;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Object getColumnValue(Object entity) {
         return null;
