@@ -48,6 +48,10 @@ public class BitmapUtils {
     }
 
     public BitmapUtils(Context context, String diskCachePath) {
+        if (context == null) {
+            throw new IllegalArgumentException("context may not be null");
+        }
+
         this.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
         defaultDisplayConfig = new BitmapDisplayConfig(context);
@@ -77,8 +81,8 @@ public class BitmapUtils {
 
     //////////////////////////////////////// config ////////////////////////////////////////////////////////////////////
 
-    public BitmapUtils configDefaultLoadingImage(Drawable bitmap) {
-        defaultDisplayConfig.setLoadingDrawable(bitmap);
+    public BitmapUtils configDefaultLoadingImage(Drawable drawable) {
+        defaultDisplayConfig.setLoadingDrawable(drawable);
         return this;
     }
 
@@ -87,13 +91,23 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDefaultLoadFailedImage(Drawable bitmap) {
-        defaultDisplayConfig.setLoadFailedDrawable(bitmap);
+    public BitmapUtils configDefaultLoadingImage(Bitmap bitmap) {
+        defaultDisplayConfig.setLoadingDrawable(new BitmapDrawable(context.getResources(), bitmap));
+        return this;
+    }
+
+    public BitmapUtils configDefaultLoadFailedImage(Drawable drawable) {
+        defaultDisplayConfig.setLoadFailedDrawable(drawable);
         return this;
     }
 
     public BitmapUtils configDefaultLoadFailedImage(int resId) {
         defaultDisplayConfig.setLoadFailedDrawable(context.getResources().getDrawable(resId));
+        return this;
+    }
+
+    public BitmapUtils configDefaultLoadFailedImage(Bitmap bitmap) {
+        defaultDisplayConfig.setLoadFailedDrawable(new BitmapDrawable(context.getResources(), bitmap));
         return this;
     }
 
