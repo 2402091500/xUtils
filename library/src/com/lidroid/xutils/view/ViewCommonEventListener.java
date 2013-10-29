@@ -58,15 +58,15 @@ public class ViewCommonEventListener implements
     private Method tabChangedMethod;
     private Method scrollChangedMethod;
 
-    // onScrollStateChanged
-    private Method scrollStateChanged;
-    private Method scroll;
+    // OnScrollListener
+    private Method scrollStateChangedMethod;
+    private Method scrollMethod;
 
-    // ItemSelected
+    // OnItemSelectedListener
     private Method itemSelectMethod;
     private Method nothingSelectedMethod;
 
-    // SeekBarChange
+    // OnSeekBarChangeListener
     private Method progressChangedMethod;
     private Method startTrackingTouchMethod;
     private Method stopTrackingTouchMethod;
@@ -122,12 +122,12 @@ public class ViewCommonEventListener implements
     }
 
     public ViewCommonEventListener scrollStateChanged(Method method) {
-        this.scrollStateChanged = method;
+        this.scrollStateChangedMethod = method;
         return this;
     }
 
     public ViewCommonEventListener scroll(Method method) {
-        this.scroll = method;
+        this.scrollMethod = method;
         return this;
     }
 
@@ -247,7 +247,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onScrollStateChanged(AbsListView absListView, int i) {
         try {
-            scrollStateChanged.invoke(handler, absListView, i);
+            scrollStateChangedMethod.invoke(handler, absListView, i);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -256,7 +256,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onScroll(AbsListView absListView, int i, int i2, int i3) {
         try {
-            scroll.invoke(handler, absListView, i, i2, i3);
+            scrollMethod.invoke(handler, absListView, i, i2, i3);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
