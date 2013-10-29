@@ -152,6 +152,7 @@ params.addBodyParameter("name", "value");
 // 如需"multipart/related"，xUtils中提供的MultipartEntity支持设置subType为"related"。
 // 使用params.setBodyEntity(httpEntity)可设置更多类型的HttpEntity（如：
 // MultipartEntity,BodyParamsEntity,FileUploadEntity,InputStreamUploadEntity,StringEntity）。
+// 例：params.setBodyEntity(new StringEntity(json,charset));
 params.addBodyParameter("file", new File("path"));
 ...
 
