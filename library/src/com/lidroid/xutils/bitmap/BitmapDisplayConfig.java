@@ -62,7 +62,7 @@ public class BitmapDisplayConfig {
     }
 
     public int getBitmapMaxHeight() {
-        if (bitmapMaxHeight == 0) {// default max height = screen_width/3
+        if (bitmapMaxHeight == 0) {// default max height = screen_height/3
             bitmapMaxHeight = BitmapCommonUtils.getScreenHeight(mContext) / 3;
         }
         return bitmapMaxHeight;

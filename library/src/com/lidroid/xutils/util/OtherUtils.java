@@ -60,7 +60,8 @@ public class OtherUtils {
                 NameValuePair fileNamePair = element.getParameterByName("filename");
                 if (fileNamePair != null) {
                     result = fileNamePair.getValue();
-                    result = CharsetUtils.toCharset(result, HTTP.UTF_8, result.length());//尝试转换乱码
+                    // try to get correct encoding str
+                    result = CharsetUtils.toCharset(result, HTTP.UTF_8, result.length());
                     break;
                 }
             }
