@@ -238,6 +238,8 @@ public class HttpFragment extends Fragment {
         http.configCurrentHttpGetCacheExpiry(1000 * 10);
         try {
             ResponseStream responseStream = http.sendSync(HttpRequest.HttpMethod.GET, "http://www.baidu.com/s", params);
+            //int statusCode = responseStream.getStatusCode();
+            //Header[] headers = responseStream.getBaseResponse().getAllHeaders();
             return responseStream.readString();
         } catch (Exception e) {
             LogUtils.e(e.getMessage(), e);
