@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A compatible AsyncTask for android2.3.
+ * A compatible AsyncTask for android2.2.
  * <p>AsyncTask enables proper and easy use of the UI thread. This class allows to
  * perform background operations and publish results on the UI thread without
  * having to manipulate threads and/or handlers.</p>

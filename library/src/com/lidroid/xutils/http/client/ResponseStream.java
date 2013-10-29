@@ -43,6 +43,10 @@ public class ResponseStream extends InputStream {
     }
 
     public ResponseStream(HttpResponse baseResponse, String charset, String url, long expiry) throws IOException {
+        if (baseResponse == null) {
+            throw new IllegalArgumentException("baseResponse may not be null");
+        }
+
         this.baseResponse = baseResponse;
         this.baseStream = baseResponse.getEntity().getContent();
         this.charset = charset;
@@ -53,6 +57,10 @@ public class ResponseStream extends InputStream {
     private String _directResult;
 
     public ResponseStream(String result) throws IOException {
+        if (result == null) {
+            throw new IllegalArgumentException("result may not be null");
+        }
+
         _directResult = result;
     }
 
