@@ -93,6 +93,7 @@ public class HttpFragment extends Fragment {
 
                     @Override
                     public void onFailure(HttpException error, String msg) {
+                        // error.getCause(); //内部错误
                         resultText.setText(error.getExceptionCode() + ":" + msg);
                         downloadBtn.setEnabled(true);
                         stopBtn.setEnabled(false);
@@ -157,10 +158,16 @@ public class HttpFragment extends Fragment {
 
     //@OnClick(R.id.download_btn)
     public void testGet(View view) {
+
+        //RequestParams params = new RequestParams();
+        //params.addHeader("name", "value");
+        //params.addQueryStringParameter("name", "value");
+
         HttpUtils http = new HttpUtils();
         http.configCurrentHttpGetCacheExpiry(1000 * 10);
         http.send(HttpRequest.HttpMethod.GET,
                 "http://www.baidu.com",
+                //params,
                 new RequestCallBack<String>() {
 
                     @Override
