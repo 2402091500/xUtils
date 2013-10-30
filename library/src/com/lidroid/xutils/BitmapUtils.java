@@ -202,7 +202,7 @@ public class BitmapUtils {
         }
 
         if (TextUtils.isEmpty(uri)) {
-            displayConfig.getImageLoadCallBack().loadFailed(uri, imageView, displayConfig.getLoadFailedDrawable());
+            displayConfig.getImageLoadCallBack().onLoadFailed(uri, imageView, displayConfig.getLoadFailedDrawable());
             return;
         }
 
@@ -530,13 +530,13 @@ public class BitmapUtils {
             final ImageView imageView = this.getTargetImageView();
             if (imageView != null) {
                 if (bitmap != null) {
-                    displayConfig.getImageLoadCallBack().loadCompleted(
+                    displayConfig.getImageLoadCallBack().onLoadCompleted(
                             this.uri,
                             imageView,
                             new BitmapDrawable(context.getResources(), bitmap),
                             displayConfig);
                 } else {
-                    displayConfig.getImageLoadCallBack().loadFailed(
+                    displayConfig.getImageLoadCallBack().onLoadFailed(
                             this.uri,
                             imageView,
                             displayConfig.getLoadFailedDrawable());

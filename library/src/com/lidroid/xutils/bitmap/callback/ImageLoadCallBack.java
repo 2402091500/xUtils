@@ -22,6 +22,16 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 public interface ImageLoadCallBack {
 
     /**
+     * Call back when start loading.
+     *
+     * @param uri
+     * @param imageView
+     * @param drawable
+     * @param config
+     */
+    void onLoadStarted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
+
+    /**
      * Call back when bitmap has loaded.
      *
      * @param uri
@@ -29,7 +39,7 @@ public interface ImageLoadCallBack {
      * @param drawable
      * @param config
      */
-    void loadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
+    void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
 
     /**
      * Call back when bitmap failed to load.
@@ -38,6 +48,6 @@ public interface ImageLoadCallBack {
      * @param imageView
      * @param drawable
      */
-    void loadFailed(String uri, ImageView imageView, Drawable drawable);
+    void onLoadFailed(String uri, ImageView imageView, Drawable drawable);
 
 }

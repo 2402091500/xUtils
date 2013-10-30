@@ -46,8 +46,8 @@ public class ImageActivity extends Activity {
 
         /*bigPicDisplayConfig.setImageLoadCallBack(new SimpleImageLoadCallBack() {
             @Override
-            public void loadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
-                super.loadCompleted(uri, imageView, drawable, config);
+            public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
+                super.onLoadCompleted(uri, imageView, drawable, config);
                 if (drawable instanceof BitmapDrawable) {
                     int w = ((BitmapDrawable) drawable).getBitmap().getWidth();
                     int h = ((BitmapDrawable) drawable).getBitmap().getHeight();
