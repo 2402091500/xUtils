@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 保存到 Preferences 的cookie
+ * A CookieStore impl, it's save cookie to SharedPreferences.
  *
  * @author michael yang
  */
@@ -46,7 +46,7 @@ public class CookieUtils implements CookieStore {
      * Construct a persistent cookie store.
      */
     public CookieUtils(Context context) {
-        cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, 0);
+        cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, Context.MODE_PRIVATE);
         cookies = new ConcurrentHashMap<String, Cookie>();
 
         // Load any previously stored cookies into the store
@@ -80,40 +80,40 @@ public class CookieUtils implements CookieStore {
         }
 
         // Save cookie into persistent store
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        prefsWriter.putString(COOKIE_NAME_STORE, TextUtils.join(",", cookies.keySet()));
-        prefsWriter.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new SerializableCookie(cookie)));
-        prefsWriter.commit();
+        SharedPreferences.Editor editor = cookiePrefs.edit();
+        editor.putString(COOKIE_NAME_STORE, TextUtils.join(",", cookies.keySet()));
+        editor.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new SerializableCookie(cookie)));
+        editor.commit();
     }
 
     @Override
     public void clear() {
+        // Clear cookies from persistent store
+        SharedPreferences.Editor editor = cookiePrefs.edit();
+        for (String name : cookies.keySet()) {
+            editor.remove(COOKIE_NAME_PREFIX + name);
+        }
+        editor.remove(COOKIE_NAME_STORE);
+        editor.commit();
+
         // Clear cookies from local store
         cookies.clear();
-
-        // Clear cookies from persistent store
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        for (String name : cookies.keySet()) {
-            prefsWriter.remove(COOKIE_NAME_PREFIX + name);
-        }
-        prefsWriter.remove(COOKIE_NAME_STORE);
-        prefsWriter.commit();
     }
 
     @Override
     public boolean clearExpired(Date date) {
         boolean clearedAny = false;
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
+        SharedPreferences.Editor editor = cookiePrefs.edit();
 
         for (ConcurrentHashMap.Entry<String, Cookie> entry : cookies.entrySet()) {
             String name = entry.getKey();
             Cookie cookie = entry.getValue();
-            if (cookie.isExpired(date)) {
-                // 清除cookies
+            if (cookie.getExpiryDate() == null || cookie.isExpired(date)) {
+                // Remove the cookie by name
                 cookies.remove(name);
 
                 // Clear cookies from persistent store
-                prefsWriter.remove(COOKIE_NAME_PREFIX + name);
+                editor.remove(COOKIE_NAME_PREFIX + name);
 
                 // We've cleared at least one
                 clearedAny = true;
@@ -122,9 +122,9 @@ public class CookieUtils implements CookieStore {
 
         // Update names in persistent store
         if (clearedAny) {
-            prefsWriter.putString(COOKIE_NAME_STORE, TextUtils.join(",", cookies.keySet()));
+            editor.putString(COOKIE_NAME_STORE, TextUtils.join(",", cookies.keySet()));
         }
-        prefsWriter.commit();
+        editor.commit();
 
         return clearedAny;
     }
@@ -132,6 +132,10 @@ public class CookieUtils implements CookieStore {
     @Override
     public List<Cookie> getCookies() {
         return new ArrayList<Cookie>(cookies.values());
+    }
+
+    public Cookie getCookie(String name) {
+        return cookies.get(name);
     }
 
 
