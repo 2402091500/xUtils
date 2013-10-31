@@ -484,7 +484,7 @@ public class BitmapUtils {
         }
     }
 
-    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Void, Bitmap> {
+    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Object, Bitmap> {
         private String uri;
         private final WeakReference<ImageView> targetImageViewReference;
         private final BitmapDisplayConfig displayConfig;
@@ -514,6 +514,7 @@ public class BitmapUtils {
 
             // get cache from disk cache
             if (!this.isCancelled() && this.getTargetImageView() != null) {
+                this.publishProgress(uri, displayConfig);
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(uri, displayConfig);
             }
 
@@ -523,6 +524,13 @@ public class BitmapUtils {
             }
 
             return bitmap;
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            if (values != null && values.length == 2) {
+                displayConfig.getImageLoadCallBack().onLoadStarted((String) values[0], (BitmapDisplayConfig) values[1]);
+            }
         }
 
         @Override
@@ -546,7 +554,6 @@ public class BitmapUtils {
 
         @Override
         protected void onCancelled(Bitmap bitmap) {
-            super.onCancelled(bitmap);
             synchronized (pauseTaskLock) {
                 pauseTaskLock.notifyAll();
             }
