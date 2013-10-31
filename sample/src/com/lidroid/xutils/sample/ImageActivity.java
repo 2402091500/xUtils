@@ -2,11 +2,15 @@ package com.lidroid.xutils.sample;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.Toast;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
+import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -44,7 +48,12 @@ public class ImageActivity extends Activity {
         bigPicDisplayConfig.setBitmapMaxWidth(BitmapCommonUtils.getScreenWidth(this));
         bigPicDisplayConfig.setBitmapMaxHeight(BitmapCommonUtils.getScreenHeight(this));
 
-        /*bigPicDisplayConfig.setImageLoadCallBack(new SimpleImageLoadCallBack() {
+        bigPicDisplayConfig.setImageLoadCallBack(new SimpleImageLoadCallBack() {
+            @Override
+            public void onLoadStarted(String uri, BitmapDisplayConfig config) {
+                Toast.makeText(getApplicationContext(), uri, 1000).show();
+            }
+
             @Override
             public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
                 super.onLoadCompleted(uri, imageView, drawable, config);
@@ -54,7 +63,7 @@ public class ImageActivity extends Activity {
                     Toast.makeText(getApplicationContext(), w + "*" + h, 1000).show();
                 }
             }
-        });*/
+        });
 
         bitmapUtils.display(bigImage, imgUrl, bigPicDisplayConfig);
     }
