@@ -26,7 +26,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     @Override
-    public void onLoadStarted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
+    public void onLoadStarted(String uri, BitmapDisplayConfig config) {
     }
 
     @Override

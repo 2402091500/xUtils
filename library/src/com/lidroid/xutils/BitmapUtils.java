@@ -211,7 +211,12 @@ public class BitmapUtils {
         bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
 
         if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
+            displayConfig.getImageLoadCallBack().onLoadStarted(uri, displayConfig);
+            displayConfig.getImageLoadCallBack().onLoadCompleted(
+                    uri,
+                    imageView,
+                    new BitmapDrawable(context.getResources(), bitmap),
+                    displayConfig);
         } else if (!bitmapLoadTaskExist(imageView, uri)) {
 
             final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, displayConfig);
