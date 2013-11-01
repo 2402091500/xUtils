@@ -22,6 +22,8 @@ public abstract class RequestCallBack<T> {
 
     private static final int DEFAULT_RATE = 1000;
 
+    private static final int MIN_RATE = 200;
+
     protected Object userTag;
 
     public RequestCallBack() {
@@ -45,6 +47,9 @@ public abstract class RequestCallBack<T> {
     private int rate;
 
     public int getRate() {
+        if (rate < MIN_RATE) {
+            return MIN_RATE;
+        }
         return rate;
     }
 
