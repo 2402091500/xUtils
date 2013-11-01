@@ -19,9 +19,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
+
+import java.lang.reflect.Method;
 
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
@@ -30,7 +31,7 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
     }
 
     @Override
-    public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config, ImageLoadFrom from) {
+    public void onLoadCompleted(String url, ImageView imageView, Drawable drawable, BitmapDisplayConfig config, ImageLoadFrom from) {
         Animation animation = config.getAnimation();
         if (animation == null) {
             fadeInDisplay(imageView, drawable);
@@ -40,14 +41,16 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
     }
 
     @Override
-    public void onLoadFailed(String uri, ImageView imageView, Drawable drawable) {
+    public void onLoadFailed(String url, ImageView imageView, Drawable drawable) {
         imageView.setImageDrawable(drawable);
     }
+
+    private static final ColorDrawable transparentDrawable = new ColorDrawable(android.R.color.transparent);
 
     private void fadeInDisplay(ImageView imageView, Drawable drawable) {
         final TransitionDrawable td =
                 new TransitionDrawable(new Drawable[]{
-                        new ColorDrawable(android.R.color.transparent),
+                        transparentDrawable,
                         drawable
                 });
         imageView.setImageDrawable(td);
@@ -55,8 +58,13 @@ public class SimpleImageLoadCallBack implements ImageLoadCallBack {
     }
 
     private void animationDisplay(ImageView imageView, Drawable drawable, Animation animation) {
-        animation.setStartTime(AnimationUtils.currentAnimationTimeMillis());
         imageView.setImageDrawable(drawable);
-        imageView.startAnimation(animation);
+        try {
+            Method cloneMethod = Animation.class.getDeclaredMethod("clone");
+            cloneMethod.setAccessible(true);
+            imageView.startAnimation((Animation) cloneMethod.invoke(animation));
+        } catch (Throwable e) {
+            imageView.startAnimation(animation);
+        }
     }
 }
