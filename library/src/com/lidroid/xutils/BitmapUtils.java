@@ -324,7 +324,7 @@ public class BitmapUtils {
 
     private static <T extends View> BitmapLoadTask getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
         if (container != null) {
-            final Drawable drawable = bitmapSetter.getDrawable(container);
+            final Drawable drawable = bitmapSetter == null ? container.getBackground() : bitmapSetter.getDrawable(container);
             if (drawable instanceof AsyncBitmapDrawable) {
                 final AsyncBitmapDrawable asyncBitmapDrawable = (AsyncBitmapDrawable) drawable;
                 return asyncBitmapDrawable.getBitmapWorkerTask();
