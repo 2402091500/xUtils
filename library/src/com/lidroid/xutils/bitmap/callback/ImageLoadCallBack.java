@@ -27,7 +27,7 @@ public interface ImageLoadCallBack {
      * @param uri
      * @param config
      */
-    void onLoadStarted(String uri, BitmapDisplayConfig config);
+    void onLoadStarted(String uri, ImageView imageView, BitmapDisplayConfig config);
 
     /**
      * Call back when bitmap has loaded.
@@ -37,7 +37,7 @@ public interface ImageLoadCallBack {
      * @param drawable
      * @param config
      */
-    void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config);
+    void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config, ImageLoadFrom from);
 
     /**
      * Call back when bitmap failed to load.

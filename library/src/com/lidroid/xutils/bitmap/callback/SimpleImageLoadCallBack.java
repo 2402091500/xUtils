@@ -26,11 +26,11 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 public class SimpleImageLoadCallBack implements ImageLoadCallBack {
 
     @Override
-    public void onLoadStarted(String uri, BitmapDisplayConfig config) {
+    public void onLoadStarted(String uri, ImageView imageView, BitmapDisplayConfig config) {
     }
 
     @Override
-    public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
+    public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config, ImageLoadFrom from) {
         Animation animation = config.getAnimation();
         if (animation == null) {
             fadeInDisplay(imageView, drawable);
