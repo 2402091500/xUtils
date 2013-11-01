@@ -146,24 +146,28 @@ public class BitmapCache {
                     }
 
                     if (mDiskLruCache != null) {
-                        snapshot = mDiskLruCache.get(uri);
-                        if (snapshot == null) {
-                            LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
-                            if (editor != null) {
-                                outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
-                                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
-                                if (bitmapMeta.expiryTimestamp < 0) {
-                                    editor.abort();
-                                    return null;
-                                } else {
-                                    editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
-                                    editor.commit();
+                        try {
+                            snapshot = mDiskLruCache.get(uri);
+                            if (snapshot == null) {
+                                LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
+                                if (editor != null) {
+                                    outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
+                                    bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
+                                    if (bitmapMeta.expiryTimestamp < 0) {
+                                        editor.abort();
+                                        return null;
+                                    } else {
+                                        editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
+                                        editor.commit();
+                                    }
+                                    snapshot = mDiskLruCache.get(uri);
                                 }
-                                snapshot = mDiskLruCache.get(uri);
                             }
-                        }
-                        if (snapshot != null) {
-                            bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                            if (snapshot != null) {
+                                bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                            }
+                        } catch (Throwable e) {
+                            LogUtils.e(e.getMessage(), e);
                         }
                     }
                 }
