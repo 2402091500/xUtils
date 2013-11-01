@@ -218,6 +218,7 @@ public class BitmapUtils {
         }
 
         if (TextUtils.isEmpty(url)) {
+            callBack.onLoadStarted(container, url, displayConfig);
             callBack.onLoadFailed(container, url, displayConfig.getLoadFailedDrawable());
             return;
         }
