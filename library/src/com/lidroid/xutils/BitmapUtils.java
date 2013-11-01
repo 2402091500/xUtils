@@ -20,13 +20,17 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapCacheListener;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
-import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.callback.ImageLoadFrom;
+import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
+import com.lidroid.xutils.bitmap.callback.BitmapSetter;
+import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.LruDiskCache;
@@ -127,11 +131,6 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDefaultImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
-        defaultDisplayConfig.setImageLoadCallBack(imageLoadCallBack);
-        return this;
-    }
-
     public BitmapUtils configDefaultShowOriginal(boolean showOriginal) {
         defaultDisplayConfig.setShowOriginal(showOriginal);
         return this;
@@ -189,13 +188,29 @@ public class BitmapUtils {
 
     ////////////////////////// display ////////////////////////////////////
 
-    public void display(ImageView imageView, String url) {
-        display(imageView, url, null);
+    public void display(ImageView container, String url) {
+        BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
+        callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
+        display(container, callBack, url, null);
     }
 
-    public void display(ImageView imageView, String url, BitmapDisplayConfig displayConfig) {
-        if (imageView == null) {
+    public void display(ImageView container, String url, BitmapDisplayConfig displayConfig) {
+        BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
+        callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
+        display(container, callBack, url, displayConfig);
+    }
+
+    public <T extends View> void display(T container, BitmapLoadCallBack<T> callBack, String url) {
+        display(container, callBack, url, null);
+    }
+
+    public <T extends View> void display(T container, BitmapLoadCallBack<T> callBack, String url, BitmapDisplayConfig displayConfig) {
+        if (container == null) {
             return;
+        }
+
+        if (callBack == null) {
+            callBack = new SimpleBitmapLoadCallBack<T>();
         }
 
         if (displayConfig == null) {
@@ -203,28 +218,33 @@ public class BitmapUtils {
         }
 
         if (TextUtils.isEmpty(url)) {
-            displayConfig.getImageLoadCallBack().onLoadFailed(url, imageView, displayConfig.getLoadFailedDrawable());
+            callBack.onLoadFailed(container, url, displayConfig.getLoadFailedDrawable());
             return;
         }
 
         Bitmap bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(url, displayConfig);
 
         if (bitmap != null) {
-            displayConfig.getImageLoadCallBack().onLoadStarted(url, imageView, displayConfig);
-            displayConfig.getImageLoadCallBack().onLoadCompleted(
+            callBack.onLoadStarted(container, url, displayConfig);
+            callBack.onLoadCompleted(
+                    container,
                     url,
-                    imageView,
-                    new BitmapDrawable(context.getResources(), bitmap),
+                    bitmap,
                     displayConfig,
-                    ImageLoadFrom.MEMORY_CACHE);
-        } else if (!bitmapLoadTaskExist(imageView, url)) {
+                    BitmapLoadFrom.MEMORY_CACHE);
+        } else if (!bitmapLoadTaskExist(container, callBack.getBitmapSetter(), url)) {
 
-            final BitmapLoadTask loadTask = new BitmapLoadTask(imageView, url, displayConfig);
+            final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, callBack, url, displayConfig);
             // set loading image
             final AsyncBitmapDrawable asyncBitmapDrawable = new AsyncBitmapDrawable(
                     displayConfig.getLoadingDrawable(),
                     loadTask);
-            imageView.setImageDrawable(asyncBitmapDrawable);
+            BitmapSetter<T> setter = callBack.getBitmapSetter();
+            if (setter != null) {
+                setter.setDrawable(container, asyncBitmapDrawable);
+            } else {
+                container.setBackgroundDrawable(asyncBitmapDrawable);
+            }
 
             // load bitmap from url or diskCache
             loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor());
@@ -302,9 +322,9 @@ public class BitmapUtils {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static BitmapLoadTask getBitmapTaskFromImageView(ImageView imageView) {
-        if (imageView != null) {
-            final Drawable drawable = imageView.getDrawable();
+    private static <T extends View> BitmapLoadTask getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
+        if (container != null) {
+            final Drawable drawable = bitmapSetter.getDrawable(container);
             if (drawable instanceof AsyncBitmapDrawable) {
                 final AsyncBitmapDrawable asyncBitmapDrawable = (AsyncBitmapDrawable) drawable;
                 return asyncBitmapDrawable.getBitmapWorkerTask();
@@ -313,8 +333,8 @@ public class BitmapUtils {
         return null;
     }
 
-    private static boolean bitmapLoadTaskExist(ImageView imageView, String url) {
-        final BitmapLoadTask oldLoadTask = getBitmapTaskFromImageView(imageView);
+    private static <T extends View> boolean bitmapLoadTaskExist(T container, BitmapSetter<T> bitmapSetter, String url) {
+        final BitmapLoadTask oldLoadTask = getBitmapTaskFromContainer(container, bitmapSetter);
 
         if (oldLoadTask != null) {
             final String oldUrl = oldLoadTask.url;
@@ -489,15 +509,21 @@ public class BitmapUtils {
         }
     }
 
-    private class BitmapLoadTask extends CompatibleAsyncTask<Object, Object, Bitmap> {
+    private class BitmapLoadTask<T extends View> extends CompatibleAsyncTask<Object, Object, Bitmap> {
         private final String url;
-        private final WeakReference<ImageView> targetImageViewReference;
+        private final WeakReference<T> containerReference;
+        private final BitmapLoadCallBack<T> callBack;
         private final BitmapDisplayConfig displayConfig;
 
-        private ImageLoadFrom from = ImageLoadFrom.DISK_CACHE;
+        private BitmapLoadFrom from = BitmapLoadFrom.DISK_CACHE;
 
-        public BitmapLoadTask(ImageView imageView, String url, BitmapDisplayConfig config) {
-            this.targetImageViewReference = new WeakReference<ImageView>(imageView);
+        public BitmapLoadTask(T container, BitmapLoadCallBack<T> callBack, String url, BitmapDisplayConfig config) {
+            if (container == null || callBack == null || url == null || config == null) {
+                throw new IllegalArgumentException("args may not be null");
+            }
+
+            this.containerReference = new WeakReference<T>(container);
+            this.callBack = callBack;
             this.url = url;
             this.displayConfig = config;
         }
@@ -517,15 +543,15 @@ public class BitmapUtils {
             Bitmap bitmap = null;
 
             // get cache from disk cache
-            if (!this.isCancelled() && this.getTargetImageView() != null) {
+            if (!this.isCancelled() && this.getTargetContainer() != null) {
                 this.publishProgress(url, displayConfig);
                 bitmap = globalConfig.getBitmapCache().getBitmapFromDiskCache(url, displayConfig);
             }
 
             // download image
-            if (bitmap == null && !this.isCancelled() && this.getTargetImageView() != null) {
+            if (bitmap == null && !this.isCancelled() && this.getTargetContainer() != null) {
                 bitmap = globalConfig.getBitmapCache().downloadBitmap(url, displayConfig);
-                from = ImageLoadFrom.URL;
+                from = BitmapLoadFrom.URL;
             }
 
             return bitmap;
@@ -534,28 +560,28 @@ public class BitmapUtils {
         @Override
         protected void onProgressUpdate(Object... values) {
             if (values != null && values.length == 2) {
-                final ImageView imageView = this.getTargetImageView();
-                if (imageView != null) {
-                    displayConfig.getImageLoadCallBack().onLoadStarted((String) values[0], imageView, (BitmapDisplayConfig) values[1]);
+                final T container = this.getTargetContainer();
+                if (container != null) {
+                    callBack.onLoadStarted(container, (String) values[0], (BitmapDisplayConfig) values[1]);
                 }
             }
         }
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            final ImageView imageView = this.getTargetImageView();
-            if (imageView != null) {
+            final T container = this.getTargetContainer();
+            if (container != null) {
                 if (bitmap != null) {
-                    displayConfig.getImageLoadCallBack().onLoadCompleted(
+                    callBack.onLoadCompleted(
+                            container,
                             this.url,
-                            imageView,
-                            new BitmapDrawable(context.getResources(), bitmap),
+                            bitmap,
                             displayConfig,
                             from);
                 } else {
-                    displayConfig.getImageLoadCallBack().onLoadFailed(
+                    callBack.onLoadFailed(
+                            container,
                             this.url,
-                            imageView,
                             displayConfig.getLoadFailedDrawable());
                 }
             }
@@ -568,12 +594,12 @@ public class BitmapUtils {
             }
         }
 
-        private ImageView getTargetImageView() {
-            final ImageView imageView = targetImageViewReference.get();
-            final BitmapLoadTask bitmapWorkerTask = getBitmapTaskFromImageView(imageView);
+        private T getTargetContainer() {
+            final T container = containerReference.get();
+            final BitmapLoadTask bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack.getBitmapSetter());
 
             if (this == bitmapWorkerTask) {
-                return imageView;
+                return container;
             }
 
             return null;

@@ -17,9 +17,12 @@ package com.lidroid.xutils.bitmap.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.DisplayMetrics;
+import android.widget.ImageView;
+import com.lidroid.xutils.bitmap.callback.BitmapSetter;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
@@ -73,5 +76,25 @@ public class BitmapCommonUtils {
             screenHeight = displayMetrics.heightPixels;
         }
         return screenHeight;
+    }
+
+    public static final ImageViewSetter sDefaultImageViewSetter = new ImageViewSetter();
+
+    public static class ImageViewSetter implements BitmapSetter<ImageView> {
+
+        @Override
+        public void setBitmap(ImageView container, Bitmap bitmap) {
+            container.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void setDrawable(ImageView container, Drawable drawable) {
+            container.setImageDrawable(drawable);
+        }
+
+        @Override
+        public Drawable getDrawable(ImageView container) {
+            return container.getDrawable();
+        }
     }
 }

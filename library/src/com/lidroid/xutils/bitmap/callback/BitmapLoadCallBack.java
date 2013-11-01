@@ -15,37 +15,43 @@
 
 package com.lidroid.xutils.bitmap.callback;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.widget.ImageView;
+import android.view.View;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
-public interface ImageLoadCallBack {
+public interface BitmapLoadCallBack<T extends View> {
 
     /**
      * Call back when start loading.
      *
+     * @param container
      * @param uri
      * @param config
      */
-    void onLoadStarted(String uri, ImageView imageView, BitmapDisplayConfig config);
+    void onLoadStarted(T container, String uri, BitmapDisplayConfig config);
 
     /**
      * Call back when bitmap has loaded.
      *
+     * @param container
      * @param url
-     * @param imageView
-     * @param drawable
+     * @param bitmap
      * @param config
      */
-    void onLoadCompleted(String url, ImageView imageView, Drawable drawable, BitmapDisplayConfig config, ImageLoadFrom from);
+    void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
 
     /**
      * Call back when bitmap failed to load.
      *
+     * @param container
      * @param url
-     * @param imageView
      * @param drawable
      */
-    void onLoadFailed(String url, ImageView imageView, Drawable drawable);
+    void onLoadFailed(T container, String url, Drawable drawable);
+
+    void setBitmapSetter(BitmapSetter<T> bitmapSetter);
+
+    BitmapSetter<T> getBitmapSetter();
 
 }

@@ -21,8 +21,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
-import com.lidroid.xutils.bitmap.callback.ImageLoadCallBack;
-import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 
 public class BitmapDisplayConfig {
@@ -34,8 +32,6 @@ public class BitmapDisplayConfig {
 
     private Drawable loadingDrawable;
     private Drawable loadFailedDrawable;
-
-    private ImageLoadCallBack imageLoadCallBack;
 
     private boolean showOriginal = false;
 
@@ -94,17 +90,6 @@ public class BitmapDisplayConfig {
 
     public void setLoadFailedDrawable(Drawable loadFailedDrawable) {
         this.loadFailedDrawable = loadFailedDrawable;
-    }
-
-    public ImageLoadCallBack getImageLoadCallBack() {
-        if (imageLoadCallBack == null) {
-            imageLoadCallBack = new SimpleImageLoadCallBack();
-        }
-        return imageLoadCallBack;
-    }
-
-    public void setImageLoadCallBack(ImageLoadCallBack imageLoadCallBack) {
-        this.imageLoadCallBack = imageLoadCallBack;
     }
 
     public boolean isShowOriginal() {
