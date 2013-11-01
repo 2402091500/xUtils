@@ -239,7 +239,7 @@ public class BitmapUtils {
 
             final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, callBack, url, displayConfig);
             // set loading image
-            final AsyncBitmapDrawable asyncBitmapDrawable = new AsyncBitmapDrawable(
+            final AsyncBitmapDrawable<T> asyncBitmapDrawable = new AsyncBitmapDrawable<T>(
                     displayConfig.getLoadingDrawable(),
                     loadTask);
             BitmapSetter<T> setter = callBack.getBitmapSetter();
@@ -325,11 +325,12 @@ public class BitmapUtils {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static <T extends View> BitmapLoadTask getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
+    @SuppressWarnings("unchecked")
+	private static <T extends View> BitmapLoadTask<T> getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
         if (container != null) {
             final Drawable drawable = bitmapSetter == null ? container.getBackground() : bitmapSetter.getDrawable(container);
             if (drawable instanceof AsyncBitmapDrawable) {
-                final AsyncBitmapDrawable asyncBitmapDrawable = (AsyncBitmapDrawable) drawable;
+                final AsyncBitmapDrawable<T> asyncBitmapDrawable = (AsyncBitmapDrawable<T>) drawable;
                 return asyncBitmapDrawable.getBitmapWorkerTask();
             }
         }
@@ -337,7 +338,7 @@ public class BitmapUtils {
     }
 
     private static <T extends View> boolean bitmapLoadTaskExist(T container, BitmapSetter<T> bitmapSetter, String url) {
-        final BitmapLoadTask oldLoadTask = getBitmapTaskFromContainer(container, bitmapSetter);
+        final BitmapLoadTask<T> oldLoadTask = getBitmapTaskFromContainer(container, bitmapSetter);
 
         if (oldLoadTask != null) {
             final String oldUrl = oldLoadTask.url;
@@ -350,13 +351,13 @@ public class BitmapUtils {
         return false;
     }
 
-    private class AsyncBitmapDrawable extends Drawable {
+    private class AsyncBitmapDrawable<T extends View> extends Drawable {
 
-        private final WeakReference<BitmapLoadTask> bitmapLoadTaskReference;
+        private final WeakReference<BitmapLoadTask<T>> bitmapLoadTaskReference;
 
         private final Drawable baseDrawable;
 
-        public AsyncBitmapDrawable(Drawable drawable, BitmapLoadTask bitmapWorkerTask) {
+        public AsyncBitmapDrawable(Drawable drawable, BitmapLoadTask<T> bitmapWorkerTask) {
             if (drawable == null) {
                 throw new IllegalArgumentException("drawable may not be null");
             }
@@ -364,10 +365,10 @@ public class BitmapUtils {
                 throw new IllegalArgumentException("bitmapWorkerTask may not be null");
             }
             baseDrawable = drawable;
-            bitmapLoadTaskReference = new WeakReference<BitmapLoadTask>(bitmapWorkerTask);
+            bitmapLoadTaskReference = new WeakReference<BitmapLoadTask<T>>(bitmapWorkerTask);
         }
 
-        public BitmapLoadTask getBitmapWorkerTask() {
+        public BitmapLoadTask<T> getBitmapWorkerTask() {
             return bitmapLoadTaskReference.get();
         }
 
@@ -599,7 +600,7 @@ public class BitmapUtils {
 
         private T getTargetContainer() {
             final T container = containerReference.get();
-            final BitmapLoadTask bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack.getBitmapSetter());
+            final BitmapLoadTask<T> bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack.getBitmapSetter());
 
             if (this == bitmapWorkerTask) {
                 return container;
