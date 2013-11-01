@@ -209,6 +209,8 @@ public class BitmapUtils {
             return;
         }
 
+        container.clearAnimation();
+
         if (callBack == null) {
             callBack = new SimpleBitmapLoadCallBack<T>();
         }

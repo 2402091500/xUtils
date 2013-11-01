@@ -30,7 +30,6 @@ public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallB
 
     @Override
     public void onLoadStarted(T container, String uri, BitmapDisplayConfig config) {
-        container.clearAnimation();
     }
 
     @Override
