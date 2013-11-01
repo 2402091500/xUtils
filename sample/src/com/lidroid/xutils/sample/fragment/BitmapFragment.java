@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnItemClick;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +50,8 @@ public class BitmapFragment extends Fragment {
             "http://www.youzi4.com/"
     };
 
+    private HashMap<String, Integer> temp = new HashMap<String, Integer>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bitmap_fragment, container, false); // 加载fragment布局
@@ -56,6 +61,11 @@ public class BitmapFragment extends Fragment {
         bitmapUtils.configDefaultLoadingImage(R.drawable.ic_launcher);
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
+
+        ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(800);
+        bitmapUtils.configDefaultImageLoadAnimation(animation);
 
         //bitmapUtils.configDefaultBitmapMaxWidth(200);
         //bitmapUtils.configDefaultBitmapMaxHeight(200);
@@ -165,7 +175,9 @@ public class BitmapFragment extends Fragment {
         Matcher m_image = p_image.matcher(htmlStr);
         while (m_image.find()) {
             String src = m_image.group(1);
-            pics.add("http://" + src + ".jpg");
+            if (src.length() < 50) {
+                pics.add("http://" + src + ".jpg");
+            }
         }
         return pics;
     }

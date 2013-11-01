@@ -2,15 +2,15 @@ package com.lidroid.xutils.sample;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
-import com.lidroid.xutils.bitmap.callback.SimpleImageLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
+import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -48,23 +48,21 @@ public class ImageActivity extends Activity {
         bigPicDisplayConfig.setBitmapMaxWidth(BitmapCommonUtils.getScreenWidth(this));
         bigPicDisplayConfig.setBitmapMaxHeight(BitmapCommonUtils.getScreenHeight(this));
 
-        bigPicDisplayConfig.setImageLoadCallBack(new SimpleImageLoadCallBack() {
+        BitmapLoadCallBack<ImageView> callback = new SimpleBitmapLoadCallBack<ImageView>() {
             @Override
-            public void onLoadStarted(String uri, BitmapDisplayConfig config) {
-                Toast.makeText(getApplicationContext(), uri, 1000).show();
+            public void onLoadStarted(ImageView container, String uri, BitmapDisplayConfig config) {
+                super.onLoadStarted(container, uri, config);
+                Toast.makeText(getApplicationContext(), uri, 300).show();
             }
 
             @Override
-            public void onLoadCompleted(String uri, ImageView imageView, Drawable drawable, BitmapDisplayConfig config) {
-                super.onLoadCompleted(uri, imageView, drawable, config);
-                if (drawable instanceof BitmapDrawable) {
-                    int w = ((BitmapDrawable) drawable).getBitmap().getWidth();
-                    int h = ((BitmapDrawable) drawable).getBitmap().getHeight();
-                    Toast.makeText(getApplicationContext(), w + "*" + h, 1000).show();
-                }
+            public void onLoadCompleted(ImageView container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
+                super.onLoadCompleted(container, url, bitmap, config, from);
+                Toast.makeText(getApplicationContext(), bitmap.getWidth() + "*" + bitmap.getHeight(), 300).show();
             }
-        });
+        };
+        callback.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
 
-        bitmapUtils.display(bigImage, imgUrl, bigPicDisplayConfig);
+        bitmapUtils.display(bigImage, callback, imgUrl, bigPicDisplayConfig);
     }
 }
