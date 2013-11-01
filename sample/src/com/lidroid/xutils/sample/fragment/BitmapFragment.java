@@ -62,10 +62,10 @@ public class BitmapFragment extends Fragment {
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
 
-        ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+        /*ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(800);
-        bitmapUtils.configDefaultImageLoadAnimation(animation);
+        bitmapUtils.configDefaultImageLoadAnimation(animation);*/
 
         //bitmapUtils.configDefaultBitmapMaxWidth(200);
         //bitmapUtils.configDefaultBitmapMaxHeight(200);
@@ -175,7 +175,7 @@ public class BitmapFragment extends Fragment {
         Matcher m_image = p_image.matcher(htmlStr);
         while (m_image.find()) {
             String src = m_image.group(1);
-            if (src.length() < 50) {
+            if (src.length() < 100) {
                 pics.add("http://" + src + ".jpg");
             }
         }
