@@ -20,19 +20,36 @@ import com.lidroid.xutils.exception.HttpException;
 
 public abstract class RequestCallBack<T> {
 
+    private static final int DEFAULT_RATE = 1000;
+
     protected Object userTag;
 
     public RequestCallBack() {
+        this.rate = DEFAULT_RATE;
+    }
+
+    public RequestCallBack(int rate) {
+        this.rate = rate;
     }
 
     public RequestCallBack(Object userTag) {
+        this.rate = DEFAULT_RATE;
         this.userTag = userTag;
     }
 
-    private int rate = 1000 * 1;
+    public RequestCallBack(int rate, Object userTag) {
+        this.rate = rate;
+        this.userTag = userTag;
+    }
+
+    private int rate;
 
     public int getRate() {
         return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
     }
 
     public void onStart() {
