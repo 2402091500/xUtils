@@ -76,7 +76,7 @@ public class HttpFragment extends Fragment {
 
                     @Override
                     public void onStart() {
-                        resultText.setText("conn..." + "\n" + this.userTag);
+                        resultText.setText(this.getRequestUrl() + " conn..." + "\n" + this.userTag);
                     }
 
                     @Override
