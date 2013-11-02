@@ -33,6 +33,7 @@ import org.apache.http.protocol.HTTP;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -247,7 +248,7 @@ public class RequestParams {
 
         if (fileParams != null && !fileParams.isEmpty()) {
 
-            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.STRICT, null, Charset.forName(charset));
 
             if (bodyParams != null && !bodyParams.isEmpty()) {
                 for (NameValuePair param : bodyParams.values()) {
