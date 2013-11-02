@@ -55,7 +55,7 @@ public class SyncHttpHandler {
         this.charset = charset;
     }
 
-    private String _getMethodRequestUrl; // If current request not http "get" method, it will be null.
+    private String requestUrl;
     private long expiry = HttpGetCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
@@ -69,17 +69,14 @@ public class SyncHttpHandler {
         while (retry) {
             IOException exception = null;
             try {
+                requestUrl = request.getURI().toString();
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
-                    _getMethodRequestUrl = request.getURI().toString();
-                } else {
-                    _getMethodRequestUrl = null;
-                }
-                if (_getMethodRequestUrl != null) {
-                    String result = HttpUtils.sHttpGetCache.get(_getMethodRequestUrl);
+                    String result = HttpUtils.sHttpGetCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseStream(result);
                     }
                 }
+
                 HttpResponse response = client.execute(request, context);
                 return handleResponse(response);
             } catch (UnknownHostException e) {
@@ -118,7 +115,7 @@ public class SyncHttpHandler {
             String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
             charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
-            return new ResponseStream(response, charset, _getMethodRequestUrl, expiry);
+            return new ResponseStream(response, charset, requestUrl, expiry);
         } else if (statusCode == 301 || statusCode == 302) {
             if (httpRedirectHandler == null) {
                 httpRedirectHandler = new DefaultHttpRedirectHandler();

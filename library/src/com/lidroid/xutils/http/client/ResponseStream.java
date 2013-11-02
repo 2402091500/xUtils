@@ -35,14 +35,14 @@ public class ResponseStream extends InputStream {
 
     private String charset;
 
-    private String url;
+    private String requestUrl;
     private long expiry;
 
-    public ResponseStream(HttpResponse baseResponse, String url, long expiry) throws IOException {
-        this(baseResponse, HTTP.UTF_8, url, expiry);
+    public ResponseStream(HttpResponse baseResponse, String requestUrl, long expiry) throws IOException {
+        this(baseResponse, HTTP.UTF_8, requestUrl, expiry);
     }
 
-    public ResponseStream(HttpResponse baseResponse, String charset, String url, long expiry) throws IOException {
+    public ResponseStream(HttpResponse baseResponse, String charset, String requestUrl, long expiry) throws IOException {
         if (baseResponse == null) {
             throw new IllegalArgumentException("baseResponse may not be null");
         }
@@ -50,7 +50,7 @@ public class ResponseStream extends InputStream {
         this.baseResponse = baseResponse;
         this.baseStream = baseResponse.getEntity().getContent();
         this.charset = charset;
-        this.url = url;
+        this.requestUrl = requestUrl;
         this.expiry = expiry;
     }
 
@@ -62,6 +62,10 @@ public class ResponseStream extends InputStream {
         }
 
         _directResult = result;
+    }
+
+    public String getRequestUrl() {
+        return requestUrl;
     }
 
     public InputStream getBaseStream() {
@@ -98,8 +102,8 @@ public class ResponseStream extends InputStream {
                 sb.append(line);
             }
             _directResult = sb.toString();
-            if (url != null) {
-                HttpUtils.sHttpGetCache.put(url, _directResult, expiry);
+            if (requestUrl != null) {
+                HttpUtils.sHttpGetCache.put(requestUrl, _directResult, expiry);
             }
             return _directResult;
         } finally {
