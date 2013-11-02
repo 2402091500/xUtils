@@ -53,13 +53,14 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         }
     }
 
+    private String requestUrl;
     private HttpRequestBase request;
     private boolean isUploading = true;
     private final RequestCallBack<T> callback;
 
     private int retriedTimes = 0;
     private String fileSavePath = null;
-    private boolean isDownloadingFile;
+    private boolean isDownloadingFile = false;
     private boolean autoResume = false; // Whether the downloading could continue from the point of interruption.
     private boolean autoRename = false; // Whether rename the file by response header info when the download completely.
     private String charset; // The default charset of response header info.
@@ -71,7 +72,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         this.charset = charset;
     }
 
-    private String _getRequestUrl;// if not get method, it will be null.
     private long expiry = HttpGetCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
@@ -98,12 +98,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             IOException exception = null;
             try {
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
-                    _getRequestUrl = request.getURI().toString();
-                } else {
-                    _getRequestUrl = null;
-                }
-                if (_getRequestUrl != null) {
-                    String result = HttpUtils.sHttpGetCache.get(_getRequestUrl);
+                    String result = HttpUtils.sHttpGetCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseInfo<T>(null, (T) result, true);
                     }
@@ -151,8 +146,17 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         }
 
         try {
-            this.publishProgress(UPDATE_START);
+            // init request & requestUrl
             request = (HttpRequestBase) params[0];
+            requestUrl = request.getURI().toString();
+            if (callback != null) {
+                callback.setRequestUrl(requestUrl);
+            }
+
+            this.publishProgress(UPDATE_START);
+
+            lastUpdateTime = SystemClock.uptimeMillis();
+
             ResponseInfo<T> responseInfo = sendRequest(request);
             if (responseInfo != null) {
                 this.publishProgress(UPDATE_SUCCESS, responseInfo);
@@ -173,33 +177,25 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     @Override
     @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
-        if (mStopped || values == null || values.length < 1) return;
+        if (mStopped || values == null || values.length < 1 || callback == null) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
-                if (callback != null) {
-                    callback.onStart();
-                }
+                callback.onStart();
                 break;
             case UPDATE_LOADING:
                 if (values.length != 3) return;
-                if (callback != null) {
-                    callback.onLoading(
-                            Long.valueOf(String.valueOf(values[1])),
-                            Long.valueOf(String.valueOf(values[2])),
-                            isUploading);
-                }
+                callback.onLoading(
+                        Long.valueOf(String.valueOf(values[1])),
+                        Long.valueOf(String.valueOf(values[2])),
+                        isUploading);
                 break;
             case UPDATE_FAILURE:
                 if (values.length != 3) return;
-                if (callback != null) {
-                    callback.onFailure((HttpException) values[1], (String) values[2]);
-                }
+                callback.onFailure((HttpException) values[1], (String) values[2]);
                 break;
             case UPDATE_SUCCESS:
                 if (values.length != 2) return;
-                if (callback != null) {
-                    callback.onSuccess((ResponseInfo<T>) values[1]);
-                }
+                callback.onSuccess((ResponseInfo<T>) values[1]);
                 break;
             default:
                 break;
@@ -220,7 +216,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 isUploading = false;
-                lastUpdateTime = SystemClock.uptimeMillis();
                 if (isDownloadingFile) {
                     autoResume = autoResume && OtherUtils.isSupportRange(response);
                     String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
@@ -232,7 +227,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                     charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
                     result = mStringDownloadHandler.handleEntity(entity, this, charset);
-                    HttpUtils.sHttpGetCache.put(_getRequestUrl, (String) result, expiry);
+                    HttpUtils.sHttpGetCache.put(requestUrl, (String) result, expiry);
                 }
             }
             return new ResponseInfo<T>(response, (T) result, false);

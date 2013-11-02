@@ -24,6 +24,8 @@ public abstract class RequestCallBack<T> {
 
     private static final int MIN_RATE = 200;
 
+    private String requestUrl;
+
     protected Object userTag;
 
     public RequestCallBack() {
@@ -46,15 +48,23 @@ public abstract class RequestCallBack<T> {
 
     private int rate;
 
-    public int getRate() {
+    public final int getRate() {
         if (rate < MIN_RATE) {
             return MIN_RATE;
         }
         return rate;
     }
 
-    public void setRate(int rate) {
+    public final void setRate(int rate) {
         this.rate = rate;
+    }
+
+    public final String getRequestUrl() {
+        return requestUrl;
+    }
+
+    public final void setRequestUrl(String requestUrl) {
+        this.requestUrl = requestUrl;
     }
 
     public void onStart() {
