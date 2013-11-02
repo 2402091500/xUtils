@@ -326,7 +326,7 @@ public class BitmapUtils {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings("unchecked")
-	private static <T extends View> BitmapLoadTask<T> getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
+    private static <T extends View> BitmapLoadTask<T> getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
         if (container != null) {
             final Drawable drawable = bitmapSetter == null ? container.getBackground() : bitmapSetter.getDrawable(container);
             if (drawable instanceof AsyncBitmapDrawable) {
