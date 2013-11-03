@@ -253,7 +253,6 @@ public class BitmapGlobalConfig {
                         cache.initDiskCache();
                         break;
                     case MESSAGE_FLUSH:
-                        cache.clearMemoryCache();
                         cache.flush();
                         break;
                     case MESSAGE_CLOSE:

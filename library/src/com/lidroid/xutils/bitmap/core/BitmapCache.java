@@ -213,8 +213,8 @@ public class BitmapCache {
      * @return The bitmap if found in cache, null otherwise
      */
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
-        String key = uri + (config == null ? "" : config.toString());
-        if (mMemoryCache != null) {
+        if (mMemoryCache != null && globalConfig.isMemoryCacheEnabled()) {
+            String key = uri + (config == null ? "" : config.toString());
             SoftReference<Bitmap> softRef = mMemoryCache.get(key);
             return softRef == null ? null : softRef.get();
         }
