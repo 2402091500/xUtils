@@ -70,6 +70,9 @@ public abstract class RequestCallBack<T> {
     public void onStart() {
     }
 
+    public void onStopped() {
+    }
+
     public void onLoading(long total, long current, boolean isUploading) {
     }
 

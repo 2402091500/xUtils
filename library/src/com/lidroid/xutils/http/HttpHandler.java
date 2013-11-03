@@ -267,6 +267,9 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             } catch (Throwable e) {
             }
         }
+        if (callback != null) {
+            callback.onStopped();
+        }
     }
 
     @Override
