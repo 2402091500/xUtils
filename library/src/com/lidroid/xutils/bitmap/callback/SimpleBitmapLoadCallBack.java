@@ -29,6 +29,10 @@ import java.lang.reflect.Method;
 public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallBack<T> {
 
     @Override
+    public void onPreLoad(T container, String uri, BitmapDisplayConfig config) {
+    }
+
+    @Override
     public void onLoadStarted(T container, String uri, BitmapDisplayConfig config) {
     }
 

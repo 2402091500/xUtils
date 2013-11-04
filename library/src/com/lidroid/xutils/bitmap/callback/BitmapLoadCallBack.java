@@ -29,6 +29,15 @@ public interface BitmapLoadCallBack<T extends View> {
      * @param uri
      * @param config
      */
+    void onPreLoad(T container, String uri, BitmapDisplayConfig config);
+
+    /**
+     * Call back when start loading.
+     *
+     * @param container
+     * @param uri
+     * @param config
+     */
     void onLoadStarted(T container, String uri, BitmapDisplayConfig config);
 
     /**

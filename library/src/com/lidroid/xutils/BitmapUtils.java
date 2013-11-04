@@ -219,8 +219,9 @@ public class BitmapUtils {
             displayConfig = defaultDisplayConfig;
         }
 
+        callBack.onPreLoad(container, url, displayConfig);
+
         if (TextUtils.isEmpty(url)) {
-            callBack.onLoadStarted(container, url, displayConfig);
             callBack.onLoadFailed(container, url, displayConfig.getLoadFailedDrawable());
             return;
         }
