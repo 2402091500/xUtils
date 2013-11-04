@@ -165,22 +165,4 @@ public class TableUtils {
         com.lidroid.xutils.db.table.Id id = getId(entityType);
         return id == null ? null : id.getColumnName();
     }
-
-    public static Object getIdValue(Object entity) {
-        if (entity == null) return null;
-
-        try {
-            com.lidroid.xutils.db.table.Id id = getId(entity.getClass());
-            if (id == null) return null;
-            Object idValue = id.getColumnValue(entity);
-            if (idValue != null && !idValue.equals(0) && idValue.toString().length() > 0) {
-                return idValue;
-            } else {
-                return null;
-            }
-        } catch (Throwable e) {
-            LogUtils.e(e.getMessage(), e);
-        }
-        return null;
-    }
 }

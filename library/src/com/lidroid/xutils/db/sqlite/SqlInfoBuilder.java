@@ -276,7 +276,7 @@ public class SqlInfoBuilder {
         Id id = table.getId();
 
         if (!id.isAutoIncrement()) {
-            Object idValue = TableUtils.getIdValue(entity);
+            Object idValue = id.getColumnValue(entity);
             KeyValue kv = new KeyValue(id.getColumnName(), idValue);
             keyValueList.add(kv);
         }

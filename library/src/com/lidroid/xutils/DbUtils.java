@@ -639,7 +639,7 @@ public class DbUtils {
     private void saveOrUpdateWithoutTransaction(Object entity) throws DbException {
         Id id = TableUtils.getId(entity.getClass());
         if (id.isAutoIncrement()) {
-            if (TableUtils.getIdValue(entity) != null) {
+            if (id.getColumnValue(entity) != null) {
                 updateWithoutTransaction(entity);
             } else {
                 saveBindingIdWithoutTransaction(entity);

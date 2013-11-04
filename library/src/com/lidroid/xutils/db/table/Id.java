@@ -35,4 +35,18 @@ public class Id extends Column {
                 idType.equals(long.class) ||
                 idType.equals(Long.class);
     }
+
+    @Override
+    public Object getColumnValue(Object entity) {
+        Object idValue = super.getColumnValue(entity);
+        if (idValue != null) {
+            if (this.isAutoIncrement() && idValue.equals(0)) {
+                return null;
+            } else {
+                return idValue;
+            }
+        } else {
+            return null;
+        }
+    }
 }
