@@ -24,7 +24,6 @@ import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
 
 import java.io.*;
-import java.lang.ref.SoftReference;
 
 
 public class BitmapCache {
@@ -32,7 +31,7 @@ public class BitmapCache {
     private final int DISK_CACHE_INDEX = 0;
 
     private LruDiskCache mDiskLruCache;
-    private LruMemoryCache<String, SoftReference<Bitmap>> mMemoryCache;
+    private LruMemoryCache<String, Bitmap> mMemoryCache;
 
     private final Object mDiskCacheLock = new Object();
     private boolean isDiskCacheReadied = false;
@@ -63,14 +62,15 @@ public class BitmapCache {
             } catch (Throwable e) {
             }
         }
-        mMemoryCache = new LruMemoryCache<String, SoftReference<Bitmap>>(globalConfig.getMemoryCacheSize()) {
+        mMemoryCache = new LruMemoryCache<String, Bitmap>(globalConfig.getMemoryCacheSize()) {
             /**
              * Measure item size in bytes rather than units which is more practical
              * for a bitmap cache
              */
             @Override
-            protected int sizeOf(String key, SoftReference<Bitmap> bitmapRef) {
-                return BitmapCommonUtils.getBitmapSize(bitmapRef.get());
+            protected int sizeOf(String key, Bitmap bitmap) {
+                if (bitmap == null) return 0;
+                return bitmap.getRowBytes() * bitmap.getHeight();
             }
         };
     }
@@ -200,7 +200,7 @@ public class BitmapCache {
     private Bitmap addBitmapToMemoryCache(Bitmap bitmap, String uri, BitmapDisplayConfig config, long expiryTimestamp) throws IOException {
         if (uri != null && bitmap != null && globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
             String key = uri + (config == null ? "" : config.toString());
-            mMemoryCache.put(key, new SoftReference<Bitmap>(bitmap), expiryTimestamp);
+            mMemoryCache.put(key, bitmap, expiryTimestamp);
         }
         return bitmap;
     }
@@ -215,8 +215,7 @@ public class BitmapCache {
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
         if (mMemoryCache != null && globalConfig.isMemoryCacheEnabled()) {
             String key = uri + (config == null ? "" : config.toString());
-            SoftReference<Bitmap> softRef = mMemoryCache.get(key);
-            return softRef == null ? null : softRef.get();
+            return mMemoryCache.get(key);
         }
         return null;
     }

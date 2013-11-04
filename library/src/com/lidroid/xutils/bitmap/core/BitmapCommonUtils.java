@@ -41,11 +41,6 @@ public class BitmapCommonUtils {
         return cachePath + File.separator + dirName;
     }
 
-    public static int getBitmapSize(Bitmap bitmap) {
-        if (bitmap == null) return 0;
-        return bitmap.getRowBytes() * bitmap.getHeight();
-    }
-
     public static long getAvailableSpace(File dir) {
         try {
             final StatFs stats = new StatFs(dir.getPath());
