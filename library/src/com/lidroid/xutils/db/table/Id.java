@@ -38,16 +38,22 @@ public class Id extends Column {
     }
 
     public void setAutoIncrementId(Object entity, long value) {
+        Object idValue = value;
+        Class<?> columnFieldType = columnField.getType();
+        if (columnFieldType.equals(int.class) || columnFieldType.equals(Integer.class)) {
+            idValue = (int) value;
+        }
+
         if (setMethod != null) {
             try {
-                setMethod.invoke(entity, value);
+                setMethod.invoke(entity, idValue);
             } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
         } else {
             try {
                 this.columnField.setAccessible(true);
-                this.columnField.set(entity, value);
+                this.columnField.set(entity, idValue);
             } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
