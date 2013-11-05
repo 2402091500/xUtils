@@ -702,7 +702,7 @@ public class DbUtils {
         }
     }
 
-    private void createTableIfNotExist(Class<?> entityType) throws DbException {
+    public void createTableIfNotExist(Class<?> entityType) throws DbException {
         if (!tableIsExist(entityType)) {
             SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(entityType);
             execNonQuery(sqlInfo);
