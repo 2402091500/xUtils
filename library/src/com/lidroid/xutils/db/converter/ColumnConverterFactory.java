@@ -19,7 +19,9 @@ public class ColumnConverterFactory {
         } else if (ColumnConverter.class.isAssignableFrom(columnType)) {
             try {
                 ColumnConverter columnConverter = (ColumnConverter) columnType.newInstance();
-                columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+                if (columnConverter != null) {
+                    columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+                }
                 return columnConverter;
             } catch (Throwable e) {
                 throw new RuntimeException("Can't find ColumnConverter for \"" +
@@ -48,6 +50,9 @@ public class ColumnConverterFactory {
         } else if (ColumnConverter.class.isAssignableFrom(columnType)) {
             try {
                 ColumnConverter columnConverter = (ColumnConverter) columnType.newInstance();
+                if (columnConverter != null) {
+                    columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+                }
                 return columnConverter == null;
             } catch (Throwable e) {
             }
