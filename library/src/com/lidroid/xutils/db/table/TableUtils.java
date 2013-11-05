@@ -18,6 +18,7 @@ package com.lidroid.xutils.db.table;
 import android.text.TextUtils;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
+import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
@@ -69,7 +70,7 @@ public class TableUtils {
                 if (ColumnUtils.isTransient(field) || Modifier.isStatic(field.getModifiers())) {
                     continue;
                 }
-                if (ColumnUtils.isSimpleColumnType(field)) {
+                if (ColumnConverterFactory.isSupportColumnConverter(field.getType())) {
                     if (!field.getName().equals(primaryKeyFieldName)) {
                         Column column = new Column(entityType, field);
                         if (!columnMap.containsKey(column.getColumnName())) {

@@ -672,7 +672,7 @@ public class DbUtils {
                 if (id == -1) {
                     return false;
                 }
-                idColumn.setValue2Entity(entity, id.toString());
+                idColumn.setAutoIncrementId(entity, id);
                 return true;
             }
         } else {

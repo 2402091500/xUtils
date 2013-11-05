@@ -133,27 +133,6 @@ public class ColumnUtils {
         return field.getAnnotation(Finder.class) != null;
     }
 
-    public static boolean isSimpleColumnType(Field field) {
-        Class<?> clazz = field.getType();
-        return isSimpleColumnType(clazz);
-    }
-
-    public static boolean isSimpleColumnType(Class<?> columnType) {
-        return columnType.isPrimitive() ||
-                columnType.equals(String.class) ||
-                columnType.equals(Integer.class) ||
-                columnType.equals(Long.class) ||
-                columnType.equals(Date.class) ||
-                columnType.equals(java.sql.Date.class) ||
-                columnType.equals(Boolean.class) ||
-                columnType.equals(Float.class) ||
-                columnType.equals(Double.class) ||
-                columnType.equals(Byte.class) ||
-                columnType.equals(Short.class) ||
-                columnType.equals(CharSequence.class) ||
-                columnType.equals(Character.class);
-    }
-
     public static boolean isUnique(Field field) {
         return field.getAnnotation(Unique.class) != null;
     }
@@ -177,7 +156,7 @@ public class ColumnUtils {
 
     public static Object valueStr2SimpleTypeFieldValue(Class<?> columnFieldType, final String valueStr) {
         Object value = null;
-        if (isSimpleColumnType(columnFieldType) && valueStr != null) {
+        if (valueStr != null) {
             if (columnFieldType.equals(String.class) || columnFieldType.equals(CharSequence.class)) {
                 value = valueStr;
             } else if (columnFieldType.equals(int.class) || columnFieldType.equals(Integer.class)) {
@@ -242,29 +221,6 @@ public class ColumnUtils {
             }
         }
         return value;
-    }
-
-    public static String fieldType2DbType(Class<?> fieldType) {
-        if (fieldType.equals(int.class) ||
-                fieldType.equals(Integer.class) ||
-                fieldType.equals(boolean.class) ||
-                fieldType.equals(Boolean.class) ||
-                fieldType.equals(Date.class) ||
-                fieldType.equals(java.sql.Date.class) ||
-                fieldType.equals(long.class) ||
-                fieldType.equals(Long.class) ||
-                fieldType.equals(byte.class) ||
-                fieldType.equals(Byte.class) ||
-                fieldType.equals(short.class) ||
-                fieldType.equals(Short.class)) {
-            return "INTEGER";
-        } else if (fieldType.equals(float.class) ||
-                fieldType.equals(Float.class) ||
-                fieldType.equals(double.class) ||
-                fieldType.equals(Double.class)) {
-            return "REAL";
-        }
-        return "TEXT";
     }
 
     private static boolean isStartWithIs(final String fieldName) {

@@ -1,5 +1,6 @@
 package com.lidroid.xutils.db.table;
 
+import android.database.Cursor;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 import com.lidroid.xutils.exception.DbException;
@@ -34,7 +35,7 @@ public class Finder extends Column {
     }
 
     @Override
-    public void setValue2Entity(Object entity, String valueStr) {
+    public void setValue2Entity(Object entity, Cursor cursor, int index) {
         Object value = null;
         Class<?> columnType = columnField.getType();
         Object finderValue = TableUtils.getColumnOrId(entity.getClass(), this.valueColumnName).getColumnValue(entity);
@@ -80,24 +81,24 @@ public class Finder extends Column {
     }
 
     public Object getFieldValue(Object entity) {
-        Object valueObj = null;
+        Object fieldValue = null;
         if (entity != null) {
             if (getMethod != null) {
                 try {
-                    valueObj = getMethod.invoke(entity);
+                    fieldValue = getMethod.invoke(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
-                    valueObj = this.columnField.get(entity);
+                    fieldValue = this.columnField.get(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
         }
-        return valueObj;
+        return fieldValue;
     }
 
     @Override

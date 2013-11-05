@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
 
@@ -34,6 +35,23 @@ public class Id extends Column {
                 idType.equals(Integer.class) ||
                 idType.equals(long.class) ||
                 idType.equals(Long.class);
+    }
+
+    public void setAutoIncrementId(Object entity, long value) {
+        if (setMethod != null) {
+            try {
+                setMethod.invoke(entity, value);
+            } catch (Throwable e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+        } else {
+            try {
+                this.columnField.setAccessible(true);
+                this.columnField.set(entity, value);
+            } catch (Throwable e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+        }
     }
 
     @Override

@@ -15,7 +15,10 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.database.Cursor;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.converter.ColumnConverter;
+import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.db.sqlite.ForeignLazyLoader;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
@@ -28,10 +31,13 @@ public class Foreign extends Column {
     public DbUtils db;
 
     private String foreignColumnName;
+    private Class<?> foreignColumnType;
+    private ColumnConverter foreignColumnConverter;
 
     protected Foreign(Class<?> entityType, Field field) {
         super(entityType, field);
         foreignColumnName = ColumnUtils.getForeignColumnNameByField(field);
+        foreignColumnConverter = ColumnConverterFactory.getColumnConverter(getForeignColumnType());
     }
 
     public String getForeignColumnName() {
@@ -43,30 +49,31 @@ public class Foreign extends Column {
     }
 
     public Class<?> getForeignColumnType() {
-        return TableUtils.getColumnOrId(getForeignEntityType(), foreignColumnName).columnField.getType();
+        if (foreignColumnType == null) {
+            foreignColumnType = TableUtils.getColumnOrId(getForeignEntityType(), foreignColumnName).columnField.getType();
+        }
+        return foreignColumnType;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setValue2Entity(Object entity, String valueStr) {
+    public void setValue2Entity(Object entity, Cursor cursor, int index) {
         Object value = null;
-        if (valueStr != null) {
-            Class<?> columnType = columnField.getType();
-            Object columnValue = ColumnUtils.valueStr2SimpleTypeFieldValue(getForeignColumnType(), valueStr);
-            if (columnType.equals(ForeignLazyLoader.class)) {
-                value = new ForeignLazyLoader(this, columnValue);
-            } else if (columnType.equals(List.class)) {
-                try {
-                    value = new ForeignLazyLoader(this, columnValue).getAllFromDb();
-                } catch (DbException e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            } else {
-                try {
-                    value = new ForeignLazyLoader(this, columnValue).getFirstFromDb();
-                } catch (DbException e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
+        Object foreignColumnValue = foreignColumnConverter.getFiledValue(entity, cursor, index);
+        Class<?> columnType = columnField.getType();
+        if (columnType.equals(ForeignLazyLoader.class)) {
+            value = new ForeignLazyLoader(this, foreignColumnValue);
+        } else if (columnType.equals(List.class)) {
+            try {
+                value = new ForeignLazyLoader(this, foreignColumnValue).getAllFromDb();
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+        } else {
+            try {
+                value = new ForeignLazyLoader(this, foreignColumnValue).getFirstFromDb();
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
             }
         }
 
@@ -89,15 +96,15 @@ public class Foreign extends Column {
     @SuppressWarnings("unchecked")
     @Override
     public Object getColumnValue(Object entity) {
-        Object valueObj = getFieldValue(entity);
+        Object fieldValue = getFieldValue(entity);
 
-        if (valueObj != null) {
+        if (fieldValue != null) {
             Class<?> columnType = columnField.getType();
             if (columnType.equals(ForeignLazyLoader.class)) {
-                valueObj = ((ForeignLazyLoader) valueObj).getColumnValue();
+                fieldValue = ((ForeignLazyLoader) fieldValue).getColumnValue();
             } else if (columnType.equals(List.class)) {
                 try {
-                    List<?> foreignEntities = (List<?>) valueObj;
+                    List<?> foreignEntities = (List<?>) fieldValue;
                     if (foreignEntities.size() > 0) {
 
                         if (this.db != null) {
@@ -106,57 +113,57 @@ public class Foreign extends Column {
 
                         Class<?> foreignEntityType = ColumnUtils.getForeignEntityType(this);
                         Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
-                        valueObj = column.getColumnValue(foreignEntities.get(0));
+                        fieldValue = column.getColumnValue(foreignEntities.get(0));
                     }
                 } catch (Throwable e) {
-                    valueObj = null;
+                    fieldValue = null;
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     if (this.db != null) {
                         try {
-                            this.db.saveOrUpdate(valueObj);
+                            this.db.saveOrUpdate(fieldValue);
                         } catch (DbException e) {
                             LogUtils.e(e.getMessage(), e);
                         }
                     }
                     Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
-                    valueObj = column.getColumnValue(valueObj);
+                    fieldValue = column.getColumnValue(fieldValue);
                 } catch (Throwable e) {
-                    valueObj = null;
+                    fieldValue = null;
                     LogUtils.e(e.getMessage(), e);
                 }
             }
         }
 
-        return ColumnUtils.convert2DbColumnValueIfNeeded(valueObj);
+        return foreignColumnConverter.fieldValue2ColumnValue(entity, fieldValue);
     }
 
     public Object getFieldValue(Object entity) {
-        Object valueObj = null;
+        Object fieldValue = null;
         if (entity != null) {
             if (getMethod != null) {
                 try {
-                    valueObj = getMethod.invoke(entity);
+                    fieldValue = getMethod.invoke(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
-                    valueObj = this.columnField.get(entity);
+                    fieldValue = this.columnField.get(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
         }
-        return valueObj;
+        return fieldValue;
     }
 
     @Override
     public String getColumnDbType() {
-        return ColumnUtils.fieldType2DbType(getForeignColumnType());
+        return foreignColumnConverter.getColumnDbType();
     }
 
     /**

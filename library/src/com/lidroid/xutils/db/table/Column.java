@@ -15,6 +15,9 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.database.Cursor;
+import com.lidroid.xutils.db.converter.ColumnConverter;
+import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
@@ -29,9 +32,11 @@ public class Column {
     protected Method setMethod;
 
     protected Field columnField;
+    protected ColumnConverter columnConverter;
 
     protected Column(Class<?> entityType, Field field) {
         this.columnField = field;
+        this.columnConverter = ColumnConverterFactory.getColumnConverter(field.getType());
         this.columnName = ColumnUtils.getColumnNameByField(field);
         this.defaultValue = ColumnUtils.getColumnDefaultValue(field);
         this.getMethod = ColumnUtils.getColumnGetMethod(entityType, field);
@@ -39,13 +44,9 @@ public class Column {
     }
 
     @SuppressWarnings("unchecked")
-    public void setValue2Entity(Object entity, String valueStr) {
+    public void setValue2Entity(Object entity, Cursor cursor, int index) {
 
-        Object value = null;
-        if (valueStr != null) {
-            Class<?> columnType = columnField.getType();
-            value = ColumnUtils.valueStr2SimpleTypeFieldValue(columnType, valueStr);
-        }
+        Object value = columnConverter.getFiledValue(entity, cursor, index);
 
         if (setMethod != null) {
             try {
@@ -65,24 +66,24 @@ public class Column {
 
     @SuppressWarnings("unchecked")
     public Object getColumnValue(Object entity) {
-        Object resultObj = null;
+        Object fieldValue = null;
         if (entity != null) {
             if (getMethod != null) {
                 try {
-                    resultObj = getMethod.invoke(entity);
+                    fieldValue = getMethod.invoke(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
-                    resultObj = this.columnField.get(entity);
+                    fieldValue = this.columnField.get(entity);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
             }
         }
-        return ColumnUtils.convert2DbColumnValueIfNeeded(resultObj);
+        return columnConverter.fieldValue2ColumnValue(entity, fieldValue);
     }
 
     public String getColumnName() {
@@ -98,6 +99,6 @@ public class Column {
     }
 
     public String getColumnDbType() {
-        return ColumnUtils.fieldType2DbType(columnField.getType());
+        return columnConverter.getColumnDbType();
     }
 }

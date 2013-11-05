@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.sqlite;
 
 import android.text.TextUtils;
+import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.db.table.ColumnUtils;
 
 import java.util.ArrayList;
@@ -143,7 +144,7 @@ public class WhereBuilder {
         } else {
             sqlSb.append(" " + op + " ");
             value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
-            if ("TEXT".equals(ColumnUtils.fieldType2DbType(value.getClass()))) {
+            if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
                 String valueStr = value.toString();
                 if (valueStr.indexOf('\'') != -1) { // convert single quotations
                     valueStr = valueStr.replace("'", "''");
