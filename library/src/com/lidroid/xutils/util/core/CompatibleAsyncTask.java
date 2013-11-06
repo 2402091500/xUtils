@@ -558,8 +558,8 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
                     throw new IllegalStateException("Cannot execute task:"
                             + " the task has already been executed "
                             + "(a task can be executed only once)");
-			    default:
-				    break;
+                default:
+                    break;
             }
         }
 

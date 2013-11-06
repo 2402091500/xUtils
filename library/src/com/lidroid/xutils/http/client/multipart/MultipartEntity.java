@@ -15,7 +15,7 @@
 
 package com.lidroid.xutils.http.client.multipart;
 
-import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+import com.lidroid.xutils.http.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.multipart.content.ContentBody;
 import org.apache.http.Header;

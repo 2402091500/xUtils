@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http;
+package com.lidroid.xutils.http.client;
 
 import android.os.SystemClock;
 import com.lidroid.xutils.util.LogUtils;

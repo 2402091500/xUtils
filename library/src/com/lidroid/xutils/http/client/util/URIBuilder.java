@@ -16,7 +16,6 @@
 package com.lidroid.xutils.http.client.util;
 
 import android.text.TextUtils;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.message.BasicNameValuePair;

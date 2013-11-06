@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
-import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
 
 public class BitmapDisplayConfig {
 

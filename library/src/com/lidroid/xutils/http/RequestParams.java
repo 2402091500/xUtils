@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http;
 
 import com.lidroid.xutils.http.client.entity.BodyParamsEntity;
 import com.lidroid.xutils.http.client.multipart.HttpMultipartMode;

@@ -17,15 +17,10 @@ package com.lidroid.xutils;
 
 import android.text.TextUtils;
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.HttpHandler;
-import com.lidroid.xutils.http.RequestCallBack;
-import com.lidroid.xutils.http.RetryHandler;
-import com.lidroid.xutils.http.SyncHttpHandler;
-import com.lidroid.xutils.http.client.HttpGetCache;
+import com.lidroid.xutils.http.*;
+import com.lidroid.xutils.http.callback.HttpRedirectHandler;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.lidroid.xutils.http.client.RequestParams;
-import com.lidroid.xutils.http.client.ResponseStream;
-import com.lidroid.xutils.http.client.callback.HttpRedirectHandler;
+import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
 import com.lidroid.xutils.util.core.SimpleSSLSocketFactory;
 import org.apache.http.*;

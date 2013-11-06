@@ -17,7 +17,6 @@ package com.lidroid.xutils.bitmap.callback;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.animation.Animation;

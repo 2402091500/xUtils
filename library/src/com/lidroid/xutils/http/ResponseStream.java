@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client;
+package com.lidroid.xutils.http;
 
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.IOUtils;

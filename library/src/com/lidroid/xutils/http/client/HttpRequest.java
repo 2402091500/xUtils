@@ -15,7 +15,8 @@
 
 package com.lidroid.xutils.http.client;
 
-import com.lidroid.xutils.http.client.callback.RequestCallBackHandler;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.callback.RequestCallBackHandler;
 import com.lidroid.xutils.http.client.entity.UploadEntity;
 import com.lidroid.xutils.http.client.util.URIBuilder;
 import com.lidroid.xutils.util.LogUtils;

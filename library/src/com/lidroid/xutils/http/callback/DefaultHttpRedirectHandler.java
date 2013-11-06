@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http.client.callback;
+package com.lidroid.xutils.http.callback;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
