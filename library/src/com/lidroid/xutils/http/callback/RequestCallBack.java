@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.http;
+package com.lidroid.xutils.http.callback;
 
 
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
 
 public abstract class RequestCallBack<T> {
 

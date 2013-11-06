@@ -12,7 +12,7 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
-import com.lidroid.xutils.http.RequestCallBack;
+import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.RequestParams;

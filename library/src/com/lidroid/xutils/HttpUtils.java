@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.*;
 import com.lidroid.xutils.http.callback.HttpRedirectHandler;
+import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
