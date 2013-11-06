@@ -39,6 +39,7 @@ public class ViewCommonEventListener implements
         OnItemLongClickListener,
         RadioGroup.OnCheckedChangeListener,
         CompoundButton.OnCheckedChangeListener,
+        Preference.OnPreferenceClickListener,
         Preference.OnPreferenceChangeListener,
         TabHost.OnTabChangeListener,
         ViewTreeObserver.OnScrollChangedListener,
@@ -54,6 +55,7 @@ public class ViewCommonEventListener implements
     private Method itemLongClickMethod;
     private Method radioGroupCheckedChangedMethod;
     private Method compoundButtonCheckedChangedMethod;
+    private Method preferenceClickMethod;
     private Method preferenceChangeMethod;
     private Method tabChangedMethod;
     private Method scrollChangedMethod;
@@ -103,6 +105,11 @@ public class ViewCommonEventListener implements
 
     public ViewCommonEventListener compoundButtonCheckedChanged(Method method) {
         this.compoundButtonCheckedChangedMethod = method;
+        return this;
+    }
+
+    public ViewCommonEventListener preferenceClick(Method method) {
+        this.preferenceClickMethod = method;
         return this;
     }
 
@@ -213,6 +220,17 @@ public class ViewCommonEventListener implements
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        try {
+            Object result = preferenceClickMethod.invoke(handler, preference);
+            return result == null ? false : Boolean.valueOf(result.toString());
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return false;
     }
 
     @Override
@@ -338,6 +356,10 @@ public class ViewCommonEventListener implements
                         } else if (view instanceof CompoundButton) {
                             ((CompoundButton) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).compoundButtonCheckedChanged(method));
                         }
+                    } else if (annotation.annotationType().equals(OnPreferenceClick.class)) {
+                        Preference preference = finder.findPreference(value.toString());
+                        if (preference == null) break;
+                        preference.setOnPreferenceClickListener(new ViewCommonEventListener(handler).preferenceClick(method));
                     } else if (annotation.annotationType().equals(OnPreferenceChange.class)) {
                         Preference preference = finder.findPreference(value.toString());
                         if (preference == null) break;
