@@ -90,7 +90,7 @@ TextView textView;
 // 支持绑定多个id @OnClick({R.id.id1, R.id.id2, R.id.id3})
 // 更多事件支持参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
 @OnClick(R.id.test_button)
-public void testButtonClick(View v) {
+public void testButtonClick(View v) { // 方法签名必须和接口中的要求一致
     ...
 }
 ...
