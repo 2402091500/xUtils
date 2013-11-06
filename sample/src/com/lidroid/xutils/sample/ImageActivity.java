@@ -11,7 +11,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
 import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
-import com.lidroid.xutils.bitmap.core.BitmapCommonUtils;
+import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
