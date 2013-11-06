@@ -74,7 +74,8 @@ public class BitmapFragment extends Fragment {
         //bitmapUtils.configDefaultBitmapMaxHeight(200);
 
         // 滑动时加载图片，快速滑动时不加载图片
-        imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
+        //imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
+
         imageListAdapter = new ImageListAdapter(this.getActivity());
         imageListView.setAdapter(imageListAdapter);
 

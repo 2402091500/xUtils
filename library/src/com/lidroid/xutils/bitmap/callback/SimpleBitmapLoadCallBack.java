@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.view.View;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
@@ -40,7 +39,11 @@ public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallB
     public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
         Animation animation = config.getAnimation();
         if (animation == null) {
-            fadeInDisplay(container, bitmap);
+            if (bitmapSetter != null) {
+                bitmapSetter.setBitmap(container, bitmap);
+            } else {
+                container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
+            }
         } else {
             animationDisplay(container, bitmap, animation);
         }
@@ -65,22 +68,6 @@ public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallB
     @Override
     public BitmapSetter<T> getBitmapSetter() {
         return bitmapSetter;
-    }
-
-    private static final ColorDrawable transparentDrawable = new ColorDrawable(android.R.color.transparent);
-
-    private void fadeInDisplay(T container, Bitmap bitmap) {
-        final TransitionDrawable drawable =
-                new TransitionDrawable(new Drawable[]{
-                        transparentDrawable,
-                        new BitmapDrawable(container.getResources(), bitmap)
-                });
-        if (bitmapSetter != null) {
-            bitmapSetter.setDrawable(container, drawable);
-        } else {
-            container.setBackgroundDrawable(drawable);
-        }
-        drawable.startTransition(300);
     }
 
     private void animationDisplay(T container, Bitmap bitmap, Animation animation) {
