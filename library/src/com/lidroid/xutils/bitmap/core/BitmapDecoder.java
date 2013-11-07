@@ -27,13 +27,13 @@ public class BitmapDecoder {
     private BitmapDecoder() {
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
         options.inInputShareable = true;
         BitmapFactory.decodeResource(res, resId, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options, maxSize.getWidth(), maxSize.getHeight());
         options.inJustDecodeBounds = false;
         if (config != null) {
             options.inPreferredConfig = config;
@@ -46,13 +46,13 @@ public class BitmapDecoder {
         }
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String filename, int reqWidth, int reqHeight, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromFile(String filename, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
         options.inInputShareable = true;
         BitmapFactory.decodeFile(filename, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options, maxSize.getWidth(), maxSize.getHeight());
         options.inJustDecodeBounds = false;
         if (config != null) {
             options.inPreferredConfig = config;
@@ -65,13 +65,13 @@ public class BitmapDecoder {
         }
     }
 
-    public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
         options.inInputShareable = true;
         BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options, maxSize.getWidth(), maxSize.getHeight());
         options.inJustDecodeBounds = false;
         if (config != null) {
             options.inPreferredConfig = config;
@@ -84,13 +84,13 @@ public class BitmapDecoder {
         }
     }
 
-    public static Bitmap decodeSampledBitmapFromByteArray(byte[] data, int reqWidth, int reqHeight, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromByteArray(byte[] data, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
         options.inInputShareable = true;
         BitmapFactory.decodeByteArray(data, 0, data.length, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options, maxSize.getWidth(), maxSize.getHeight());
         options.inJustDecodeBounds = false;
         if (config != null) {
             options.inPreferredConfig = config;
@@ -151,21 +151,21 @@ public class BitmapDecoder {
         }
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int maxWidth, int maxHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
+        if (height > maxHeight || width > maxWidth) {
             if (width > height) {
-                inSampleSize = Math.round((float) height / (float) reqHeight);
+                inSampleSize = Math.round((float) height / (float) maxHeight);
             } else {
-                inSampleSize = Math.round((float) width / (float) reqWidth);
+                inSampleSize = Math.round((float) width / (float) maxWidth);
             }
 
             final float totalPixels = width * height;
 
-            final float totalReqPixelsCap = reqWidth * reqHeight * 2;
+            final float totalReqPixelsCap = maxWidth * maxHeight * 2;
 
             while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
                 inSampleSize++;

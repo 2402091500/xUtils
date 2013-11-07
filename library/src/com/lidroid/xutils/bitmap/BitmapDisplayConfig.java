@@ -21,11 +21,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
+import com.lidroid.xutils.bitmap.core.BitmapSize;
 
 public class BitmapDisplayConfig {
 
-    private int bitmapMaxWidth = 0;
-    private int bitmapMaxHeight = 0;
+    private BitmapSize bitmapMaxSize;
 
     private Animation animation;
 
@@ -36,35 +36,28 @@ public class BitmapDisplayConfig {
 
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
-    private Context mContext;
-
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
+    private static BitmapSize SCREEN_SIZE_SCALE_DOWN_3;
+
+    private Context mContext;
+
     public BitmapDisplayConfig(Context context) {
-        if (context == null) throw new IllegalArgumentException("context may not be null");
         mContext = context;
     }
 
-    public int getBitmapMaxWidth() {
-        if (bitmapMaxWidth == 0) {// default max width = screen_width/3
-            bitmapMaxWidth = BitmapCommonUtils.getScreenWidth(mContext) / 3;
+    public BitmapSize getBitmapMaxSize() {
+        if (bitmapMaxSize == null) {
+            if (SCREEN_SIZE_SCALE_DOWN_3 == null) {
+                SCREEN_SIZE_SCALE_DOWN_3 = BitmapCommonUtils.getScreenSize(mContext).scaleDown(3);
+            }
+            bitmapMaxSize = SCREEN_SIZE_SCALE_DOWN_3;
         }
-        return bitmapMaxWidth;
+        return bitmapMaxSize;
     }
 
-    public void setBitmapMaxWidth(int bitmapMaxWidth) {
-        this.bitmapMaxWidth = bitmapMaxWidth;
-    }
-
-    public int getBitmapMaxHeight() {
-        if (bitmapMaxHeight == 0) {// default max height = screen_height/3
-            bitmapMaxHeight = BitmapCommonUtils.getScreenHeight(mContext) / 3;
-        }
-        return bitmapMaxHeight;
-    }
-
-    public void setBitmapMaxHeight(int bitmapMaxHeight) {
-        this.bitmapMaxHeight = bitmapMaxHeight;
+    public void setBitmapMaxSize(BitmapSize bitmapMaxSize) {
+        this.bitmapMaxSize = bitmapMaxSize;
     }
 
     public Animation getAnimation() {
@@ -109,6 +102,6 @@ public class BitmapDisplayConfig {
 
     @Override
     public String toString() {
-        return isShowOriginal() ? "" : "-" + getBitmapMaxWidth() + "-" + getBitmapMaxHeight();
+        return isShowOriginal() ? "" : "-" + bitmapMaxSize.toString();
     }
 }

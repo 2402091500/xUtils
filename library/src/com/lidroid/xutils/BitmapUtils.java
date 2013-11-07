@@ -31,6 +31,7 @@ import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
 import com.lidroid.xutils.bitmap.callback.BitmapSetter;
 import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.LruDiskCache;
@@ -116,13 +117,13 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDefaultBitmapMaxWidth(int bitmapWidth) {
-        defaultDisplayConfig.setBitmapMaxWidth(bitmapWidth);
+    public BitmapUtils configDefaultBitmapMaxSize(int maxWidth, int maxHeight) {
+        defaultDisplayConfig.setBitmapMaxSize(new BitmapSize(maxWidth, maxHeight));
         return this;
     }
 
-    public BitmapUtils configDefaultBitmapMaxHeight(int bitmapHeight) {
-        defaultDisplayConfig.setBitmapMaxHeight(bitmapHeight);
+    public BitmapUtils configDefaultBitmapMaxSize(BitmapSize maxSize) {
+        defaultDisplayConfig.setBitmapMaxSize(maxSize);
         return this;
     }
 
@@ -218,6 +219,10 @@ public class BitmapUtils {
         if (displayConfig == null) {
             displayConfig = defaultDisplayConfig;
         }
+
+        // Optimize Max Size
+        BitmapSize size = displayConfig.getBitmapMaxSize();
+        displayConfig.setBitmapMaxSize(BitmapCommonUtils.optimizeMaxSizeByView(container, size.getWidth(), size.getHeight()));
 
         callBack.onPreLoad(container, url, displayConfig);
 

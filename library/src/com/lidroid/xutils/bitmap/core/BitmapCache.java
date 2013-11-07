@@ -262,8 +262,7 @@ public class BitmapCache {
                         } else {
                             bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
                                     snapshot.getInputStream(DISK_CACHE_INDEX).getFD(),
-                                    config.getBitmapMaxWidth(),
-                                    config.getBitmapMaxHeight(),
+                                    config.getBitmapMaxSize(),
                                     config.getBitmapConfig());
                         }
 
@@ -384,8 +383,7 @@ public class BitmapCache {
             } else {
                 bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
                         bitmapMeta.inputStream.getFD(),
-                        config.getBitmapMaxWidth(),
-                        config.getBitmapMaxHeight(),
+                        config.getBitmapMaxSize(),
                         config.getBitmapConfig());
             }
         } else if (bitmapMeta.data != null) {
@@ -394,8 +392,7 @@ public class BitmapCache {
             } else {
                 bitmap = BitmapDecoder.decodeSampledBitmapFromByteArray(
                         bitmapMeta.data,
-                        config.getBitmapMaxWidth(),
-                        config.getBitmapMaxHeight(),
+                        config.getBitmapMaxSize(),
                         config.getBitmapConfig());
             }
         }

@@ -21,11 +21,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.callback.BitmapSetter;
+import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
 public class BitmapCommonUtils {
 
@@ -52,25 +56,35 @@ public class BitmapCommonUtils {
 
     }
 
-    private static int screenWidth = 0;
-    private static int screenHeight = 0;
+    private static BitmapSize screenSize = null;
 
-    public static int getScreenWidth(Context context) {
-        if (screenWidth == 0) {
+    public static BitmapSize getScreenSize(Context context) {
+        if (screenSize == null) {
+            screenSize = new BitmapSize();
             DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-            screenWidth = displayMetrics.widthPixels;
-            screenHeight = displayMetrics.heightPixels;
+            screenSize.setWidth(displayMetrics.widthPixels);
+            screenSize.setHeight(displayMetrics.heightPixels);
         }
-        return screenWidth;
+        return screenSize;
     }
 
-    public static int getScreenHeight(Context context) {
-        if (screenHeight == 0) {
-            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-            screenWidth = displayMetrics.widthPixels;
-            screenHeight = displayMetrics.heightPixels;
-        }
-        return screenHeight;
+    public static BitmapSize optimizeMaxSizeByView(View view, int maxImageWidth, int maxImageHeight) {
+        final BitmapSize screenSize = getScreenSize(view.getContext());
+
+        final ViewGroup.LayoutParams params = view.getLayoutParams();
+        int width = (params != null && params.width == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 : view.getWidth(); // Get actual image width
+        if (width <= 0 && params != null) width = params.width; // Get layout width parameter
+        if (width <= 0) width = getFieldValue(view, "mMaxWidth"); // Check maxWidth parameter
+        if (width <= 0) width = maxImageWidth;
+        if (width <= 0) width = screenSize.getWidth();
+
+        int height = (params != null && params.height == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 : view.getHeight(); // Get actual image height
+        if (height <= 0 && params != null) height = params.height; // Get layout height parameter
+        if (height <= 0) height = getFieldValue(view, "mMaxHeight"); // Check maxHeight parameter
+        if (height <= 0) height = maxImageHeight;
+        if (height <= 0) height = screenSize.getHeight();
+
+        return new BitmapSize(width, height);
     }
 
     public static final ImageViewSetter sDefaultImageViewSetter = new ImageViewSetter();
@@ -91,5 +105,19 @@ public class BitmapCommonUtils {
         public Drawable getDrawable(ImageView container) {
             return container.getDrawable();
         }
+    }
+
+    private static int getFieldValue(Object object, String fieldName) {
+        int value = 0;
+        try {
+            Field field = ImageView.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            int fieldValue = (Integer) field.get(object);
+            if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
+                value = fieldValue;
+            }
+        } catch (Throwable e) {
+        }
+        return value;
     }
 }
