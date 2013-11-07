@@ -42,7 +42,7 @@ public class ImageActivity extends Activity {
             bitmapUtils = new BitmapUtils(this);
         }
 
-        bigPicDisplayConfig = new BitmapDisplayConfig(this);
+        bigPicDisplayConfig = new BitmapDisplayConfig();
         //bigPicDisplayConfig.setShowOriginal(true); // 显示原始图片,不压缩, 尽量不要使用, 图片太大时容易OOM。
         bigPicDisplayConfig.setBitmapConfig(Bitmap.Config.RGB_565);
         bigPicDisplayConfig.setBitmapMaxSize(BitmapCommonUtils.getScreenSize(this));
