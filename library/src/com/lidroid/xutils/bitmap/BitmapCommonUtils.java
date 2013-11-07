@@ -70,19 +70,15 @@ public class BitmapCommonUtils {
 
     public static BitmapSize optimizeMaxSizeByView(View view, int maxImageWidth, int maxImageHeight) {
         final BitmapSize screenSize = getScreenSize(view.getContext());
-
         final ViewGroup.LayoutParams params = view.getLayoutParams();
-        int width = (params != null && params.width == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 : view.getWidth(); // Get actual image width
-        if (width <= 0 && params != null) width = params.width; // Get layout width parameter
-        if (width <= 0) width = getFieldValue(view, "mMaxWidth"); // Check maxWidth parameter
-        if (width <= 0) width = maxImageWidth;
-        if (width <= 0) width = screenSize.getWidth();
 
-        int height = (params != null && params.height == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 : view.getHeight(); // Get actual image height
-        if (height <= 0 && params != null) height = params.height; // Get layout height parameter
-        if (height <= 0) height = getFieldValue(view, "mMaxHeight"); // Check maxHeight parameter
-        if (height <= 0) height = maxImageHeight;
-        if (height <= 0) height = screenSize.getHeight();
+        int width = params == null ? maxImageWidth : params.width;
+        if (width <= 0) width = getFieldValue(view, "mMaxWidth");
+        if (width <= 0) width = screenSize.getWidth() / 3;
+
+        int height = params == null ? maxImageHeight : params.height;
+        if (height <= 0) height = getFieldValue(view, "mMaxHeight");
+        if (height <= 0) height = screenSize.getHeight() / 3;
 
         return new BitmapSize(width, height);
     }

@@ -6,6 +6,9 @@ package com.lidroid.xutils.bitmap.core;
  * Time: 下午1:20
  */
 public class BitmapSize {
+
+    public static final BitmapSize ZERO = new BitmapSize(0, 0);
+
     private int width;
     private int height;
 

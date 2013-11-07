@@ -33,7 +33,6 @@ public class BitmapDisplayConfig {
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
-    private static BitmapSize SCREEN_SIZE_SCALE_DOWN_3;
 
     private Context mContext;
 
@@ -43,10 +42,7 @@ public class BitmapDisplayConfig {
 
     public BitmapSize getBitmapMaxSize() {
         if (bitmapMaxSize == null) {
-            if (SCREEN_SIZE_SCALE_DOWN_3 == null) {
-                SCREEN_SIZE_SCALE_DOWN_3 = BitmapCommonUtils.getScreenSize(mContext).scaleDown(3);
-            }
-            bitmapMaxSize = SCREEN_SIZE_SCALE_DOWN_3;
+            return BitmapSize.ZERO;
         }
         return bitmapMaxSize;
     }
