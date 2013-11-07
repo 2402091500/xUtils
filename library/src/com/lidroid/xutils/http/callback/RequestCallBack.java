@@ -60,6 +60,14 @@ public abstract class RequestCallBack<T> {
         this.rate = rate;
     }
 
+    public Object getUserTag() {
+        return userTag;
+    }
+
+    public void setUserTag(Object userTag) {
+        this.userTag = userTag;
+    }
+
     public final String getRequestUrl() {
         return requestUrl;
     }

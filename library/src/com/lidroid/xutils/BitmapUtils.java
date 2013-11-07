@@ -60,7 +60,7 @@ public class BitmapUtils {
 
         this.context = context;
         globalConfig = new BitmapGlobalConfig(context, diskCachePath);
-        defaultDisplayConfig = new BitmapDisplayConfig(context);
+        defaultDisplayConfig = new BitmapDisplayConfig();
     }
 
     public BitmapUtils(Context context, String diskCachePath, int memoryCacheSize) {

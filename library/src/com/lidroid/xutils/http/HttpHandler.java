@@ -276,6 +276,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         return mStopped;
     }
 
+    public RequestCallBack<T> getRequestCallBack() {
+        return this.callback;
+    }
+
     private long lastUpdateTime;
 
     @Override
