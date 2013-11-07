@@ -34,10 +34,7 @@ public class BitmapDisplayConfig {
 
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
-    private Context mContext;
-
-    public BitmapDisplayConfig(Context context) {
-        mContext = context;
+    public BitmapDisplayConfig() {
     }
 
     public BitmapSize getBitmapMaxSize() {
@@ -97,7 +94,7 @@ public class BitmapDisplayConfig {
     }
 
     public BitmapDisplayConfig cloneNew() {
-        BitmapDisplayConfig config = new BitmapDisplayConfig(mContext);
+        BitmapDisplayConfig config = new BitmapDisplayConfig();
         config.bitmapMaxSize = this.bitmapMaxSize;
         config.animation = this.animation;
         config.loadingDrawable = this.loadingDrawable;
