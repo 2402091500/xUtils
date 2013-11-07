@@ -68,17 +68,21 @@ public class BitmapCommonUtils {
         return screenSize;
     }
 
+    private static BitmapSize screenSizeScaleDown3 = null;
+
     public static BitmapSize optimizeMaxSizeByView(View view, int maxImageWidth, int maxImageHeight) {
-        final BitmapSize screenSize = getScreenSize(view.getContext());
+        if (screenSizeScaleDown3 == null) {
+            screenSizeScaleDown3 = getScreenSize(view.getContext()).scaleDown(3);
+        }
         final ViewGroup.LayoutParams params = view.getLayoutParams();
 
-        int width = params == null ? maxImageWidth : params.width;
-        if (width <= 0) width = getFieldValue(view, "mMaxWidth");
-        if (width <= 0) width = screenSize.getWidth() / 3;
+        int width = (params != null && params.width > 0) ? params.width : getFieldValue(view, "mMaxWidth");
+        if (width <= 0) width = maxImageWidth;
+        if (width <= 0) width = screenSizeScaleDown3.getWidth();
 
-        int height = params == null ? maxImageHeight : params.height;
-        if (height <= 0) height = getFieldValue(view, "mMaxHeight");
-        if (height <= 0) height = screenSize.getHeight() / 3;
+        int height = (params != null && params.height > 0) ? params.height : getFieldValue(view, "mMaxHeight");
+        if (height <= 0) height = maxImageHeight;
+        if (height <= 0) height = screenSizeScaleDown3.getHeight();
 
         return new BitmapSize(width, height);
     }
