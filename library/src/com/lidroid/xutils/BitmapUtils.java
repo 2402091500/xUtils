@@ -191,20 +191,20 @@ public class BitmapUtils {
     public void display(ImageView container, String url) {
         BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
         callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
-        display(container, callBack, url, null);
+        display(container, url, null, callBack);
     }
 
     public void display(ImageView container, String url, BitmapDisplayConfig displayConfig) {
         BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
         callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
-        display(container, callBack, url, displayConfig);
+        display(container, url, displayConfig, callBack);
     }
 
-    public <T extends View> void display(T container, BitmapLoadCallBack<T> callBack, String url) {
-        display(container, callBack, url, null);
+    public <T extends View> void display(T container, String url, BitmapLoadCallBack<T> callBack) {
+        display(container, url, null, callBack);
     }
 
-    public <T extends View> void display(T container, BitmapLoadCallBack<T> callBack, String url, BitmapDisplayConfig displayConfig) {
+    public <T extends View> void display(T container, String url, BitmapDisplayConfig displayConfig, BitmapLoadCallBack<T> callBack) {
         if (container == null) {
             return;
         }
