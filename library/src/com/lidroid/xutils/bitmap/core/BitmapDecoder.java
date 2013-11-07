@@ -156,7 +156,7 @@ public class BitmapDecoder {
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > maxHeight || width > maxWidth) {
+        if (width > maxWidth || height > maxHeight) {
             if (width > height) {
                 inSampleSize = Math.round((float) height / (float) maxHeight);
             } else {
@@ -165,9 +165,9 @@ public class BitmapDecoder {
 
             final float totalPixels = width * height;
 
-            final float totalReqPixelsCap = maxWidth * maxHeight * 2;
+            final float maxTotalPixels = maxWidth * maxHeight * 2;
 
-            while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+            while (totalPixels / (inSampleSize * inSampleSize) > maxTotalPixels) {
                 inSampleSize++;
             }
         }

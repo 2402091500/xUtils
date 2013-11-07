@@ -15,9 +15,10 @@ import android.widget.ListView;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.sample.ImageActivity;
 import com.lidroid.xutils.sample.R;
@@ -67,8 +68,8 @@ public class BitmapFragment extends Fragment {
         animation.setDuration(800);
         bitmapUtils.configDefaultImageLoadAnimation(animation);*/
 
-        //bitmapUtils.configDefaultBitmapMaxWidth(200);
-        //bitmapUtils.configDefaultBitmapMaxHeight(200);
+        // 设置最大宽高, 不设置时更具控件属性自适应.
+        bitmapUtils.configDefaultBitmapMaxSize(BitmapCommonUtils.getScreenSize(getActivity()).scaleDown(3));
 
         // 滑动时加载图片，快速滑动时不加载图片
         //imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
