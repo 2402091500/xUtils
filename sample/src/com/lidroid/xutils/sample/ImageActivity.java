@@ -7,11 +7,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
 import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
-import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
@@ -63,6 +63,6 @@ public class ImageActivity extends Activity {
         };
         callback.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
 
-        bitmapUtils.display(bigImage, callback, imgUrl, bigPicDisplayConfig);
+        bitmapUtils.display(bigImage, imgUrl, bigPicDisplayConfig, callback);
     }
 }
