@@ -216,8 +216,8 @@ public class BitmapUtils {
             callBack = new SimpleBitmapLoadCallBack<T>();
         }
 
-        if (displayConfig == null) {
-            displayConfig = defaultDisplayConfig;
+        if (displayConfig == null || displayConfig == defaultDisplayConfig) {
+            displayConfig = defaultDisplayConfig.cloneNew();
         }
 
         // Optimize Max Size

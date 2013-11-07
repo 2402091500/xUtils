@@ -49,6 +49,6 @@ public class BitmapSize {
 
     @Override
     public String toString() {
-        return width + "-" + height;
+        return "_" + width + "_" + height;
     }
 }

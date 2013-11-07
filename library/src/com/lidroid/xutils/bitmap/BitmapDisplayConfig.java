@@ -26,18 +26,13 @@ import com.lidroid.xutils.bitmap.core.BitmapSize;
 public class BitmapDisplayConfig {
 
     private BitmapSize bitmapMaxSize;
-
     private Animation animation;
-
     private Drawable loadingDrawable;
     private Drawable loadFailedDrawable;
-
     private boolean showOriginal = false;
-
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
-
     private static BitmapSize SCREEN_SIZE_SCALE_DOWN_3;
 
     private Context mContext;
@@ -102,6 +97,17 @@ public class BitmapDisplayConfig {
 
     @Override
     public String toString() {
-        return isShowOriginal() ? "" : "-" + bitmapMaxSize.toString();
+        return isShowOriginal() ? "" : bitmapMaxSize.toString();
+    }
+
+    public BitmapDisplayConfig cloneNew() {
+        BitmapDisplayConfig config = new BitmapDisplayConfig(mContext);
+        config.bitmapMaxSize = this.bitmapMaxSize;
+        config.animation = this.animation;
+        config.loadingDrawable = this.loadingDrawable;
+        config.loadFailedDrawable = this.loadFailedDrawable;
+        config.showOriginal = this.showOriginal;
+        config.bitmapConfig = this.bitmapConfig;
+        return config;
     }
 }
