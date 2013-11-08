@@ -844,7 +844,9 @@ public class DbUtils {
         private long seq = 0;
 
         public void put(String sql, Object result) {
-            cache.put(sql, result);
+            if (sql != null && result != null) {
+                cache.put(sql, result);
+            }
         }
 
         public Object get(String sql) {

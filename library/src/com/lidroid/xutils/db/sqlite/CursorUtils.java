@@ -116,7 +116,9 @@ public class CursorUtils {
         private static long seq = 0;
 
         public static void put(Object entity, String idStr) {
-            cache.put(entity.getClass(), idStr, entity);
+            if (entity != null && idStr != null) {
+                cache.put(entity.getClass(), idStr, entity);
+            }
         }
 
         @SuppressWarnings("unchecked")
