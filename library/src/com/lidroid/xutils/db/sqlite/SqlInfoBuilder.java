@@ -44,7 +44,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" (");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append(",");
-            result.addBindArg(kv.getValue());
+            result.addBindArgWithoutConverter(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         sqlBuffer.append(") VALUES (");
@@ -76,7 +76,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(" (");
         for (KeyValue kv : keyValueList) {
             sqlBuffer.append(kv.getKey()).append(",");
-            result.addBindArg(kv.getValue());
+            result.addBindArgWithoutConverter(kv.getValue());
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
         sqlBuffer.append(") VALUES (");
@@ -173,7 +173,7 @@ public class SqlInfoBuilder {
         for (KeyValue kv : keyValueList) {
             if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getKey())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
-                result.addBindArg(kv.getValue());
+                result.addBindArgWithoutConverter(kv.getValue());
             }
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);
@@ -203,7 +203,7 @@ public class SqlInfoBuilder {
         for (KeyValue kv : keyValueList) {
             if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getKey())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
-                result.addBindArg(kv.getValue());
+                result.addBindArgWithoutConverter(kv.getValue());
             }
         }
         sqlBuffer.deleteCharAt(sqlBuffer.length() - 1);

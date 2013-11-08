@@ -75,6 +75,14 @@ public class SqlInfo {
         bindArgs.add(ColumnUtils.convert2DbColumnValueIfNeeded(arg));
     }
 
+    /* package */ void addBindArgWithoutConverter(Object arg) {
+        if (bindArgs == null) {
+            bindArgs = new LinkedList<Object>();
+        }
+
+        bindArgs.add(arg);
+    }
+
     public void addBindArgs(Object... bindArgs) {
         if (bindArgs != null) {
             for (Object arg : bindArgs) {
