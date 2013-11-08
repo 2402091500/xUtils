@@ -1,6 +1,6 @@
 ## xUtils简介
 * xUtils 包含了很多实用的android工具。
-* xUtils 最初源于Afinal框架，进行了大量重构，使得xUtils支持大文件上传，更全面的http请求协议支持(7种谓词)，拥有更加灵活的ORM，更多的事件注解支持且不受混淆影响...
+* xUtils 最初源于Afinal框架，进行了大量重构，使得xUtils支持大文件上传，更全面的http请求协议支持(10种谓词)，拥有更加灵活的ORM，更多的事件注解支持且不受混淆影响...
 * xUitls最低兼容android 2.2 (api level 8)
 
 ## 目前xUtils主要有四大模块：
@@ -21,7 +21,7 @@
 * HttpUtils模块：
   > * 支持同步，异步方式的请求；
   > * 支持大文件上传，上传大文件不会oom；
-  > * 支持GET，POST，PUT，MOVE，COPY，DELETE，HEAD请求；
+  > * 支持GET，POST，PUT，MOVE，COPY，DELETE，HEAD，OPTIONS，TRACE，CONNECT请求；
   > * 下载支持301/302重定向，支持设置是否根据Content-Disposition重命名下载的文件；
   > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
 
