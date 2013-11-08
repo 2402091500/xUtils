@@ -25,14 +25,14 @@ import java.lang.reflect.Method;
 
 public class Column {
 
-    protected String columnName;
-    private Object defaultValue;
+    protected final String columnName;
+    private final Object defaultValue;
 
-    protected Method getMethod;
-    protected Method setMethod;
+    protected final Method getMethod;
+    protected final Method setMethod;
 
-    protected Field columnField;
-    protected ColumnConverter columnConverter;
+    protected final Field columnField;
+    protected final ColumnConverter columnConverter;
 
     protected Column(Class<?> entityType, Field field) {
         this.columnField = field;
@@ -40,6 +40,8 @@ public class Column {
         this.columnName = ColumnUtils.getColumnNameByField(field);
         if (this.columnConverter != null) {
             this.defaultValue = this.columnConverter.getFiledValue(ColumnUtils.getColumnDefaultValue(field));
+        } else {
+            this.defaultValue = null;
         }
         this.getMethod = ColumnUtils.getColumnGetMethod(entityType, field);
         this.setMethod = ColumnUtils.getColumnSetMethod(entityType, field);
@@ -68,6 +70,11 @@ public class Column {
 
     @SuppressWarnings("unchecked")
     public Object getColumnValue(Object entity) {
+        Object fieldValue = getFieldValue(entity);
+        return columnConverter.fieldValue2ColumnValue(fieldValue);
+    }
+
+    public Object getFieldValue(Object entity) {
         Object fieldValue = null;
         if (entity != null) {
             if (getMethod != null) {
@@ -85,7 +92,7 @@ public class Column {
                 }
             }
         }
-        return columnConverter.fieldValue2ColumnValue(fieldValue);
+        return fieldValue;
     }
 
     public String getColumnName() {

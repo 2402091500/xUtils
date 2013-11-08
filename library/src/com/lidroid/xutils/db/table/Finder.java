@@ -18,20 +18,24 @@ public class Finder extends Column {
 
     public DbUtils db;
 
-    private String valueColumnName;
-
-    private String targetColumnName;
+    private final String valueColumnName;
+    private final String targetColumnName;
 
     protected Finder(Class<?> entityType, Field field) {
         super(entityType, field);
 
-        com.lidroid.xutils.db.annotation.Finder finder = field.getAnnotation(com.lidroid.xutils.db.annotation.Finder.class);
+        com.lidroid.xutils.db.annotation.Finder finder =
+                field.getAnnotation(com.lidroid.xutils.db.annotation.Finder.class);
         this.valueColumnName = finder.valueColumn();
         this.targetColumnName = finder.targetColumn();
     }
 
     public Class<?> getTargetEntityType() {
         return ColumnUtils.getFinderTargetEntityType(this);
+    }
+
+    public String getTargetColumnName() {
+        return targetColumnName;
     }
 
     @Override
@@ -71,34 +75,9 @@ public class Finder extends Column {
         }
     }
 
-    public String getTargetColumnName() {
-        return targetColumnName;
-    }
-
     @Override
     public Object getColumnValue(Object entity) {
         return null;
-    }
-
-    public Object getFieldValue(Object entity) {
-        Object fieldValue = null;
-        if (entity != null) {
-            if (getMethod != null) {
-                try {
-                    fieldValue = getMethod.invoke(entity);
-                } catch (Throwable e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            } else {
-                try {
-                    this.columnField.setAccessible(true);
-                    fieldValue = this.columnField.get(entity);
-                } catch (Throwable e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
-        }
-        return fieldValue;
     }
 
     @Override

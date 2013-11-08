@@ -30,14 +30,16 @@ public class Foreign extends Column {
 
     public DbUtils db;
 
-    private String foreignColumnName;
-    private Class<?> foreignColumnType;
-    private ColumnConverter foreignColumnConverter;
+    private final String foreignColumnName;
+    private final ColumnConverter foreignColumnConverter;
 
     protected Foreign(Class<?> entityType, Field field) {
         super(entityType, field);
+
         foreignColumnName = ColumnUtils.getForeignColumnNameByField(field);
-        foreignColumnConverter = ColumnConverterFactory.getColumnConverter(getForeignColumnType());
+        Class<?> foreignColumnType =
+                TableUtils.getColumnOrId(getForeignEntityType(), foreignColumnName).columnField.getType();
+        foreignColumnConverter = ColumnConverterFactory.getColumnConverter(foreignColumnType);
     }
 
     public String getForeignColumnName() {
@@ -46,13 +48,6 @@ public class Foreign extends Column {
 
     public Class<?> getForeignEntityType() {
         return ColumnUtils.getForeignEntityType(this);
-    }
-
-    public Class<?> getForeignColumnType() {
-        if (foreignColumnType == null) {
-            foreignColumnType = TableUtils.getColumnOrId(getForeignEntityType(), foreignColumnName).columnField.getType();
-        }
-        return foreignColumnType;
     }
 
     @SuppressWarnings("unchecked")
@@ -138,27 +133,6 @@ public class Foreign extends Column {
         }
 
         return foreignColumnConverter.fieldValue2ColumnValue(fieldValue);
-    }
-
-    public Object getFieldValue(Object entity) {
-        Object fieldValue = null;
-        if (entity != null) {
-            if (getMethod != null) {
-                try {
-                    fieldValue = getMethod.invoke(entity);
-                } catch (Throwable e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            } else {
-                try {
-                    this.columnField.setAccessible(true);
-                    fieldValue = this.columnField.get(entity);
-                } catch (Throwable e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
-        }
-        return fieldValue;
     }
 
     @Override
