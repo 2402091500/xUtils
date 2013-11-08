@@ -1,6 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
 /**
  * Author: wyouflf
@@ -9,12 +10,18 @@ import android.database.Cursor;
  */
 public class SqlDateColumnConverter implements ColumnConverter<java.sql.Date, Object> {
     @Override
-    public java.sql.Date getFiledValue(Object entity, Cursor cursor, int index) {
+    public java.sql.Date getFiledValue(Cursor cursor, int index) {
         return new java.sql.Date(cursor.getLong(index));
     }
 
     @Override
-    public Object fieldValue2ColumnValue(Object entity, java.sql.Date fieldValue) {
+    public java.sql.Date getFiledValue(String fieldStringValue) {
+        if (TextUtils.isEmpty(fieldStringValue)) return null;
+        return new java.sql.Date(Long.valueOf(fieldStringValue));
+    }
+
+    @Override
+    public Object fieldValue2ColumnValue(java.sql.Date fieldValue) {
         if (fieldValue == null) return null;
         return fieldValue.getTime();
     }

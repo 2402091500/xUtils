@@ -24,9 +24,6 @@ public class ColumnConverterFactory {
                 }
                 return columnConverter;
             } catch (Throwable e) {
-                throw new RuntimeException("Can't find ColumnConverter for \"" +
-                        columnType.getCanonicalName() +
-                        "\", you must call registerColumnConverter(Class,ColumnConverter) to register it.");
             }
         }
         return null;

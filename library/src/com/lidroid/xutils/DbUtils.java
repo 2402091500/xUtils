@@ -695,7 +695,10 @@ public class DbUtils {
     private static void fillContentValues(ContentValues contentValues, List<KeyValue> list) {
         if (list != null && contentValues != null) {
             for (KeyValue kv : list) {
-                contentValues.put(kv.getKey(), kv.getValue().toString());
+                Object value = kv.getValue();
+                if (value != null) {
+                    contentValues.put(kv.getKey(), value.toString());
+                }
             }
         } else {
             LogUtils.w("List<KeyValue> is empty or ContentValues is empty!");

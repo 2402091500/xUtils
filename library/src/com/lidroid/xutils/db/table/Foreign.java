@@ -59,7 +59,7 @@ public class Foreign extends Column {
     @Override
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
         Object value = null;
-        Object foreignColumnValue = foreignColumnConverter.getFiledValue(entity, cursor, index);
+        Object foreignColumnValue = foreignColumnConverter.getFiledValue(cursor, index);
         Class<?> columnType = columnField.getType();
         if (columnType.equals(ForeignLazyLoader.class)) {
             value = new ForeignLazyLoader(this, foreignColumnValue);
@@ -137,7 +137,7 @@ public class Foreign extends Column {
             }
         }
 
-        return foreignColumnConverter.fieldValue2ColumnValue(entity, fieldValue);
+        return foreignColumnConverter.fieldValue2ColumnValue(fieldValue);
     }
 
     public Object getFieldValue(Object entity) {

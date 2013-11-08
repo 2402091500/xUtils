@@ -38,7 +38,9 @@ public class Column {
         this.columnField = field;
         this.columnConverter = ColumnConverterFactory.getColumnConverter(field.getType());
         this.columnName = ColumnUtils.getColumnNameByField(field);
-        this.defaultValue = ColumnUtils.getColumnDefaultValue(field);
+        if (this.columnConverter != null) {
+            this.defaultValue = this.columnConverter.getFiledValue(ColumnUtils.getColumnDefaultValue(field));
+        }
         this.getMethod = ColumnUtils.getColumnGetMethod(entityType, field);
         this.setMethod = ColumnUtils.getColumnSetMethod(entityType, field);
     }
@@ -46,7 +48,7 @@ public class Column {
     @SuppressWarnings("unchecked")
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
 
-        Object value = columnConverter.getFiledValue(entity, cursor, index);
+        Object value = columnConverter.getFiledValue(cursor, index);
 
         if (setMethod != null) {
             try {
@@ -83,7 +85,7 @@ public class Column {
                 }
             }
         }
-        return columnConverter.fieldValue2ColumnValue(entity, fieldValue);
+        return columnConverter.fieldValue2ColumnValue(fieldValue);
     }
 
     public String getColumnName() {

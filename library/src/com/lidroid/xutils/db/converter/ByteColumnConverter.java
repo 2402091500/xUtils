@@ -1,6 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
 /**
  * Author: wyouflf
@@ -9,12 +10,18 @@ import android.database.Cursor;
  */
 public class ByteColumnConverter implements ColumnConverter<Byte, Object> {
     @Override
-    public Byte getFiledValue(Object entity, Cursor cursor, int index) {
+    public Byte getFiledValue(Cursor cursor, int index) {
         return (byte) cursor.getInt(index);
     }
 
     @Override
-    public Object fieldValue2ColumnValue(Object entity, Byte fieldValue) {
+    public Byte getFiledValue(String fieldStringValue) {
+        if (TextUtils.isEmpty(fieldStringValue)) return null;
+        return Byte.valueOf(fieldStringValue);
+    }
+
+    @Override
+    public Object fieldValue2ColumnValue(Byte fieldValue) {
         return fieldValue;
     }
 

@@ -9,12 +9,17 @@ import android.database.Cursor;
  */
 public class ByteArrayColumnConverter implements ColumnConverter<byte[], Object> {
     @Override
-    public byte[] getFiledValue(Object entity, Cursor cursor, int index) {
+    public byte[] getFiledValue(Cursor cursor, int index) {
         return cursor.getBlob(index);
     }
 
     @Override
-    public Object fieldValue2ColumnValue(Object entity, byte[] fieldValue) {
+    public byte[] getFiledValue(String fieldStringValue) {
+        return null;
+    }
+
+    @Override
+    public Object fieldValue2ColumnValue(byte[] fieldValue) {
         return fieldValue;
     }
 

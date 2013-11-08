@@ -35,7 +35,11 @@ public class DbModel {
     }
 
     public boolean getBoolean(String columnName) {
-        return ColumnUtils.convert2Boolean(getString(columnName));
+        String value = getString(columnName);
+        if (value != null) {
+            return value.length() == 1 ? "1".equals(value) : Boolean.valueOf(value);
+        }
+        return false;
     }
 
     public double getDouble(String columnName) {

@@ -9,9 +9,11 @@ import android.database.Cursor;
  */
 public interface ColumnConverter<T, E> {
 
-    T getFiledValue(E entity, Cursor cursor, int index);
+    T getFiledValue(Cursor cursor, int index);
 
-    Object fieldValue2ColumnValue(E entity, T fieldValue);
+    T getFiledValue(String fieldStringValue);
+
+    Object fieldValue2ColumnValue(T fieldValue);
 
     String getColumnDbType();
 }

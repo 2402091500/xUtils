@@ -1,6 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
 /**
  * Author: wyouflf
@@ -9,12 +10,18 @@ import android.database.Cursor;
  */
 public class FloatColumnConverter implements ColumnConverter<Float, Object> {
     @Override
-    public Float getFiledValue(Object entity, Cursor cursor, int index) {
+    public Float getFiledValue(Cursor cursor, int index) {
         return cursor.getFloat(index);
     }
 
     @Override
-    public Object fieldValue2ColumnValue(Object entity, Float fieldValue) {
+    public Float getFiledValue(String fieldStringValue) {
+        if (TextUtils.isEmpty(fieldStringValue)) return null;
+        return Float.valueOf(fieldStringValue);
+    }
+
+    @Override
+    public Object fieldValue2ColumnValue(Float fieldValue) {
         return fieldValue;
     }
 

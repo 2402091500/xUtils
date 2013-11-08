@@ -1,6 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
 /**
  * Author: wyouflf
@@ -9,12 +10,18 @@ import android.database.Cursor;
  */
 public class BooleanColumnConverter implements ColumnConverter<Boolean, Object> {
     @Override
-    public Boolean getFiledValue(Object entity, Cursor cursor, int index) {
+    public Boolean getFiledValue(Cursor cursor, int index) {
         return cursor.getInt(index) == 1;
     }
 
     @Override
-    public Object fieldValue2ColumnValue(Object entity, Boolean fieldValue) {
+    public Boolean getFiledValue(String fieldStringValue) {
+        if (TextUtils.isEmpty(fieldStringValue)) return null;
+        return fieldStringValue.length() == 1 ? "1".equals(fieldStringValue) : Boolean.valueOf(fieldStringValue);
+    }
+
+    @Override
+    public Object fieldValue2ColumnValue(Boolean fieldValue) {
         if (fieldValue == null) return null;
         return fieldValue ? 1 : 0;
     }

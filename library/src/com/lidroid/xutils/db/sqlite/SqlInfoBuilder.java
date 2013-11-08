@@ -171,7 +171,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(table.getTableName());
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getValue())) {
+            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getKey())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
                 result.addBindArg(kv.getValue());
             }
@@ -201,7 +201,7 @@ public class SqlInfoBuilder {
         sqlBuffer.append(table.getTableName());
         sqlBuffer.append(" SET ");
         for (KeyValue kv : keyValueList) {
-            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getValue())) {
+            if (updateColumnNameSet == null || updateColumnNameSet.contains(kv.getKey())) {
                 sqlBuffer.append(kv.getKey()).append("=?,");
                 result.addBindArg(kv.getValue());
             }
@@ -262,7 +262,7 @@ public class SqlInfoBuilder {
         String key = column.getColumnName();
         Object value = column.getColumnValue(entity);
         value = value == null ? column.getDefaultValue() : value;
-        if (key != null && value != null) {
+        if (key != null) {
             kv = new KeyValue(key, value);
         }
         return kv;
@@ -285,6 +285,7 @@ public class SqlInfoBuilder {
         for (Column column : columns) {
             if (column instanceof Finder) {
                 ((Finder) column).db = db;
+                continue;
             } else if (column instanceof Foreign) {
                 ((Foreign) column).db = db;
             }
