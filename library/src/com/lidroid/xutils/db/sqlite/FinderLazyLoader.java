@@ -12,8 +12,8 @@ import java.util.List;
  * Time: 下午10:50
  */
 public class FinderLazyLoader<T> {
-    private Finder finderColumn;
-    private Object finderValue;
+    private final Finder finderColumn;
+    private final Object finderValue;
 
     public FinderLazyLoader(Class<?> entityType, String fieldName, Object finderValue) {
         this.finderColumn = (Finder) TableUtils.getColumnOrId(entityType, fieldName);

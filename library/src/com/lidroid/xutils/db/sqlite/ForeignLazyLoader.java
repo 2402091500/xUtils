@@ -22,8 +22,8 @@ import com.lidroid.xutils.exception.DbException;
 import java.util.List;
 
 public class ForeignLazyLoader<T> {
-    private Foreign foreignColumn;
-    private Object columnValue;
+    private final Foreign foreignColumn;
+    private final Object columnValue;
 
     public ForeignLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
