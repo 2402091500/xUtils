@@ -30,11 +30,36 @@ import com.lidroid.xutils.util.LogUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashSet;
 import java.util.List;
 
 public class ColumnUtils {
 
     private ColumnUtils() {
+    }
+
+    private static final HashSet<String> DB_PRIMITIVE_TYPES = new HashSet<String>(14);
+
+    static {
+        DB_PRIMITIVE_TYPES.add(int.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(long.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(short.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(byte.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(float.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(double.class.getCanonicalName());
+
+        DB_PRIMITIVE_TYPES.add(Integer.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Long.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Short.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Byte.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Float.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Double.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(String.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(byte[].class.getCanonicalName());
+    }
+
+    public static boolean isDbPrimitiveType(Class<?> fieldType) {
+        return DB_PRIMITIVE_TYPES.contains(fieldType.getCanonicalName());
     }
 
     public static Method getColumnGetMethod(Class<?> entityType, Field field) {
@@ -157,7 +182,7 @@ public class ColumnUtils {
 
     @SuppressWarnings("unchecked")
     public static Class<?> getForeignEntityType(com.lidroid.xutils.db.table.Foreign foreignColumn) {
-        Class<?> result = (Class<?>) foreignColumn.getColumnField().getType();
+        Class<?> result = foreignColumn.getColumnField().getType();
         if (result.equals(ForeignLazyLoader.class) || result.equals(List.class)) {
             result = (Class<?>) ((ParameterizedType) foreignColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
         }
@@ -166,7 +191,7 @@ public class ColumnUtils {
 
     @SuppressWarnings("unchecked")
     public static Class<?> getFinderTargetEntityType(com.lidroid.xutils.db.table.Finder finderColumn) {
-        Class<?> result = (Class<?>) finderColumn.getColumnField().getType();
+        Class<?> result = finderColumn.getColumnField().getType();
         if (result.equals(FinderLazyLoader.class) || result.equals(List.class)) {
             result = (Class<?>) ((ParameterizedType) finderColumn.getColumnField().getGenericType()).getActualTypeArguments()[0];
         }
@@ -177,11 +202,14 @@ public class ColumnUtils {
     public static Object convert2DbColumnValueIfNeeded(final Object value) {
         Object result = value;
         if (value != null) {
-            ColumnConverter converter = ColumnConverterFactory.getColumnConverter(value.getClass());
-            if (converter != null) {
-                result = converter.fieldValue2ColumnValue(value);
-            } else {
-                result = value;
+            Class<?> valueType = value.getClass();
+            if (!isDbPrimitiveType(valueType)) {
+                ColumnConverter converter = ColumnConverterFactory.getColumnConverter(valueType);
+                if (converter != null) {
+                    result = converter.fieldValue2ColumnValue(value);
+                } else {
+                    result = value;
+                }
             }
         }
         return result;
