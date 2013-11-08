@@ -96,13 +96,11 @@ public class BitmapCommonUtils {
         if (width <= 0) width = getFieldValue(view, "mMaxWidth");
         if (height <= 0) height = getFieldValue(view, "mMaxHeight");
 
-        if (width <= 0 || height <= 0) {
-            if (screenSizeScaleDown3 == null) {
-                screenSizeScaleDown3 = getScreenSize(view.getContext()).scaleDown(3);
-            }
-            if (width <= 0) width = screenSizeScaleDown3.getWidth();
-            if (height <= 0) height = screenSizeScaleDown3.getHeight();
+        if (screenSizeScaleDown3 == null) {
+            screenSizeScaleDown3 = getScreenSize(view.getContext()).scaleDown(3);
         }
+        if (width <= 0) width = screenSizeScaleDown3.getWidth();
+        if (height <= 0) height = screenSizeScaleDown3.getHeight();
 
         return new BitmapSize(width, height);
     }
