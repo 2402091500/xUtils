@@ -167,7 +167,16 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
     }
 
     public static enum HttpMethod {
-        GET("GET"), POST("POST"), PUT("PUT"), HEAD("HEAD"), MOVE("MOVE"), COPY("COPY"), DELETE("DELETE");
+        GET("GET"),
+        POST("POST"),
+        PUT("PUT"),
+        HEAD("HEAD"),
+        MOVE("MOVE"),
+        COPY("COPY"),
+        DELETE("DELETE"),
+        OPTIONS("OPTIONS"),
+        TRACE("TRACE"),
+        CONNECT("CONNECT");
 
         private final String value;
 
