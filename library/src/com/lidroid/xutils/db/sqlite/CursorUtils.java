@@ -30,11 +30,14 @@ public class CursorUtils {
         EntityTempCache.setSeq(findCacheSequence);
         try {
             Table table = Table.get(entityType);
-            int idIndex = cursor.getColumnIndex(table.getId().getColumnName());
+            Id id = table.getId();
+            String idColumnName = id.getColumnName();
+            int idIndex = cursor.getColumnIndex(idColumnName);
             String idStr = cursor.getString(idIndex);
             T entity = EntityTempCache.get(entityType, idStr);
             if (entity == null) {
                 entity = entityType.newInstance();
+                id.setValue2Entity(entity, cursor, idIndex);
                 EntityTempCache.put(entity, idStr);
             } else {
                 return entity;
@@ -53,8 +56,6 @@ public class CursorUtils {
                     } else {
                         column.setValue2Entity(entity, cursor, i);
                     }
-                } else if (columnName.equals(table.getId().getColumnName())) {
-                    table.getId().setValue2Entity(entity, cursor, i);
                 }
             }
 
