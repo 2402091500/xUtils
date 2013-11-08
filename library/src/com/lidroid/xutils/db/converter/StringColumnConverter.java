@@ -1,7 +1,6 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
-import android.text.TextUtils;
 
 /**
  * Author: wyouflf
