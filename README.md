@@ -16,7 +16,7 @@
 * ViewUtils模块：
   > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定；
   > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作；
-  > * 目前支持常用的14种事件绑定，参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
+  > * 目前支持常用的16种事件绑定，参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
 
 * HttpUtils模块：
   > * 支持同步，异步方式的请求；
