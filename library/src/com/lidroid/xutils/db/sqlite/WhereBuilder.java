@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.db.table.ColumnUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class WhereBuilder {
      * create new instance
      *
      * @param columnName
-     * @param op         operator: "=","<","LIKE"...
+     * @param op         operator: "=","<","LIKE","IN"...
      * @param value
      * @return
      */
@@ -62,7 +63,7 @@ public class WhereBuilder {
      * add AND condition
      *
      * @param columnName
-     * @param op         operator: "=","<","LIKE"...
+     * @param op         operator: "=","<","LIKE","IN"...
      * @param value
      * @return
      */
@@ -75,7 +76,7 @@ public class WhereBuilder {
      * add OR condition
      *
      * @param columnName
-     * @param op         operator: "=","<","LIKE"...
+     * @param op         operator: "=","<","LIKE","IN"...
      * @param value
      * @return
      */
@@ -143,15 +144,51 @@ public class WhereBuilder {
             }
         } else {
             sqlSb.append(" " + op + " ");
-            value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
-            if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
-                String valueStr = value.toString();
-                if (valueStr.indexOf('\'') != -1) { // convert single quotations
-                    valueStr = valueStr.replace("'", "''");
+
+            if (op.equalsIgnoreCase("IN")) {
+                StringBuffer stringBuffer = new StringBuffer("(");
+                Iterable<?> items = null;
+                if (value instanceof Iterable) {
+                    items = (Iterable<?>) value;
+                } else if (value.getClass().isArray()) {
+                    ArrayList<Object> arrayList = new ArrayList<Object>();
+                    int len = Array.getLength(value);
+                    for (int i = 0; i < len; i++) {
+                        arrayList.add(Array.get(value, i));
+                    }
+                    items = arrayList;
                 }
-                sqlSb.append("'" + valueStr + "'");
+                if (items != null) {
+                    for (Object item : items) {
+                        Object itemColValue = ColumnUtils.convert2DbColumnValueIfNeeded(item);
+                        if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(itemColValue.getClass()))) {
+                            String valueStr = itemColValue.toString();
+                            if (valueStr.indexOf('\'') != -1) { // convert single quotations
+                                valueStr = valueStr.replace("'", "''");
+                            }
+                            stringBuffer.append("'" + valueStr + "'");
+                        } else {
+                            stringBuffer.append(itemColValue);
+                        }
+                        stringBuffer.append(",");
+                    }
+                } else {
+                    throw new IllegalArgumentException("value must be an Array or an Iterable.");
+                }
+                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+                stringBuffer.append(")");
+                sqlSb.append(stringBuffer.toString());
             } else {
-                sqlSb.append(value);
+                value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
+                if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
+                    String valueStr = value.toString();
+                    if (valueStr.indexOf('\'') != -1) { // convert single quotations
+                        valueStr = valueStr.replace("'", "''");
+                    }
+                    sqlSb.append("'" + valueStr + "'");
+                } else {
+                    sqlSb.append(value);
+                }
             }
         }
         whereItems.add(sqlSb.toString());

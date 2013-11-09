@@ -105,6 +105,5 @@ public class ColumnConverterFactory {
 
         StringColumnConverter stringColumnConverter = new StringColumnConverter();
         columnType_columnConverter_map.put(String.class.getCanonicalName(), stringColumnConverter);
-        columnType_columnConverter_map.put(CharSequence.class.getCanonicalName(), stringColumnConverter);
     }
 }
