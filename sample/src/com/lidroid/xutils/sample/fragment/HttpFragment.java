@@ -12,13 +12,15 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.ResponseStream;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.sample.R;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.ResType;
+import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
@@ -59,6 +61,9 @@ public class HttpFragment extends Fragment {
     @ViewInject(R.id.result_txt)
     private TextView resultText;
 
+    @ResInject(id = 5, type = ResType.String)
+    private String label;
+
     @OnClick(R.id.download_btn)
     public void download(View view) {
 
@@ -76,7 +81,10 @@ public class HttpFragment extends Fragment {
 
                     @Override
                     public void onStart() {
-                        resultText.setText(this.getRequestUrl() + " conn..." + "\n" + this.userTag);
+                        resultText.setText(
+                                label + ": " + this.getRequestUrl()
+                                        + "\n conn..." + "\n"
+                                        + this.userTag);
                     }
 
                     @Override
