@@ -145,8 +145,7 @@ public class WhereBuilder {
         } else {
             sqlSb.append(" " + op + " ");
 
-            if (op.equalsIgnoreCase("IN")) {
-                StringBuffer stringBuffer = new StringBuffer("(");
+            if ("IN".equalsIgnoreCase(op)) {
                 Iterable<?> items = null;
                 if (value instanceof Iterable) {
                     items = (Iterable<?>) value;
@@ -159,6 +158,7 @@ public class WhereBuilder {
                     items = arrayList;
                 }
                 if (items != null) {
+                    StringBuffer stringBuffer = new StringBuffer("(");
                     for (Object item : items) {
                         Object itemColValue = ColumnUtils.convert2DbColumnValueIfNeeded(item);
                         if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(itemColValue.getClass()))) {
@@ -172,12 +172,12 @@ public class WhereBuilder {
                         }
                         stringBuffer.append(",");
                     }
+                    stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+                    stringBuffer.append(")");
+                    sqlSb.append(stringBuffer.toString());
                 } else {
                     throw new IllegalArgumentException("value must be an Array or an Iterable.");
                 }
-                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-                stringBuffer.append(")");
-                sqlSb.append(stringBuffer.toString());
             } else {
                 value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
                 if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
