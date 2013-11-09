@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class ByteColumnConverter implements ColumnConverter<Byte, Object> {
     @Override
-    public Byte getFiledValue(Cursor cursor, int index) {
+    public Byte getFiledValue(final Cursor cursor, int index) {
         return (byte) cursor.getInt(index);
     }
 

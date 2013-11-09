@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class SqlDateColumnConverter implements ColumnConverter<java.sql.Date, Object> {
     @Override
-    public java.sql.Date getFiledValue(Cursor cursor, int index) {
+    public java.sql.Date getFiledValue(final Cursor cursor, int index) {
         return new java.sql.Date(cursor.getLong(index));
     }
 

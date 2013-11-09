@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class IntegerColumnConverter implements ColumnConverter<Integer, Object> {
     @Override
-    public Integer getFiledValue(Cursor cursor, int index) {
+    public Integer getFiledValue(final Cursor cursor, int index) {
         return cursor.getInt(index);
     }
 

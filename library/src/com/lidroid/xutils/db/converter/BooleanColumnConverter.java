@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class BooleanColumnConverter implements ColumnConverter<Boolean, Object> {
     @Override
-    public Boolean getFiledValue(Cursor cursor, int index) {
+    public Boolean getFiledValue(final Cursor cursor, int index) {
         return cursor.getInt(index) == 1;
     }
 

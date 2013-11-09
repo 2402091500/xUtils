@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class ShortColumnConverter implements ColumnConverter<Short, Object> {
     @Override
-    public Short getFiledValue(Cursor cursor, int index) {
+    public Short getFiledValue(final Cursor cursor, int index) {
         return cursor.getShort(index);
     }
 

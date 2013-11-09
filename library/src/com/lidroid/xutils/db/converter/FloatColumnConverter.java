@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class FloatColumnConverter implements ColumnConverter<Float, Object> {
     @Override
-    public Float getFiledValue(Cursor cursor, int index) {
+    public Float getFiledValue(final Cursor cursor, int index) {
         return cursor.getFloat(index);
     }
 

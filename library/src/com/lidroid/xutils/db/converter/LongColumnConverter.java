@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class LongColumnConverter implements ColumnConverter<Long, Object> {
     @Override
-    public Long getFiledValue(Cursor cursor, int index) {
+    public Long getFiledValue(final Cursor cursor, int index) {
         return cursor.getLong(index);
     }
 

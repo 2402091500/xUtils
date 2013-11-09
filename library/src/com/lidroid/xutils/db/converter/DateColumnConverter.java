@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class DateColumnConverter implements ColumnConverter<Date, Object> {
     @Override
-    public Date getFiledValue(Cursor cursor, int index) {
+    public Date getFiledValue(final Cursor cursor, int index) {
         return new Date(cursor.getLong(index));
     }
 

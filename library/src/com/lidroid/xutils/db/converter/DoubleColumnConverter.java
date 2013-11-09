@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class DoubleColumnConverter implements ColumnConverter<Double, Object> {
     @Override
-    public Double getFiledValue(Cursor cursor, int index) {
+    public Double getFiledValue(final Cursor cursor, int index) {
         return cursor.getDouble(index);
     }
 

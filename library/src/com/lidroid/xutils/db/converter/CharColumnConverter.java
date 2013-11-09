@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 public class CharColumnConverter implements ColumnConverter<Character, Object> {
     @Override
-    public Character getFiledValue(Cursor cursor, int index) {
+    public Character getFiledValue(final Cursor cursor, int index) {
         return (char) cursor.getInt(index);
     }
 

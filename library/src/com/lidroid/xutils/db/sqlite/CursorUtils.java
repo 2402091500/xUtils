@@ -24,7 +24,7 @@ import com.lidroid.xutils.util.core.DoubleKeyValueMap;
 public class CursorUtils {
 
     @SuppressWarnings("unchecked")
-    public static <T> T getEntity(DbUtils db, Cursor cursor, Class<T> entityType, long findCacheSequence) {
+    public static <T> T getEntity(final DbUtils db, final Cursor cursor, Class<T> entityType, long findCacheSequence) {
         if (db == null || cursor == null) return null;
 
         EntityTempCache.setSeq(findCacheSequence);
@@ -72,7 +72,7 @@ public class CursorUtils {
         return null;
     }
 
-    public static DbModel getDbModel(Cursor cursor) {
+    public static DbModel getDbModel(final Cursor cursor) {
         DbModel result = null;
         if (cursor != null) {
             result = new DbModel();

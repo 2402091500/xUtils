@@ -9,7 +9,7 @@ import android.database.Cursor;
  */
 public class StringColumnConverter implements ColumnConverter<String, Object> {
     @Override
-    public String getFiledValue(Cursor cursor, int index) {
+    public String getFiledValue(final Cursor cursor, int index) {
         return cursor.getString(index);
     }
 

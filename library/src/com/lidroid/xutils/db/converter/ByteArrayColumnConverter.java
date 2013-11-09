@@ -9,7 +9,7 @@ import android.database.Cursor;
  */
 public class ByteArrayColumnConverter implements ColumnConverter<byte[], Object> {
     @Override
-    public byte[] getFiledValue(Cursor cursor, int index) {
+    public byte[] getFiledValue(final Cursor cursor, int index) {
         return cursor.getBlob(index);
     }
 
