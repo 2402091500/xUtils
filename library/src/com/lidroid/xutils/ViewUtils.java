@@ -102,7 +102,7 @@ public class ViewUtils {
                     ResInject resInject = field.getAnnotation(ResInject.class);
                     if (resInject != null) {
                         try {
-                            Object res = ResLoader.loadResource(
+                            Object res = ResLoader.loadRes(
                                     resInject.type(), finder.getContext(), resInject.id());
                             if (res != null) {
                                 field.setAccessible(true);

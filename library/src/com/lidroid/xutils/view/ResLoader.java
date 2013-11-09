@@ -15,7 +15,7 @@ import android.view.animation.AnimationUtils;
  */
 public class ResLoader {
 
-    public static Object loadResource(ResType type, Context context, int id) {
+    public static Object loadRes(ResType type, Context context, int id) {
         if (context == null || id < 1) return null;
         switch (type) {
             case Animation:
