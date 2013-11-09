@@ -18,6 +18,7 @@ package com.lidroid.xutils.view;
 import android.preference.Preference;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewTreeObserver;
 import android.widget.*;
@@ -35,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ViewCommonEventListener implements
         OnClickListener,
         OnLongClickListener,
+        OnFocusChangeListener,
         OnItemClickListener,
         OnItemLongClickListener,
         RadioGroup.OnCheckedChangeListener,
@@ -51,6 +53,7 @@ public class ViewCommonEventListener implements
 
     private Method clickMethod;
     private Method longClickMethod;
+    private Method focusChangeMethod;
     private Method itemClickMethod;
     private Method itemLongClickMethod;
     private Method radioGroupCheckedChangedMethod;
@@ -85,6 +88,11 @@ public class ViewCommonEventListener implements
 
     public ViewCommonEventListener longClick(Method method) {
         this.longClickMethod = method;
+        return this;
+    }
+
+    public ViewCommonEventListener focusChange(Method method) {
+        this.focusChangeMethod = method;
         return this;
     }
 
@@ -182,6 +190,15 @@ public class ViewCommonEventListener implements
             LogUtils.e(e.getMessage(), e);
         }
         return false;
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        try {
+            focusChangeMethod.invoke(handler, view, b);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -340,6 +357,10 @@ public class ViewCommonEventListener implements
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
                         view.setOnLongClickListener(new ViewCommonEventListener(handler).longClick(method));
+                    } else if (annotation.annotationType().equals(OnFocusChange.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        view.setOnFocusChangeListener(new ViewCommonEventListener(handler).focusChange(method));
                     } else if (annotation.annotationType().equals(OnItemClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
