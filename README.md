@@ -64,6 +64,11 @@ Parent entity = db.findFirst(entity);//通过entity的属性查找
 List<Parent> list = db.findAll(entity);//通过entity的属性查找
 Parent Parent = db.findFirst(Selector.from(Parent.class).where("name","=","test"));
 
+// IS NULL
+Parent Parent = db.findFirst(Selector.from(Parent.class).where("name","=", null));
+// IS NOT NULL
+Parent Parent = db.findFirst(Selector.from(Parent.class).where("name","!=", null));
+
 // WHERE id<54 AND (age>20 OR age<30) ORDER BY id LIMIT pageSize OFFSET pageOffset
 List<Parent> list = db.findAll(Selector.from(Parent.class)
                                    .where("id" ,"<", 54)
