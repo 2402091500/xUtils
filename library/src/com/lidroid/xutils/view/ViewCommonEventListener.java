@@ -16,10 +16,10 @@
 package com.lidroid.xutils.view;
 
 import android.preference.Preference;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnLongClickListener;
+import android.view.View.*;
 import android.view.ViewTreeObserver;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
@@ -37,6 +37,8 @@ public class ViewCommonEventListener implements
         OnClickListener,
         OnLongClickListener,
         OnFocusChangeListener,
+        OnKeyListener,
+        OnTouchListener,
         OnItemClickListener,
         OnItemLongClickListener,
         RadioGroup.OnCheckedChangeListener,
@@ -54,6 +56,8 @@ public class ViewCommonEventListener implements
     private Method clickMethod;
     private Method longClickMethod;
     private Method focusChangeMethod;
+    private Method keyMethod;
+    private Method touchMethod;
     private Method itemClickMethod;
     private Method itemLongClickMethod;
     private Method radioGroupCheckedChangedMethod;
@@ -93,6 +97,16 @@ public class ViewCommonEventListener implements
 
     public ViewCommonEventListener focusChange(Method method) {
         this.focusChangeMethod = method;
+        return this;
+    }
+
+    public ViewCommonEventListener key(Method method) {
+        this.keyMethod = method;
+        return this;
+    }
+
+    public ViewCommonEventListener touch(Method method) {
+        this.touchMethod = method;
         return this;
     }
 
@@ -184,8 +198,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onLongClick(View v) {
         try {
-            Object result = longClickMethod.invoke(handler, v);
-            return result == null ? false : Boolean.valueOf(result.toString());
+            return (Boolean) longClickMethod.invoke(handler, v);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -202,6 +215,26 @@ public class ViewCommonEventListener implements
     }
 
     @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        try {
+            return (Boolean) keyMethod.invoke(handler, view, i, keyEvent);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        try {
+            return (Boolean) touchMethod.invoke(handler, view, motionEvent);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
             itemClickMethod.invoke(handler, parent, view, position, id);
@@ -213,8 +246,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            Object result = itemLongClickMethod.invoke(handler, parent, view, position, id);
-            return result == null ? false : Boolean.valueOf(result.toString());
+            return (Boolean) itemLongClickMethod.invoke(handler, parent, view, position, id);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -242,8 +274,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onPreferenceClick(Preference preference) {
         try {
-            Object result = preferenceClickMethod.invoke(handler, preference);
-            return result == null ? false : Boolean.valueOf(result.toString());
+            return (Boolean) preferenceClickMethod.invoke(handler, preference);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -253,8 +284,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         try {
-            Object result = preferenceChangeMethod.invoke(handler, preference, newValue);
-            return result == null ? false : Boolean.valueOf(result.toString());
+            return (Boolean) preferenceChangeMethod.invoke(handler, preference, newValue);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -361,6 +391,14 @@ public class ViewCommonEventListener implements
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
                         view.setOnFocusChangeListener(new ViewCommonEventListener(handler).focusChange(method));
+                    } else if (annotation.annotationType().equals(OnKey.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        view.setOnKeyListener(new ViewCommonEventListener(handler).key(method));
+                    } else if (annotation.annotationType().equals(OnTouch.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        view.setOnTouchListener(new ViewCommonEventListener(handler).touch(method));
                     } else if (annotation.annotationType().equals(OnItemClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
