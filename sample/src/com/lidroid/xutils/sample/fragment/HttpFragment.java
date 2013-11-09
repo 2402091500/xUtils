@@ -61,7 +61,7 @@ public class HttpFragment extends Fragment {
     @ViewInject(R.id.result_txt)
     private TextView resultText;
 
-    @ResInject(id = 5, type = ResType.String)
+    @ResInject(id = R.string.download_label, type = ResType.String)
     private String label;
 
     @OnClick(R.id.download_btn)

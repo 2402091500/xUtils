@@ -14,7 +14,7 @@
   > * 支持链式表达查询，更直观的查询语义，参考下面的介绍或sample中的例子。
 
 * ViewUtils模块：
-  > * android中的ioc框架，完全注解方式就可以进行UI绑定和事件绑定；
+  > * android中的ioc框架，完全注解方式就可以进行UI，资源和事件绑定；
   > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作；
   > * 目前支持常用的16种事件绑定，参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
 
@@ -85,6 +85,9 @@ List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("
 ```java
 @ViewInject(R.id.textView)
 TextView textView;
+
+@ResInject(id = R.string.label, type = ResType.String)
+private String label;
 
 // 取消了之前使用方法名绑定事件的方式，使用id绑定不受混淆影响
 // 支持绑定多个id @OnClick({R.id.id1, R.id.id2, R.id.id3})
