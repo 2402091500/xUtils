@@ -270,6 +270,6 @@ LogUtils.d("wyouflf");
 # 关于作者
 * Email： <wyouflf@qq.com>, <wyouflf@gmail.com>
 * 有任何建议或者使用中遇到问题都可以给我发邮件, 你也可以加入这个QQ群：330445659, 技术交流，idea分享 *_*
-* 捐助:https://me.alipay.com/wyouflf
+* 捐助: <https://me.alipay.com/wyouflf>
 
 
