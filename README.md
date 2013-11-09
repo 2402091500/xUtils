@@ -74,6 +74,8 @@ List<Parent> list = db.findAll(Selector.from(Parent.class)
 
 // op为"in"时，最后一个参数必须是数组或Iterable的实现类(例如List等)
 Parent test = db.findFirst(Selector.from(Parent.class).where("id", "in", new int[]{1, 2, 3}));
+// op为"between"时，最后一个参数必须是数组或Iterable的实现类(例如List等)
+Parent test = db.findFirst(Selector.from(Parent.class).where("id", "between", new String[]{"1", "5"}));
 
 DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));

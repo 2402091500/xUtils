@@ -70,8 +70,9 @@ public class DbFragment extends Fragment {
             //child.parent = new ForeignLazyLoader<Parent>(Child.class, "parentId", parent.getId());
             //child.parent = parent;
 
-            //Parent test = db.findFirst(Parent.class);
-            Parent test = db.findFirst(Selector.from(Parent.class).where("id", "in", new int[]{1, 2, 3}));//通过entity的属性查找
+            Parent test = db.findFirst(parent); // 通过parent的属性查找
+            //Parent test = db.findFirst(Selector.from(Parent.class).where("id", "in", new int[]{1, 3, 6}));
+            //Parent test = db.findFirst(Selector.from(Parent.class).where("id", "between", new String[]{"1", "5"}));
             if (test != null) {
                 child.parent = test;
                 temp += "first parent:" + test + "\n";
