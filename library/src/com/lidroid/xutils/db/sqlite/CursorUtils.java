@@ -49,10 +49,8 @@ public class CursorUtils {
                 if (column != null) {
                     if (column instanceof Foreign) {
                         Foreign foreign = (Foreign) column;
-                        if (foreign.getFieldValue(entity) == null) {
-                            foreign.db = db;
-                            foreign.setValue2Entity(entity, cursor, i);
-                        }
+                        foreign.db = db;
+                        foreign.setValue2Entity(entity, cursor, i);
                     } else {
                         column.setValue2Entity(entity, cursor, i);
                     }
@@ -62,10 +60,8 @@ public class CursorUtils {
             for (Column column : table.columnMap.values()) {
                 if (column instanceof Finder) {
                     Finder finder = (Finder) column;
-                    if (finder.getFieldValue(entity) == null) {
-                        finder.db = db;
-                        finder.setValue2Entity(entity, null, 0);
-                    }
+                    finder.db = db;
+                    finder.setValue2Entity(entity, null, 0);
                 }
             }
             return entity;
