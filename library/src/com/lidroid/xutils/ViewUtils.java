@@ -20,9 +20,11 @@ import android.preference.PreferenceActivity;
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.DoubleKeyValueMap;
+import com.lidroid.xutils.view.ResLoader;
 import com.lidroid.xutils.view.ViewCommonEventListener;
 import com.lidroid.xutils.view.ViewCustomEventListener;
 import com.lidroid.xutils.view.ViewFinder;
+import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.EventBase;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -95,6 +97,20 @@ public class ViewUtils {
                         }
                     } catch (Throwable e) {
                         LogUtils.e(e.getMessage(), e);
+                    }
+                } else {
+                    ResInject resInject = field.getAnnotation(ResInject.class);
+                    if (resInject != null) {
+                        try {
+                            Object res = ResLoader.loadResource(
+                                    resInject.type(), finder.getContext(), resInject.id());
+                            if (res != null) {
+                                field.setAccessible(true);
+                                field.set(handler, res);
+                            }
+                        } catch (Throwable e) {
+                            LogUtils.e(e.getMessage(), e);
+                        }
                     }
                 }
             }

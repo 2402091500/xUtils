@@ -1,6 +1,7 @@
 package com.lidroid.xutils.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.View;
@@ -36,5 +37,12 @@ public class ViewFinder {
     @SuppressWarnings("deprecation")
     public Preference findPreference(CharSequence key) {
         return preferenceActivity.findPreference(key);
+    }
+
+    public Context getContext() {
+        if (view != null) return view.getContext();
+        if (activity != null) return activity;
+        if (preferenceActivity != null) return preferenceActivity;
+        return null;
     }
 }
