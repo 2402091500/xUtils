@@ -72,6 +72,9 @@ List<Parent> list = db.findAll(Selector.from(Parent.class)
                                    .limit(pageSize)
                                    .offset(pageSize * pageIndex));
 
+// op为"in"时，最后一个参数必须是数组或Iterable的实现类(例如List等)
+Parent test = db.findFirst(Selector.from(Parent.class).where("id", "in", new int[]{1, 2, 3}));
+
 DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
 ...
