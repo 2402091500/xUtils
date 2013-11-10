@@ -6,7 +6,7 @@ import android.os.IBinder;
 import com.lidroid.xutils.http.HttpHandler;
 
 import java.io.File;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Author: wyouflf
@@ -16,10 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DownloadService extends Service {
 
     /**
-     * key: url
+     * key: fileName
+     * <p/>
+     * 省去DownloadManager的包装 只是简单的示例， 需要更好的控制可以包装一个DownloadManager
      */
-    public static final ConcurrentHashMap<String, HttpHandler<File>> UrlHttpHandlerMap
-            = new ConcurrentHashMap<String, HttpHandler<File>>();
+    public static final LinkedHashMap<String, HttpHandler<File>> FileHttpHandlerMap
+            = new LinkedHashMap<String, HttpHandler<File>>();
 
 
     @Override
@@ -35,10 +37,21 @@ public class DownloadService extends Service {
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
+
+        // 获取之前保存的地址和参数 根据需要开始未完成的操作
+        // .....
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        // 可以把下载的地址和参数保存起来
+        // .....
+
+        // 停止下载
+        for (HttpHandler httpHandler : FileHttpHandlerMap.values()) {
+            httpHandler.stop();
+        }
     }
 }
