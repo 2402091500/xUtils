@@ -13,7 +13,6 @@ public final class ResponseInfo<T> {
     public T result;
     public final boolean resultFormCache;
 
-    public final Header[] allHeaders;
     public final Locale locale;
 
     // status line
@@ -26,12 +25,34 @@ public final class ResponseInfo<T> {
     public final Header contentType;
     public final Header contentEncoding;
 
+    public Header[] getAllHeaders() {
+        if (response == null) return null;
+        return response.getAllHeaders();
+    }
+
+    public Header[] getHeaders(String name) {
+        if (response == null) return null;
+        return response.getHeaders(name);
+    }
+
+    public Header getFirstHeader(String name) {
+        if (response == null) return null;
+        return response.getFirstHeader(name);
+    }
+
+    public Header getLastHeader(String name) {
+        if (response == null) return null;
+        return response.getLastHeader(name);
+    }
+
+    private final HttpResponse response;
+
     public ResponseInfo(final HttpResponse response, T result, boolean resultFormCache) {
+        this.response = response;
         this.result = result;
         this.resultFormCache = resultFormCache;
 
         if (response != null) {
-            allHeaders = response.getAllHeaders();
             locale = response.getLocale();
 
             // status line
@@ -58,7 +79,6 @@ public final class ResponseInfo<T> {
                 contentEncoding = null;
             }
         } else {
-            allHeaders = null;
             locale = null;
 
             // status line
