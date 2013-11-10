@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.db.sqlite;
 
+import com.lidroid.xutils.db.table.ColumnUtils;
 import com.lidroid.xutils.db.table.Foreign;
 import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
@@ -23,16 +24,16 @@ import java.util.List;
 
 public class ForeignLazyLoader<T> {
     private final Foreign foreignColumn;
-    private final Object columnValue;
+    private Object columnValue;
 
-    public ForeignLazyLoader(Class<?> entityType, String columnName, Object columnValue) {
+    public ForeignLazyLoader(Class<?> entityType, String columnName, Object value) {
         this.foreignColumn = (Foreign) TableUtils.getColumnOrId(entityType, columnName);
-        this.columnValue = columnValue;
+        this.columnValue = ColumnUtils.convert2DbColumnValueIfNeeded(value);
     }
 
-    public ForeignLazyLoader(Foreign foreignColumn, Object columnValue) {
+    public ForeignLazyLoader(Foreign foreignColumn, Object value) {
         this.foreignColumn = foreignColumn;
-        this.columnValue = columnValue;
+        this.columnValue = ColumnUtils.convert2DbColumnValueIfNeeded(value);
     }
 
     public List<T> getAllFromDb() throws DbException {
@@ -53,6 +54,10 @@ public class ForeignLazyLoader<T> {
                             where(foreignColumn.getForeignColumnName(), "=", columnValue));
         }
         return entity;
+    }
+
+    public void setColumnValue(Object value) {
+        this.columnValue = ColumnUtils.convert2DbColumnValueIfNeeded(value);
     }
 
     public Object getColumnValue() {
