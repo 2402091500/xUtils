@@ -64,7 +64,7 @@ public class Id extends Column {
     public Object getColumnValue(Object entity) {
         Object idValue = super.getColumnValue(entity);
         if (idValue != null) {
-            if (this.isAutoIncrement() && idValue.equals(0)) {
+            if (this.isAutoIncrement() && (idValue.equals(0) || idValue.equals(0L))) {
                 return null;
             } else {
                 return idValue;
