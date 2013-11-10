@@ -10,6 +10,8 @@ import java.util.Locale;
  * Time: 下午3:20
  */
 public final class ResponseInfo<T> {
+
+    private final HttpResponse response;
     public T result;
     public final boolean resultFormCache;
 
@@ -44,8 +46,6 @@ public final class ResponseInfo<T> {
         if (response == null) return null;
         return response.getLastHeader(name);
     }
-
-    private final HttpResponse response;
 
     public ResponseInfo(final HttpResponse response, T result, boolean resultFormCache) {
         this.response = response;
