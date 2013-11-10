@@ -107,7 +107,7 @@ public class Foreign extends Column {
                         Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
                         columnValue = column.getColumnValue(foreignEntities.get(0));
 
-                        if (this.db != null && columnValue == null) {
+                        if (this.db != null && columnValue == null && column instanceof Id) {
                             this.db.saveOrUpdateAll(foreignEntities);
                         }
 
@@ -121,7 +121,7 @@ public class Foreign extends Column {
                     Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
                     columnValue = column.getColumnValue(fieldValue);
 
-                    if (this.db != null && columnValue == null) {
+                    if (this.db != null && columnValue == null && column instanceof Id) {
                         try {
                             this.db.saveOrUpdate(fieldValue);
                         } catch (DbException e) {
