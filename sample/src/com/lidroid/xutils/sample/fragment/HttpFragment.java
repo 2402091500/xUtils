@@ -11,26 +11,27 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.sample.R;
-import com.lidroid.xutils.sample.service.DownloadService;
+import com.lidroid.xutils.sample.download.DownloadInfo;
+import com.lidroid.xutils.sample.download.DownloadManager;
+import com.lidroid.xutils.sample.download.DownloadService;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.ResType;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: wyouflf
@@ -48,13 +49,13 @@ public class HttpFragment extends Fragment {
         View view = inflater.inflate(R.layout.http_fragment, container, false);
         ViewUtils.inject(this, view);
 
-        downloadListAdapter = new DownloadListAdapter(this.getActivity());
-        downloadList.setAdapter(downloadListAdapter);
-
         if (!isServiceRunning(this.getActivity(), DownloadService.class)) {
             Intent downloadSvr = new Intent("download.service.action");
             this.getActivity().startService(downloadSvr);
         }
+
+        downloadListAdapter = new DownloadListAdapter(this.getActivity().getApplicationContext());
+        downloadList.setAdapter(downloadListAdapter);
 
         return view;
     }
@@ -65,9 +66,17 @@ public class HttpFragment extends Fragment {
         //downloadBtn.setEnabled(handler == null || handler.isStopped());
         //stopBtn.setEnabled(!downloadBtn.isEnabled());
 
-        if (DownloadService.FileHttpHandlerMap.size() > 0) {
-            downloadListAdapter.FileHttpHandlerMap.putAll(DownloadService.FileHttpHandlerMap);
-            downloadListAdapter.notifyDataSetChanged();
+        downloadListAdapter.downloadManager = DownloadService.DOWNLOAD_MANAGER;
+        downloadListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            downloadListAdapter.downloadManager.backupDownloadInfoList();
+        } catch (DbException e) {
+            LogUtils.e(e.getMessage(), e);
         }
     }
 
@@ -76,9 +85,6 @@ public class HttpFragment extends Fragment {
 
     @ViewInject(R.id.download_btn)
     private Button downloadBtn;
-
-    @ViewInject(R.id.stop_btn)
-    private Button stopBtn;
 
     @ViewInject(R.id.result_txt)
     private TextView resultText;
@@ -91,81 +97,36 @@ public class HttpFragment extends Fragment {
 
     @OnClick(R.id.download_btn)
     public void download(View view) {
-
-        //downloadBtn.setEnabled(false);
-        //stopBtn.setEnabled(true);
-
-        String fileName = "/sdcard/" + System.currentTimeMillis() + "lzfile.apk";
-
-        HttpUtils http = new HttpUtils();
-        HttpHandler<File> handler = http.download(
-                downloadAddrEdit.getText().toString(),
-                fileName,
+        String target = "/sdcard/" + System.currentTimeMillis() + "lzfile.apk";
+        downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
+                "力卓文件",
+                target,
                 true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
-                true, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
-                //new RequestCallBack<File>() { // userTag is null
-                new RequestCallBack<File>("my custom tag") {
-
-                    @Override
-                    public void onStart() {
-                        if (userTag == null) return;
-                        DownloadUserTag tag = (DownloadUserTag) userTag;
-                        TextView view = (TextView) tag.viewRef.get();
-                        if (view != null) {
-                            view.setText(tag.name + "\n conn...");
-                        }
-                    }
-
-                    @Override
-                    public void onLoading(long total, long current, boolean isUploading) {
-                        if (userTag == null) return;
-                        DownloadUserTag tag = (DownloadUserTag) userTag;
-                        TextView view = (TextView) tag.viewRef.get();
-                        if (view != null) {
-                            view.setText(tag.name + ": " + current + "/" + total);
-                        }
-                    }
-
-                    @Override
-                    public void onSuccess(ResponseInfo<File> responseInfo) {
-                        if (userTag == null) return;
-                        DownloadUserTag tag = (DownloadUserTag) userTag;
-                        TextView view = (TextView) tag.viewRef.get();
-                        if (view != null) {
-                            view.setText("downloaded:" + responseInfo.result.getPath());
-                            //downloadBtn.setEnabled(false);
-                            //stopBtn.setEnabled(false);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HttpException error, String msg) {
-                        // error.getCause(); //内部错误
-                        if (userTag == null) return;
-                        DownloadUserTag tag = (DownloadUserTag) userTag;
-                        TextView view = (TextView) tag.viewRef.get();
-                        if (view != null) {
-                            view.setText(error.getExceptionCode() + ":" + msg);
-                            //downloadBtn.setEnabled(true);
-                            //stopBtn.setEnabled(false);
-                        }
-                    }
-                });
-
-        DownloadService.FileHttpHandlerMap.put(fileName, handler);
-        downloadListAdapter.FileHttpHandlerMap.put(fileName, handler);
+                false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
+                new DownloadRequestCallBack());
         downloadListAdapter.notifyDataSetChanged();
     }
 
-    @OnClick(R.id.stop_btn)
-    public void stop(View view) {
-        //if (handler != null) {
-        //    handler.stop();
-        //    resultText.setText(resultText.getText() + " stopped");
-        //    downloadBtn.setEnabled(true);
-        //    stopBtn.setEnabled(false);
-        //}
+    @OnItemClick(R.id.download_list)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (downloadListAdapter.downloadManager.isDownloadStopped(position)) {
+            downloadListAdapter.downloadManager.resumeDownload(position, new DownloadRequestCallBack());
+            downloadListAdapter.notifyDataSetChanged();
+        } else {
+            downloadListAdapter.downloadManager.stopDownload(position);
+        }
+
     }
+
+    //@OnClick(R.id.stop_btn)
+    //public void stop(View view) {
+    //if (handler != null) {
+    //    handler.stop();
+    //    resultText.setText(resultText.getText() + " stopped");
+    //    downloadBtn.setEnabled(true);
+    //    stopBtn.setEnabled(false);
+    //}
+    //}
 
     /////////////////////////////////////// other ////////////////////////////////////////////////////////////////
 
@@ -307,26 +268,27 @@ public class HttpFragment extends Fragment {
 
         private final Context mContext;
 
-        /**
-         * key: fileName
-         * <p/>
-         * 省去DownloadManager的包装 只是简单的示例， 需要更好的控制可以包装一个DownloadManager
-         */
-        public final LinkedHashMap<String, HttpHandler<File>> FileHttpHandlerMap
-                = new LinkedHashMap<String, HttpHandler<File>>();
+        public DownloadManager downloadManager;
 
         private DownloadListAdapter(Context context) {
             mContext = context;
+            if (DownloadService.DOWNLOAD_MANAGER != null) {
+                downloadManager = DownloadService.DOWNLOAD_MANAGER;
+            } else {
+                downloadManager = new DownloadManager(mContext);
+            }
+            DownloadService.DOWNLOAD_MANAGER = downloadManager;
         }
 
         @Override
         public int getCount() {
-            return FileHttpHandlerMap.size();
+            if (downloadManager == null) return 0;
+            return downloadManager.getDownloadInfoListCount();
         }
 
         @Override
         public Object getItem(int i) {
-            return FileHttpHandlerMap.entrySet().toArray()[i];
+            return downloadManager.getDownloadInfo(i);
         }
 
         @Override
@@ -340,13 +302,18 @@ public class HttpFragment extends Fragment {
             if (view == null) {
                 view = new TextView(mContext);
                 view.setMinimumWidth(400);
+                view.setMinimumHeight(50);
             }
-            Map.Entry<String, HttpHandler> entry = (Map.Entry<String, HttpHandler>) FileHttpHandlerMap.entrySet().toArray()[i];
+            DownloadInfo downloadInfo = downloadManager.getDownloadInfo(i);
             DownloadUserTag userTag = new DownloadUserTag();
-            userTag.name = entry.getKey();
-            ((TextView) view).setText(userTag.name);
+            userTag.name = downloadInfo.getFileName();
+            ((TextView) view).setText(userTag.name +
+                    (downloadManager.isDownloadCompleted(i) ? ": 已完成" :
+                            (downloadManager.isDownloadStopped(i) ? ": 已停止" :
+                                    (downloadManager.isDownloadFailed(i) ? ": 下载失败" :
+                                            (downloadManager.isDownloadStarted(i) ? ": 正在下载" : ": 等待...")))));
             userTag.viewRef = new WeakReference<View>(view);
-            entry.getValue().getRequestCallBack().setUserTag(userTag);
+            downloadInfo.getHandler().getRequestCallBack().setUserTag(userTag);
             return view;
         }
     }
@@ -375,5 +342,62 @@ public class HttpFragment extends Fragment {
             }
         }
         return isRunning;
+    }
+
+    private class DownloadRequestCallBack extends RequestCallBack<File> {
+        @Override
+        public void onStart() {
+            if (userTag == null) return;
+            DownloadUserTag tag = (DownloadUserTag) userTag;
+            TextView view = (TextView) tag.viewRef.get();
+            if (view != null) {
+                view.setText(tag.name + "\n conn...");
+            }
+        }
+
+        @Override
+        public void onLoading(long total, long current, boolean isUploading) {
+            if (userTag == null) return;
+            DownloadUserTag tag = (DownloadUserTag) userTag;
+            TextView view = (TextView) tag.viewRef.get();
+            if (view != null) {
+                view.setText(tag.name + ": " + current + "/" + total);
+            }
+        }
+
+        @Override
+        public void onSuccess(ResponseInfo<File> responseInfo) {
+            if (userTag == null) return;
+            DownloadUserTag tag = (DownloadUserTag) userTag;
+            TextView view = (TextView) tag.viewRef.get();
+            if (view != null) {
+                view.setText("已完成:" + responseInfo.result.getPath());
+                //downloadBtn.setEnabled(false);
+                //stopBtn.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void onFailure(HttpException error, String msg) {
+            // error.getCause(); //内部错误
+            if (userTag == null) return;
+            DownloadUserTag tag = (DownloadUserTag) userTag;
+            TextView view = (TextView) tag.viewRef.get();
+            if (view != null) {
+                view.setText(error.getExceptionCode() + ":" + msg);
+                //downloadBtn.setEnabled(true);
+                //stopBtn.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void onStopped() {
+            if (userTag == null) return;
+            DownloadUserTag tag = (DownloadUserTag) userTag;
+            TextView view = (TextView) tag.viewRef.get();
+            if (view != null) {
+                view.setText(tag.name + ": 已停止");
+            }
+        }
     }
 }

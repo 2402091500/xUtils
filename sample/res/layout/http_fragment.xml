@@ -16,11 +16,6 @@
             android:layout_height="wrap_content"
             android:text="@string/download"/>
 
-    <Button android:id="@+id/stop_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stop"/>
-
     <TextView android:id="@+id/result_txt"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"/>
