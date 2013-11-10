@@ -313,7 +313,9 @@ public class HttpFragment extends Fragment {
                                     (downloadManager.isDownloadFailed(i) ? ": 下载失败" :
                                             (downloadManager.isDownloadStarted(i) ? ": 正在下载" : ": 等待...")))));
             userTag.viewRef = new WeakReference<View>(view);
-            downloadInfo.getHandler().getRequestCallBack().setUserTag(userTag);
+            if (downloadInfo.getHandler() != null) {
+                downloadInfo.getHandler().getRequestCallBack().setUserTag(userTag);
+            }
             return view;
         }
     }
