@@ -103,12 +103,14 @@ public class Foreign extends Column {
                     List<?> foreignEntities = (List<?>) fieldValue;
                     if (foreignEntities.size() > 0) {
 
-                        if (this.db != null) {
+                        Class<?> foreignEntityType = ColumnUtils.getForeignEntityType(this);
+                        Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
+                        columnValue = column.getColumnValue(foreignEntities.get(0));
+
+                        if (this.db != null && columnValue == null) {
                             this.db.saveOrUpdateAll(foreignEntities);
                         }
 
-                        Class<?> foreignEntityType = ColumnUtils.getForeignEntityType(this);
-                        Column column = TableUtils.getColumnOrId(foreignEntityType, foreignColumnName);
                         columnValue = column.getColumnValue(foreignEntities.get(0));
                     }
                 } catch (Throwable e) {
@@ -116,14 +118,17 @@ public class Foreign extends Column {
                 }
             } else {
                 try {
-                    if (this.db != null) {
+                    Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
+                    columnValue = column.getColumnValue(fieldValue);
+
+                    if (this.db != null && columnValue == null) {
                         try {
                             this.db.saveOrUpdate(fieldValue);
                         } catch (DbException e) {
                             LogUtils.e(e.getMessage(), e);
                         }
                     }
-                    Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
+
                     columnValue = column.getColumnValue(fieldValue);
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
