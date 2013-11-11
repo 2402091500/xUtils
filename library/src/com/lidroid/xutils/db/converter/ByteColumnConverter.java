@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class ByteColumnConverter implements ColumnConverter<Byte, Object> {
+public class ByteColumnConverter implements ColumnConverter<Byte> {
     @Override
     public Byte getFiledValue(final Cursor cursor, int index) {
         return (byte) cursor.getInt(index);

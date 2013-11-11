@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class FloatColumnConverter implements ColumnConverter<Float, Object> {
+public class FloatColumnConverter implements ColumnConverter<Float> {
     @Override
     public Float getFiledValue(final Cursor cursor, int index) {
         return cursor.getFloat(index);

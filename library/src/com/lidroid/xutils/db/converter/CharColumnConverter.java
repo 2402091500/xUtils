@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class CharColumnConverter implements ColumnConverter<Character, Object> {
+public class CharColumnConverter implements ColumnConverter<Character> {
     @Override
     public Character getFiledValue(final Cursor cursor, int index) {
         return (char) cursor.getInt(index);

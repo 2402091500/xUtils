@@ -7,7 +7,7 @@ import android.database.Cursor;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class StringColumnConverter implements ColumnConverter<String, Object> {
+public class StringColumnConverter implements ColumnConverter<String> {
     @Override
     public String getFiledValue(final Cursor cursor, int index) {
         return cursor.getString(index);

@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class SqlDateColumnConverter implements ColumnConverter<java.sql.Date, Object> {
+public class SqlDateColumnConverter implements ColumnConverter<java.sql.Date> {
     @Override
     public java.sql.Date getFiledValue(final Cursor cursor, int index) {
         return new java.sql.Date(cursor.getLong(index));

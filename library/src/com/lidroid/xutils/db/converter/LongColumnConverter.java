@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class LongColumnConverter implements ColumnConverter<Long, Object> {
+public class LongColumnConverter implements ColumnConverter<Long> {
     @Override
     public Long getFiledValue(final Cursor cursor, int index) {
         return cursor.getLong(index);

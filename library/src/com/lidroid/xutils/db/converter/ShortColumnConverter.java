@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class ShortColumnConverter implements ColumnConverter<Short, Object> {
+public class ShortColumnConverter implements ColumnConverter<Short> {
     @Override
     public Short getFiledValue(final Cursor cursor, int index) {
         return cursor.getShort(index);

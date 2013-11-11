@@ -7,7 +7,7 @@ import android.database.Cursor;
  * Date: 13-11-4
  * Time: 下午8:57
  */
-public interface ColumnConverter<T, E> {
+public interface ColumnConverter<T> {
 
     T getFiledValue(final Cursor cursor, int index);
 

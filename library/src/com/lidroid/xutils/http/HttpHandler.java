@@ -311,6 +311,34 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     }
 
     public enum State {
-        WAITING, STARTED, LOADING, STOPPED, SUCCESS, FAILURE
+        WAITING(0), STARTED(1), LOADING(2), STOPPED(3), SUCCESS(4), FAILURE(-1);
+        private int value = 0;
+
+        State(int value) {
+            this.value = value;
+        }
+
+        public static State valueOf(int value) {
+            switch (value) {
+                case 0:
+                    return WAITING;
+                case 1:
+                    return STARTED;
+                case 2:
+                    return LOADING;
+                case 3:
+                    return STOPPED;
+                case 4:
+                    return SUCCESS;
+                case -1:
+                    return FAILURE;
+                default:
+                    return null;
+            }
+        }
+
+        public int value() {
+            return this.value;
+        }
     }
 }

@@ -8,7 +8,7 @@ import android.text.TextUtils;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class BooleanColumnConverter implements ColumnConverter<Boolean, Object> {
+public class BooleanColumnConverter implements ColumnConverter<Boolean> {
     @Override
     public Boolean getFiledValue(final Cursor cursor, int index) {
         return cursor.getInt(index) == 1;

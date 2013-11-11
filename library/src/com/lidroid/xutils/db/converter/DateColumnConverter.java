@@ -10,7 +10,7 @@ import java.util.Date;
  * Date: 13-11-4
  * Time: 下午10:51
  */
-public class DateColumnConverter implements ColumnConverter<Date, Object> {
+public class DateColumnConverter implements ColumnConverter<Date> {
     @Override
     public Date getFiledValue(final Cursor cursor, int index) {
         return new Date(cursor.getLong(index));
