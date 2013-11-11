@@ -20,10 +20,7 @@ public class DownloadInfo {
     @Transient
     private HttpHandler<File> handler;
 
-    @Transient
-    private boolean started;
-
-    private boolean failed;
+    private HttpHandler.State state;
 
     private String downloadUrl;
 
@@ -36,8 +33,6 @@ public class DownloadInfo {
     private boolean autoResume;
 
     private boolean autoRename;
-
-    private boolean downloadCompleted;
 
 
     public long getId() {
@@ -56,20 +51,12 @@ public class DownloadInfo {
         this.handler = handler;
     }
 
-    public boolean isStarted() {
-        return started;
+    public HttpHandler.State getState() {
+        return state;
     }
 
-    public void setStarted(boolean started) {
-        this.started = started;
-    }
-
-    public boolean isFailed() {
-        return failed;
-    }
-
-    public void setFailed(boolean failed) {
-        this.failed = failed;
+    public void setState(HttpHandler.State state) {
+        this.state = state;
     }
 
     public String getDownloadUrl() {
@@ -118,13 +105,5 @@ public class DownloadInfo {
 
     public void setAutoRename(boolean autoRename) {
         this.autoRename = autoRename;
-    }
-
-    public boolean isDownloadCompleted() {
-        return downloadCompleted;
-    }
-
-    public void setDownloadCompleted(boolean downloadCompleted) {
-        this.downloadCompleted = downloadCompleted;
     }
 }

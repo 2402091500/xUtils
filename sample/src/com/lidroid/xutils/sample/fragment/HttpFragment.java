@@ -13,6 +13,7 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.ResponseStream;
@@ -109,7 +110,7 @@ public class HttpFragment extends Fragment {
 
     @OnItemClick(R.id.download_list)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (downloadListAdapter.downloadManager.isDownloadStopped(position)) {
+        if (downloadListAdapter.downloadManager.getDownloadState(position) == HttpHandler.State.STOPPED) {
             downloadListAdapter.downloadManager.resumeDownload(position, new DownloadRequestCallBack());
             downloadListAdapter.notifyDataSetChanged();
         } else {
@@ -307,11 +308,8 @@ public class HttpFragment extends Fragment {
             DownloadInfo downloadInfo = downloadManager.getDownloadInfo(i);
             DownloadUserTag userTag = new DownloadUserTag();
             userTag.name = downloadInfo.getFileName();
-            ((TextView) view).setText(userTag.name +
-                    (downloadManager.isDownloadCompleted(i) ? ": 已完成" :
-                            (downloadManager.isDownloadStopped(i) ? ": 已停止" :
-                                    (downloadManager.isDownloadFailed(i) ? ": 下载失败" :
-                                            (downloadManager.isDownloadStarted(i) ? ": 正在下载" : ": 等待...")))));
+            HttpHandler.State state = downloadManager.getDownloadState(i);
+            ((TextView) view).setText(userTag.name + (state != null ? state.toString() : ""));
             userTag.viewRef = new WeakReference<View>(view);
             if (downloadInfo.getHandler() != null) {
                 downloadInfo.getHandler().getRequestCallBack().setUserTag(userTag);
