@@ -20,7 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
-public interface BitmapLoadCallBack<T extends View> {
+public abstract class BitmapLoadCallBack<T extends View> {
 
     /**
      * Call back when start loading.
@@ -29,7 +29,8 @@ public interface BitmapLoadCallBack<T extends View> {
      * @param uri
      * @param config
      */
-    void onPreLoad(T container, String uri, BitmapDisplayConfig config);
+    public void onPreLoad(T container, String uri, BitmapDisplayConfig config) {
+    }
 
     /**
      * Call back when start loading.
@@ -38,7 +39,8 @@ public interface BitmapLoadCallBack<T extends View> {
      * @param uri
      * @param config
      */
-    void onLoadStarted(T container, String uri, BitmapDisplayConfig config);
+    public void onLoadStarted(T container, String uri, BitmapDisplayConfig config) {
+    }
 
     /**
      * Call back when bitmap has loaded.
@@ -48,7 +50,7 @@ public interface BitmapLoadCallBack<T extends View> {
      * @param bitmap
      * @param config
      */
-    void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
+    abstract public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
 
     /**
      * Call back when bitmap failed to load.
@@ -57,10 +59,15 @@ public interface BitmapLoadCallBack<T extends View> {
      * @param url
      * @param drawable
      */
-    void onLoadFailed(T container, String url, Drawable drawable);
+    abstract public void onLoadFailed(T container, String url, Drawable drawable);
 
-    void setBitmapSetter(BitmapSetter<T> bitmapSetter);
+    private BitmapSetter<T> bitmapSetter;
 
-    BitmapSetter<T> getBitmapSetter();
+    public void setBitmapSetter(BitmapSetter<T> bitmapSetter) {
+        this.bitmapSetter = bitmapSetter;
+    }
 
+    public BitmapSetter<T> getBitmapSetter() {
+        return bitmapSetter;
+    }
 }

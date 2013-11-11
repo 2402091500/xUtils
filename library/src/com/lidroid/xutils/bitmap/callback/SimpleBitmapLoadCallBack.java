@@ -24,22 +24,15 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 import java.lang.reflect.Method;
 
-public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallBack<T> {
-
-    @Override
-    public void onPreLoad(T container, String uri, BitmapDisplayConfig config) {
-    }
-
-    @Override
-    public void onLoadStarted(T container, String uri, BitmapDisplayConfig config) {
-    }
+public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack<T> {
 
     @Override
     public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
         Animation animation = config.getAnimation();
         if (animation == null) {
-            if (bitmapSetter != null) {
-                bitmapSetter.setBitmap(container, bitmap);
+            BitmapSetter<T> setter = this.getBitmapSetter();
+            if (getBitmapSetter() != null) {
+                setter.setBitmap(container, bitmap);
             } else {
                 container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
             }
@@ -50,28 +43,18 @@ public class SimpleBitmapLoadCallBack<T extends View> implements BitmapLoadCallB
 
     @Override
     public void onLoadFailed(T container, String url, Drawable drawable) {
-        if (bitmapSetter != null) {
-            bitmapSetter.setDrawable(container, drawable);
+        BitmapSetter<T> setter = this.getBitmapSetter();
+        if (setter != null) {
+            setter.setDrawable(container, drawable);
         } else {
             container.setBackgroundDrawable(drawable);
         }
     }
 
-    private BitmapSetter<T> bitmapSetter;
-
-    @Override
-    public void setBitmapSetter(BitmapSetter<T> bitmapSetter) {
-        this.bitmapSetter = bitmapSetter;
-    }
-
-    @Override
-    public BitmapSetter<T> getBitmapSetter() {
-        return bitmapSetter;
-    }
-
     private void animationDisplay(T container, Bitmap bitmap, Animation animation) {
-        if (bitmapSetter != null) {
-            bitmapSetter.setBitmap(container, bitmap);
+        BitmapSetter<T> setter = this.getBitmapSetter();
+        if (setter != null) {
+            setter.setBitmap(container, bitmap);
         } else {
             container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
         }
