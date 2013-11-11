@@ -157,6 +157,16 @@ public class BitmapUtils {
         return this;
     }
 
+    public BitmapUtils configDefaultConnectTimeout(int connectTimeout) {
+        globalConfig.setConnectTimeout(connectTimeout);
+        return this;
+    }
+
+    public BitmapUtils configDefaultReadTimeout(int readTimeout) {
+        globalConfig.setReadTimeout(readTimeout);
+        return this;
+    }
+
     public BitmapUtils configThreadPoolSize(int threadPoolSize) {
         globalConfig.setThreadPoolSize(threadPoolSize);
         return this;

@@ -26,7 +26,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class SimpleDownloader implements Downloader {
+public class SimpleDownloader extends Downloader {
 
     /**
      * Download bitmap to outputStream by uri.
@@ -47,15 +47,15 @@ public class SimpleDownloader implements Downloader {
             if (uri.startsWith("/")) {
                 FileInputStream fileInputStream = new FileInputStream(uri);
                 bis = new BufferedInputStream(fileInputStream);
-                result = System.currentTimeMillis() + getDefaultExpiry();
+                result = System.currentTimeMillis() + this.getDefaultExpiry();
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
-                urlConnection.setConnectTimeout(1000 * 15);
-                urlConnection.setReadTimeout(1000 * 30);
+                urlConnection.setConnectTimeout(this.getConnectTimeout());
+                urlConnection.setReadTimeout(this.getReadTimeout());
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration(); // 如果header中不包含expires返回0
-                result = result < System.currentTimeMillis() ? System.currentTimeMillis() + getDefaultExpiry() : result;
+                result = result < System.currentTimeMillis() ? System.currentTimeMillis() + this.getDefaultExpiry() : result;
             }
 
             byte[] buffer = new byte[4096];
@@ -71,17 +71,5 @@ public class SimpleDownloader implements Downloader {
             IOUtils.closeQuietly(bis);
         }
         return result;
-    }
-
-    private long defaultExpiry;
-
-    @Override
-    public void setDefaultExpiry(long expiry) {
-        this.defaultExpiry = expiry;
-    }
-
-    @Override
-    public long getDefaultExpiry() {
-        return this.defaultExpiry;
     }
 }

@@ -17,7 +17,7 @@ package com.lidroid.xutils.bitmap.download;
 
 import java.io.OutputStream;
 
-public interface Downloader {
+public abstract class Downloader {
 
     /**
      * Download bitmap to outputStream by uri.
@@ -26,9 +26,33 @@ public interface Downloader {
      * @param outputStream
      * @return The expiry time stamp or -1 if failed to download.
      */
-    long downloadToStream(String uri, OutputStream outputStream);
+    abstract public long downloadToStream(String uri, OutputStream outputStream);
 
-    void setDefaultExpiry(long expiry);
+    private long defaultExpiry;
+    private int connectTimeout;
+    private int readTimeout;
 
-    long getDefaultExpiry();
+    public void setDefaultExpiry(long expiry) {
+        this.defaultExpiry = expiry;
+    }
+
+    public long getDefaultExpiry() {
+        return this.defaultExpiry;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
 }

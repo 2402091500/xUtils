@@ -53,7 +53,9 @@ public class BitmapGlobalConfig {
     private boolean _dirty_params_bitmapLoadExecutor = true;
     private ExecutorService bitmapLoadExecutor;
 
-    private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 默认30天过期
+    private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
+    private int connectTimeout = 1000 * 15; // 15 sec
+    private int readTimeout = 1000 * 15; // 15 sec
 
     private LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator;
 
@@ -98,14 +100,15 @@ public class BitmapGlobalConfig {
     public Downloader getDownloader() {
         if (downloader == null) {
             downloader = new SimpleDownloader();
-            downloader.setDefaultExpiry(getDefaultCacheExpiry());
         }
+        downloader.setDefaultExpiry(getDefaultCacheExpiry());
+        downloader.setConnectTimeout(getConnectTimeout());
+        downloader.setReadTimeout(getReadTimeout());
         return downloader;
     }
 
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
-        this.downloader.setDefaultExpiry(getDefaultCacheExpiry());
     }
 
     public long getDefaultCacheExpiry() {
@@ -114,9 +117,22 @@ public class BitmapGlobalConfig {
 
     public void setDefaultCacheExpiry(long defaultCacheExpiry) {
         this.defaultCacheExpiry = defaultCacheExpiry;
-        if (this.downloader != null) {
-            downloader.setDefaultExpiry(defaultCacheExpiry);
-        }
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
 
     public BitmapCache getBitmapCache() {
