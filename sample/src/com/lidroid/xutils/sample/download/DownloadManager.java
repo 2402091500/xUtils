@@ -138,6 +138,7 @@ public class DownloadManager {
 
         @Override
         public HttpHandler.State getFiledValue(String fieldStringValue) {
+            if (fieldStringValue == null) return null;
             return HttpHandler.State.valueOf(fieldStringValue);
         }
 
