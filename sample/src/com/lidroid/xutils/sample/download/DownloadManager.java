@@ -8,7 +8,9 @@ import com.lidroid.xutils.db.converter.ColumnConverter;
 import com.lidroid.xutils.db.converter.ColumnConverterFactory;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
+import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -62,7 +64,7 @@ public class DownloadManager {
         downloadInfo.setFileSavePath(target);
         HttpUtils http = new HttpUtils();
         http.configRequestThreadPoolSize(maxDownloadThread);
-        HttpHandler<File> handler = http.download(url, target, autoResume, autoRename, callback);
+        HttpHandler<File> handler = http.download(url, target, autoResume, autoRename, new DownloadCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
         downloadInfoList.add(downloadInfo);
@@ -81,7 +83,7 @@ public class DownloadManager {
                 downloadInfo.getFileSavePath(),
                 downloadInfo.isAutoResume(),
                 downloadInfo.isAutoRename(),
-                callback);
+                new DownloadCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
     }
@@ -127,6 +129,97 @@ public class DownloadManager {
 
     public void setMaxDownloadThread(int maxDownloadThread) {
         this.maxDownloadThread = maxDownloadThread;
+    }
+
+    private class DownloadCallBack extends RequestCallBack<File> {
+        private DownloadInfo downloadInfo;
+        private RequestCallBack<File> callBack;
+
+        private DownloadCallBack(DownloadInfo downloadInfo, RequestCallBack<File> callBack) {
+            this.callBack = callBack;
+            this.downloadInfo = downloadInfo;
+        }
+
+        @Override
+        public Object getUserTag() {
+            return callBack.getUserTag();
+        }
+
+        @Override
+        public void setUserTag(Object userTag) {
+            callBack.setUserTag(userTag);
+        }
+
+        @Override
+        public void onStart() {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+            try {
+                db.saveOrUpdate(downloadInfo);
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+            callBack.onStart();
+        }
+
+        @Override
+        public void onStopped() {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+            try {
+                db.saveOrUpdate(downloadInfo);
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+            callBack.onStopped();
+        }
+
+        @Override
+        public void onLoading(long total, long current, boolean isUploading) {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+            downloadInfo.setFileLength(total);
+            try {
+                db.saveOrUpdate(downloadInfo);
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+            callBack.onLoading(total, current, isUploading);
+        }
+
+        @Override
+        public void onSuccess(ResponseInfo<File> responseInfo) {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+            try {
+                db.saveOrUpdate(downloadInfo);
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+            callBack.onSuccess(responseInfo);
+        }
+
+        @Override
+        public void onFailure(HttpException error, String msg) {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+            try {
+                db.saveOrUpdate(downloadInfo);
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+            callBack.onFailure(error, msg);
+        }
     }
 
     private class HttpHandlerStateConverter implements ColumnConverter<HttpHandler.State> {
