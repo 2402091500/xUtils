@@ -50,7 +50,7 @@ public abstract class BitmapLoadCallBack<T extends View> {
      * @param bitmap
      * @param config
      */
-    abstract public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
+    public abstract void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
 
     /**
      * Call back when bitmap failed to load.
@@ -59,7 +59,7 @@ public abstract class BitmapLoadCallBack<T extends View> {
      * @param url
      * @param drawable
      */
-    abstract public void onLoadFailed(T container, String url, Drawable drawable);
+    public abstract void onLoadFailed(T container, String url, Drawable drawable);
 
     private BitmapSetter<T> bitmapSetter;
 

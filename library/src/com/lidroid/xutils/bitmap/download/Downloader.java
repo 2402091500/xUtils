@@ -26,7 +26,7 @@ public abstract class Downloader {
      * @param outputStream
      * @return The expiry time stamp or -1 if failed to download.
      */
-    abstract public long downloadToStream(String uri, OutputStream outputStream);
+    public abstract long downloadToStream(String uri, OutputStream outputStream);
 
     private long defaultExpiry;
     private int connectTimeout;

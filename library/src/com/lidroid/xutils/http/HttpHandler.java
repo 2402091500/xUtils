@@ -71,6 +71,12 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         this.charset = charset;
     }
 
+    private State state = State.WAITING;
+
+    public State getState() {
+        return state;
+    }
+
     private long expiry = HttpGetCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
@@ -179,10 +185,12 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         if (mStopped || values == null || values.length < 1 || callback == null) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
+                this.state = State.STARTED;
                 callback.onStart();
                 break;
             case UPDATE_LOADING:
                 if (values.length != 3) return;
+                this.state = State.LOADING;
                 callback.onLoading(
                         Long.valueOf(String.valueOf(values[1])),
                         Long.valueOf(String.valueOf(values[2])),
@@ -190,10 +198,12 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                 break;
             case UPDATE_FAILURE:
                 if (values.length != 3) return;
+                this.state = State.FAILURE;
                 callback.onFailure((HttpException) values[1], (String) values[2]);
                 break;
             case UPDATE_SUCCESS:
                 if (values.length != 2) return;
+                this.state = State.SUCCESS;
                 callback.onSuccess((ResponseInfo<T>) values[1]);
                 break;
             default:
@@ -266,6 +276,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             } catch (Throwable e) {
             }
         }
+
+        this.state = State.STOPPED;
         if (callback != null) {
             callback.onStopped();
         }
@@ -298,4 +310,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         return !mStopped;
     }
 
+    public enum State {
+        WAITING, STARTED, LOADING, STOPPED, SUCCESS, FAILURE
+    }
 }
