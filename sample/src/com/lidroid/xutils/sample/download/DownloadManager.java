@@ -112,6 +112,12 @@ public class DownloadManager {
     }
 
     public void backupDownloadInfoList() throws DbException {
+        for (DownloadInfo downloadInfo : downloadInfoList) {
+            HttpHandler<File> handler = downloadInfo.getHandler();
+            if (handler != null) {
+                downloadInfo.setState(handler.getState());
+            }
+        }
         db.saveOrUpdateAll(downloadInfoList);
     }
 
@@ -122,7 +128,6 @@ public class DownloadManager {
     public void setMaxDownloadThread(int maxDownloadThread) {
         this.maxDownloadThread = maxDownloadThread;
     }
-
 
     private class HttpHandlerStateConverter implements ColumnConverter<HttpHandler.State> {
 

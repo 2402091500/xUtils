@@ -98,7 +98,7 @@ public class HttpFragment extends Fragment {
 
     @OnClick(R.id.download_btn)
     public void download(View view) {
-        String target = "/sdcard/" + System.currentTimeMillis() + "lzfile.apk";
+        String target = "/sdcard/xUtils/" + System.currentTimeMillis() + "lzfile.apk";
         downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
                 "力卓文件",
                 target,
@@ -110,11 +110,11 @@ public class HttpFragment extends Fragment {
 
     @OnItemClick(R.id.download_list)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (downloadListAdapter.downloadManager.getDownloadState(position) == HttpHandler.State.STOPPED) {
+        if (downloadListAdapter.downloadManager.getDownloadState(position) != HttpHandler.State.STOPPED) {
+            downloadListAdapter.downloadManager.stopDownload(position);
+        } else {
             downloadListAdapter.downloadManager.resumeDownload(position, new DownloadRequestCallBack());
             downloadListAdapter.notifyDataSetChanged();
-        } else {
-            downloadListAdapter.downloadManager.stopDownload(position);
         }
 
     }
