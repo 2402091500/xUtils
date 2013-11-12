@@ -39,7 +39,7 @@ public class ImageActivity extends Activity {
 
         bitmapUtils = BitmapFragment.bitmapUtils;
         if (bitmapUtils == null) {
-            bitmapUtils = new BitmapUtils(this);
+            bitmapUtils = BitmapHelp.getBitmapUtils(this.getApplicationContext());
         }
 
         bigPicDisplayConfig = new BitmapDisplayConfig();

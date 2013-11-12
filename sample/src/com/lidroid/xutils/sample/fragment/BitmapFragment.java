@@ -20,6 +20,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.lidroid.xutils.sample.BitmapHelp;
 import com.lidroid.xutils.sample.ImageActivity;
 import com.lidroid.xutils.sample.R;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -55,7 +56,7 @@ public class BitmapFragment extends Fragment {
         View view = inflater.inflate(R.layout.bitmap_fragment, container, false); // 加载fragment布局
         ViewUtils.inject(this, view); //注入view和事件
 
-        bitmapUtils = new BitmapUtils(this.getActivity());
+        bitmapUtils = BitmapHelp.getBitmapUtils(this.getActivity().getApplicationContext());
         bitmapUtils.configDefaultLoadingImage(R.drawable.ic_launcher);
         bitmapUtils.configDefaultLoadFailedImage(R.drawable.bitmap);
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);
