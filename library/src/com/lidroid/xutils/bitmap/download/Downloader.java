@@ -29,8 +29,8 @@ public abstract class Downloader {
     public abstract long downloadToStream(String uri, OutputStream outputStream);
 
     private long defaultExpiry;
-    private int connectTimeout;
-    private int readTimeout;
+    private int defaultConnectTimeout;
+    private int defaultReadTimeout;
 
     public void setDefaultExpiry(long expiry) {
         this.defaultExpiry = expiry;
@@ -40,19 +40,19 @@ public abstract class Downloader {
         return this.defaultExpiry;
     }
 
-    public int getConnectTimeout() {
-        return connectTimeout;
+    public int getDefaultConnectTimeout() {
+        return defaultConnectTimeout;
     }
 
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
+    public void setDefaultConnectTimeout(int defaultConnectTimeout) {
+        this.defaultConnectTimeout = defaultConnectTimeout;
     }
 
-    public int getReadTimeout() {
-        return readTimeout;
+    public int getDefaultReadTimeout() {
+        return defaultReadTimeout;
     }
 
-    public void setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
+    public void setDefaultReadTimeout(int defaultReadTimeout) {
+        this.defaultReadTimeout = defaultReadTimeout;
     }
 }

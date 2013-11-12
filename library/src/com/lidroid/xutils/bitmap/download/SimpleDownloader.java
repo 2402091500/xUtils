@@ -51,8 +51,8 @@ public class SimpleDownloader extends Downloader {
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
-                urlConnection.setConnectTimeout(this.getConnectTimeout());
-                urlConnection.setReadTimeout(this.getReadTimeout());
+                urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
+                urlConnection.setReadTimeout(this.getDefaultReadTimeout());
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration(); // 如果header中不包含expires返回0
                 result = result < System.currentTimeMillis() ? System.currentTimeMillis() + this.getDefaultExpiry() : result;

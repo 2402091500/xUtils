@@ -54,8 +54,8 @@ public class BitmapGlobalConfig {
     private ExecutorService bitmapLoadExecutor;
 
     private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
-    private int connectTimeout = 1000 * 15; // 15 sec
-    private int readTimeout = 1000 * 15; // 15 sec
+    private int defaultConnectTimeout = 1000 * 15; // 15 sec
+    private int defaultReadTimeout = 1000 * 15; // 15 sec
 
     private LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator;
 
@@ -102,8 +102,8 @@ public class BitmapGlobalConfig {
             downloader = new SimpleDownloader();
         }
         downloader.setDefaultExpiry(getDefaultCacheExpiry());
-        downloader.setConnectTimeout(getConnectTimeout());
-        downloader.setReadTimeout(getReadTimeout());
+        downloader.setDefaultConnectTimeout(getDefaultConnectTimeout());
+        downloader.setDefaultReadTimeout(getDefaultReadTimeout());
         return downloader;
     }
 
@@ -119,20 +119,20 @@ public class BitmapGlobalConfig {
         this.defaultCacheExpiry = defaultCacheExpiry;
     }
 
-    public int getConnectTimeout() {
-        return connectTimeout;
+    public int getDefaultConnectTimeout() {
+        return defaultConnectTimeout;
     }
 
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
+    public void setDefaultConnectTimeout(int defaultConnectTimeout) {
+        this.defaultConnectTimeout = defaultConnectTimeout;
     }
 
-    public int getReadTimeout() {
-        return readTimeout;
+    public int getDefaultReadTimeout() {
+        return defaultReadTimeout;
     }
 
-    public void setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
+    public void setDefaultReadTimeout(int defaultReadTimeout) {
+        this.defaultReadTimeout = defaultReadTimeout;
     }
 
     public BitmapCache getBitmapCache() {

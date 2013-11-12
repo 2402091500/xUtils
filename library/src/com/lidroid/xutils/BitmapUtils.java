@@ -158,12 +158,12 @@ public class BitmapUtils {
     }
 
     public BitmapUtils configDefaultConnectTimeout(int connectTimeout) {
-        globalConfig.setConnectTimeout(connectTimeout);
+        globalConfig.setDefaultConnectTimeout(connectTimeout);
         return this;
     }
 
     public BitmapUtils configDefaultReadTimeout(int readTimeout) {
-        globalConfig.setReadTimeout(readTimeout);
+        globalConfig.setDefaultReadTimeout(readTimeout);
         return this;
     }
 
