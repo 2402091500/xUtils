@@ -668,7 +668,7 @@ public class DbUtils {
             if (entityKvList != null && entityKvList.size() > 0) {
                 ContentValues cv = new ContentValues();
                 DbUtils.fillContentValues(cv, entityKvList);
-                Long id = database.insert(table.getTableName(), null, cv);
+                long id = database.insert(table.getTableName(), null, cv);
                 if (id == -1) {
                     return false;
                 }

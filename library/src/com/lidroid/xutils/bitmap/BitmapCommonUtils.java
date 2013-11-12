@@ -68,8 +68,6 @@ public class BitmapCommonUtils {
         return screenSize;
     }
 
-    private static BitmapSize screenSizeScaleDown3 = null;
-
     public static BitmapSize optimizeMaxSizeByView(View view, int maxImageWidth, int maxImageHeight) {
         int width = maxImageWidth;
         int height = maxImageHeight;
@@ -96,13 +94,24 @@ public class BitmapCommonUtils {
         if (width <= 0) width = getFieldValue(view, "mMaxWidth");
         if (height <= 0) height = getFieldValue(view, "mMaxHeight");
 
-        if (screenSizeScaleDown3 == null) {
-            screenSizeScaleDown3 = getScreenSize(view.getContext()).scaleDown(3);
-        }
-        if (width <= 0) width = screenSizeScaleDown3.getWidth();
-        if (height <= 0) height = screenSizeScaleDown3.getHeight();
+        if (width <= 0) width = screenSize.getWidth();
+        if (height <= 0) height = screenSize.getHeight();
 
         return new BitmapSize(width, height);
+    }
+
+    private static int getFieldValue(Object object, String fieldName) {
+        int value = 0;
+        try {
+            Field field = ImageView.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            int fieldValue = (Integer) field.get(object);
+            if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
+                value = fieldValue;
+            }
+        } catch (Throwable e) {
+        }
+        return value;
     }
 
     public static final ImageViewSetter sDefaultImageViewSetter = new ImageViewSetter();
@@ -123,19 +132,5 @@ public class BitmapCommonUtils {
         public Drawable getDrawable(ImageView container) {
             return container.getDrawable();
         }
-    }
-
-    private static int getFieldValue(Object object, String fieldName) {
-        int value = 0;
-        try {
-            Field field = ImageView.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            int fieldValue = (Integer) field.get(object);
-            if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
-                value = fieldValue;
-            }
-        } catch (Throwable e) {
-        }
-        return value;
     }
 }
