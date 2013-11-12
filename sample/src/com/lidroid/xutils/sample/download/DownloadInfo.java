@@ -28,6 +28,8 @@ public class DownloadInfo {
 
     private String fileSavePath;
 
+    private long progress;
+
     private long fileLength;
 
     private boolean autoResume;
@@ -81,6 +83,14 @@ public class DownloadInfo {
 
     public void setFileSavePath(String fileSavePath) {
         this.fileSavePath = fileSavePath;
+    }
+
+    public long getProgress() {
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
     }
 
     public long getFileLength() {

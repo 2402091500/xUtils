@@ -185,6 +185,7 @@ public class DownloadManager {
                 downloadInfo.setState(handler.getState());
             }
             downloadInfo.setFileLength(total);
+            downloadInfo.setProgress(current);
             try {
                 db.saveOrUpdate(downloadInfo);
             } catch (DbException e) {
