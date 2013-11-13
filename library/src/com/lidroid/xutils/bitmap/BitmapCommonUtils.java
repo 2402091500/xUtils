@@ -88,8 +88,8 @@ public class BitmapCommonUtils {
             }
         }
 
-        if (width <= 0) width = getFieldValue(view, "mMaxWidth");
-        if (height <= 0) height = getFieldValue(view, "mMaxHeight");
+        if (width <= 0) width = getImageViewFieldValue(view, "mMaxWidth");
+        if (height <= 0) height = getImageViewFieldValue(view, "mMaxHeight");
 
         BitmapSize screenSize = getScreenSize(view.getContext());
         if (width <= 0) width = screenSize.getWidth();
@@ -98,16 +98,18 @@ public class BitmapCommonUtils {
         return new BitmapSize(width, height);
     }
 
-    private static int getFieldValue(Object object, String fieldName) {
+    private static int getImageViewFieldValue(Object object, String fieldName) {
         int value = 0;
-        try {
-            Field field = ImageView.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            int fieldValue = (Integer) field.get(object);
-            if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
-                value = fieldValue;
+        if (object instanceof ImageView) {
+            try {
+                Field field = ImageView.class.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                int fieldValue = (Integer) field.get(object);
+                if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
+                    value = fieldValue;
+                }
+            } catch (Throwable e) {
             }
-        } catch (Throwable e) {
         }
         return value;
     }
