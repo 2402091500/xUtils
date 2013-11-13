@@ -73,12 +73,12 @@ public class HttpFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         try {
             downloadListAdapter.downloadManager.backupDownloadInfoList();
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);
         }
+        super.onDestroy();
     }
 
     @ViewInject(R.id.download_addr_edit)

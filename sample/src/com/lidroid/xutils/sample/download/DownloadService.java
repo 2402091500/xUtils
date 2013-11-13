@@ -32,7 +32,6 @@ public class DownloadService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (DOWNLOAD_MANAGER != null) {
             DOWNLOAD_MANAGER.stopAllDownload();
             try {
@@ -41,5 +40,6 @@ public class DownloadService extends Service {
                 LogUtils.e(e.getMessage(), e);
             }
         }
+        super.onDestroy();
     }
 }
