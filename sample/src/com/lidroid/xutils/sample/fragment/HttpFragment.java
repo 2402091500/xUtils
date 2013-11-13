@@ -74,7 +74,9 @@ public class HttpFragment extends Fragment {
     @Override
     public void onDestroy() {
         try {
-            downloadListAdapter.downloadManager.backupDownloadInfoList();
+            if (downloadListAdapter != null && downloadListAdapter.downloadManager != null) {
+                downloadListAdapter.downloadManager.backupDownloadInfoList();
+            }
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);
         }
