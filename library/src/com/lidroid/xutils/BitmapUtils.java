@@ -29,7 +29,6 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.BitmapSetter;
 import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
@@ -247,19 +246,14 @@ public class BitmapUtils {
                     bitmap,
                     displayConfig,
                     BitmapLoadFrom.MEMORY_CACHE);
-        } else if (!bitmapLoadTaskExist(container, callBack.getBitmapSetter(), url)) {
+        } else if (!bitmapLoadTaskExist(container, url, callBack)) {
 
-            final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, callBack, url, displayConfig);
+            final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, url, displayConfig, callBack);
             // set loading image
             final AsyncBitmapDrawable<T> asyncBitmapDrawable = new AsyncBitmapDrawable<T>(
                     displayConfig.getLoadingDrawable(),
                     loadTask);
-            BitmapSetter<T> setter = callBack.getBitmapSetter();
-            if (setter != null) {
-                setter.setDrawable(container, asyncBitmapDrawable);
-            } else {
-                container.setBackgroundDrawable(asyncBitmapDrawable);
-            }
+            callBack.setDrawable(container, asyncBitmapDrawable);
 
             // load bitmap from url or diskCache
             loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor());
@@ -338,9 +332,9 @@ public class BitmapUtils {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings("unchecked")
-    private static <T extends View> BitmapLoadTask<T> getBitmapTaskFromContainer(T container, BitmapSetter<T> bitmapSetter) {
+    private static <T extends View> BitmapLoadTask<T> getBitmapTaskFromContainer(T container, BitmapLoadCallBack<T> callBack) {
         if (container != null) {
-            final Drawable drawable = bitmapSetter == null ? container.getBackground() : bitmapSetter.getDrawable(container);
+            final Drawable drawable = callBack.getDrawable(container);
             if (drawable instanceof AsyncBitmapDrawable) {
                 final AsyncBitmapDrawable<T> asyncBitmapDrawable = (AsyncBitmapDrawable<T>) drawable;
                 return asyncBitmapDrawable.getBitmapWorkerTask();
@@ -349,8 +343,8 @@ public class BitmapUtils {
         return null;
     }
 
-    private static <T extends View> boolean bitmapLoadTaskExist(T container, BitmapSetter<T> bitmapSetter, String url) {
-        final BitmapLoadTask<T> oldLoadTask = getBitmapTaskFromContainer(container, bitmapSetter);
+    private static <T extends View> boolean bitmapLoadTaskExist(T container, String url, BitmapLoadCallBack<T> callBack) {
+        final BitmapLoadTask<T> oldLoadTask = getBitmapTaskFromContainer(container, callBack);
 
         if (oldLoadTask != null) {
             final String oldUrl = oldLoadTask.url;
@@ -533,8 +527,8 @@ public class BitmapUtils {
 
         private BitmapLoadFrom from = BitmapLoadFrom.DISK_CACHE;
 
-        public BitmapLoadTask(T container, BitmapLoadCallBack<T> callBack, String url, BitmapDisplayConfig config) {
-            if (container == null || callBack == null || url == null || config == null) {
+        public BitmapLoadTask(T container, String url, BitmapDisplayConfig config, BitmapLoadCallBack<T> callBack) {
+            if (container == null || url == null || config == null || callBack == null) {
                 throw new IllegalArgumentException("args may not be null");
             }
 
@@ -612,7 +606,7 @@ public class BitmapUtils {
 
         private T getTargetContainer() {
             final T container = containerReference.get();
-            final BitmapLoadTask<T> bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack.getBitmapSetter());
+            final BitmapLoadTask<T> bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack);
 
             if (this == bitmapWorkerTask) {
                 return container;

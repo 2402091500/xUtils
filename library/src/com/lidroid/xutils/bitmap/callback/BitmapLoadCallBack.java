@@ -63,17 +63,13 @@ public abstract class BitmapLoadCallBack<T extends View> {
      */
     public abstract void onLoadFailed(T container, String url, Drawable drawable);
 
-    protected BitmapSetter<T> bitmapSetter;
+    private BitmapSetter<T> bitmapSetter;
 
     public void setBitmapSetter(BitmapSetter<T> bitmapSetter) {
         this.bitmapSetter = bitmapSetter;
     }
 
-    public BitmapSetter<T> getBitmapSetter() {
-        return bitmapSetter;
-    }
-
-    protected void setBitmap(T container, Bitmap bitmap) {
+    public void setBitmap(T container, Bitmap bitmap) {
         if (bitmapSetter != null) {
             bitmapSetter.setBitmap(container, bitmap);
         } else if (container instanceof ImageView) {
@@ -83,13 +79,23 @@ public abstract class BitmapLoadCallBack<T extends View> {
         }
     }
 
-    protected void setDrawable(T container, Drawable drawable) {
+    public void setDrawable(T container, Drawable drawable) {
         if (bitmapSetter != null) {
             bitmapSetter.setDrawable(container, drawable);
         } else if (container instanceof ImageView) {
             ((ImageView) container).setImageDrawable(drawable);
         } else {
             container.setBackgroundDrawable(drawable);
+        }
+    }
+
+    public Drawable getDrawable(T container) {
+        if (bitmapSetter != null) {
+            return bitmapSetter.getDrawable(container);
+        } else if (container instanceof ImageView) {
+            return ((ImageView) container).getDrawable();
+        } else {
+            return container.getBackground();
         }
     }
 }
