@@ -31,7 +31,7 @@ public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack
         Animation animation = config.getAnimation();
         if (animation == null) {
             BitmapSetter<T> setter = this.getBitmapSetter();
-            if (getBitmapSetter() != null) {
+            if (setter != null) {
                 setter.setBitmap(container, bitmap);
             } else {
                 container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));

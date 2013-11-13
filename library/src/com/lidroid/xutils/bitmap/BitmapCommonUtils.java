@@ -94,6 +94,7 @@ public class BitmapCommonUtils {
         if (width <= 0) width = getFieldValue(view, "mMaxWidth");
         if (height <= 0) height = getFieldValue(view, "mMaxHeight");
 
+        BitmapSize screenSize = getScreenSize(view.getContext());
         if (width <= 0) width = screenSize.getWidth();
         if (height <= 0) height = screenSize.getHeight();
 
