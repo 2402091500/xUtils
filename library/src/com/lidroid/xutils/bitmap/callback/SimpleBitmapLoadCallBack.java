@@ -16,7 +16,6 @@
 package com.lidroid.xutils.bitmap.callback;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.animation.Animation;
@@ -28,36 +27,19 @@ public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack
 
     @Override
     public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
+        this.setBitmap(container, bitmap);
         Animation animation = config.getAnimation();
-        if (animation == null) {
-            BitmapSetter<T> setter = this.getBitmapSetter();
-            if (setter != null) {
-                setter.setBitmap(container, bitmap);
-            } else {
-                container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
-            }
-        } else {
-            animationDisplay(container, bitmap, animation);
+        if (animation != null) {
+            animationDisplay(container, animation);
         }
     }
 
     @Override
     public void onLoadFailed(T container, String url, Drawable drawable) {
-        BitmapSetter<T> setter = this.getBitmapSetter();
-        if (setter != null) {
-            setter.setDrawable(container, drawable);
-        } else {
-            container.setBackgroundDrawable(drawable);
-        }
+        this.setDrawable(container, drawable);
     }
 
-    private void animationDisplay(T container, Bitmap bitmap, Animation animation) {
-        BitmapSetter<T> setter = this.getBitmapSetter();
-        if (setter != null) {
-            setter.setBitmap(container, bitmap);
-        } else {
-            container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
-        }
+    private void animationDisplay(T container, Animation animation) {
         try {
             Method cloneMethod = Animation.class.getDeclaredMethod("clone");
             cloneMethod.setAccessible(true);

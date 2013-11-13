@@ -60,7 +60,6 @@ public class ImageActivity extends Activity {
                 Toast.makeText(getApplicationContext(), bitmap.getWidth() + "*" + bitmap.getHeight(), 300).show();
             }
         };
-        callback.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
 
         bitmapUtils.display(bigImage, imgUrl, bigPicDisplayConfig, callback);
     }

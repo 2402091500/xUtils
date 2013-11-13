@@ -200,15 +200,11 @@ public class BitmapUtils {
     ////////////////////////// display ////////////////////////////////////
 
     public void display(ImageView container, String url) {
-        BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
-        callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
-        display(container, url, null, callBack);
+        display(container, url, null, null);
     }
 
     public void display(ImageView container, String url, BitmapDisplayConfig displayConfig) {
-        BitmapLoadCallBack<ImageView> callBack = new SimpleBitmapLoadCallBack<ImageView>();
-        callBack.setBitmapSetter(BitmapCommonUtils.sDefaultImageViewSetter);
-        display(container, url, displayConfig, callBack);
+        display(container, url, displayConfig, null);
     }
 
     public <T extends View> void display(T container, String url, BitmapLoadCallBack<T> callBack) {

@@ -16,8 +16,10 @@
 package com.lidroid.xutils.bitmap.callback;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 public abstract class BitmapLoadCallBack<T extends View> {
@@ -61,7 +63,7 @@ public abstract class BitmapLoadCallBack<T extends View> {
      */
     public abstract void onLoadFailed(T container, String url, Drawable drawable);
 
-    private BitmapSetter<T> bitmapSetter;
+    protected BitmapSetter<T> bitmapSetter;
 
     public void setBitmapSetter(BitmapSetter<T> bitmapSetter) {
         this.bitmapSetter = bitmapSetter;
@@ -69,5 +71,25 @@ public abstract class BitmapLoadCallBack<T extends View> {
 
     public BitmapSetter<T> getBitmapSetter() {
         return bitmapSetter;
+    }
+
+    protected void setBitmap(T container, Bitmap bitmap) {
+        if (bitmapSetter != null) {
+            bitmapSetter.setBitmap(container, bitmap);
+        } else if (container instanceof ImageView) {
+            ((ImageView) container).setImageBitmap(bitmap);
+        } else {
+            container.setBackgroundDrawable(new BitmapDrawable(container.getResources(), bitmap));
+        }
+    }
+
+    protected void setDrawable(T container, Drawable drawable) {
+        if (bitmapSetter != null) {
+            bitmapSetter.setDrawable(container, drawable);
+        } else if (container instanceof ImageView) {
+            ((ImageView) container).setImageDrawable(drawable);
+        } else {
+            container.setBackgroundDrawable(drawable);
+        }
     }
 }
