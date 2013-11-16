@@ -32,11 +32,10 @@ public class HttpGetCache {
 
     private final static int DEFAULT_CACHE_SIZE = 1024 * 100;// string length
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
-    private final static long MIN_EXPIRY_TIME = 200;
-
-    private int cacheSize = DEFAULT_CACHE_SIZE;
 
     private boolean enabled = true;
+
+    private int cacheSize = DEFAULT_CACHE_SIZE;
 
     private static long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
 
@@ -48,10 +47,8 @@ public class HttpGetCache {
     }
 
     public HttpGetCache(int strLength, long defaultExpiryTime) {
-        if (strLength > DEFAULT_CACHE_SIZE) {
-            this.cacheSize = strLength;
-        }
-        HttpGetCache.setDefaultExpiryTime(defaultExpiryTime);
+        this.cacheSize = strLength;
+        HttpGetCache.defaultExpiryTime = defaultExpiryTime;
 
         mMemoryCache = new LruMemoryCache<String, String>(this.cacheSize) {
             @Override
@@ -63,17 +60,11 @@ public class HttpGetCache {
     }
 
     public void setCacheSize(int strLength) {
-        if (strLength > DEFAULT_CACHE_SIZE) {
-            mMemoryCache.setMaxSize(strLength);
-        }
+        mMemoryCache.setMaxSize(strLength);
     }
 
     public static void setDefaultExpiryTime(long defaultExpiryTime) {
-        if (defaultExpiryTime > MIN_EXPIRY_TIME) {
-            HttpGetCache.defaultExpiryTime = defaultExpiryTime;
-        } else {
-            HttpGetCache.defaultExpiryTime = MIN_EXPIRY_TIME;
-        }
+        HttpGetCache.defaultExpiryTime = defaultExpiryTime;
     }
 
     public static long getDefaultExpiryTime() {
@@ -85,16 +76,13 @@ public class HttpGetCache {
     }
 
     public void put(String url, String result, long expiry) {
-        if (!enabled || url == null || result == null) return;
+        if (!enabled || url == null || result == null || expiry < 1) return;
 
-        if (expiry < MIN_EXPIRY_TIME) {
-            expiry = MIN_EXPIRY_TIME;
-        }
         mMemoryCache.put(url, result, System.currentTimeMillis() + expiry);
     }
 
     public String get(String url) {
-        return enabled ? mMemoryCache.get(url) : null;
+        return (enabled && url != null) ? mMemoryCache.get(url) : null;
     }
 
     public void clear() {
