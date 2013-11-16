@@ -16,7 +16,6 @@
 package com.lidroid.xutils.http;
 
 import android.os.SystemClock;
-import android.text.TextUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.callback.*;
@@ -232,8 +231,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                 } else {
 
                     // Set charset from response header info if it's exist.
-                    String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
-                    charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
+                    //String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
+                    //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
                     result = mStringDownloadHandler.handleEntity(entity, this, charset);
                     HttpUtils.sHttpGetCache.put(requestUrl, (String) result, expiry);

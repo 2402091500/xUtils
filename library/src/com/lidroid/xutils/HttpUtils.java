@@ -117,7 +117,7 @@ public class HttpUtils {
 
     // ************************************    default settings & fields ****************************
 
-    private String defaultResponseTextCharset = HTTP.UTF_8;
+    private String responseTextCharset = HTTP.UTF_8;
 
     private long currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
 
@@ -149,9 +149,9 @@ public class HttpUtils {
 
     // ***************************************** config *******************************************
 
-    public HttpUtils configDefaultResponseTextCharset(String charSet) {
+    public HttpUtils configResponseTextCharset(String charSet) {
         if (!TextUtils.isEmpty(charSet)) {
-            this.defaultResponseTextCharset = charSet;
+            this.responseTextCharset = charSet;
         }
         return this;
     }
@@ -319,7 +319,7 @@ public class HttpUtils {
 
         HttpRequest request = new HttpRequest(method, url);
 
-        HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, defaultResponseTextCharset, callback);
+        HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, responseTextCharset, callback);
 
         handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
@@ -335,7 +335,7 @@ public class HttpUtils {
             request.setHeader("Content-Type", contentType);
         }
 
-        HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, defaultResponseTextCharset, callBack);
+        HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, responseTextCharset, callBack);
 
         handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
@@ -350,7 +350,7 @@ public class HttpUtils {
             request.setHeader("Content-Type", contentType);
         }
 
-        SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, defaultResponseTextCharset);
+        SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, responseTextCharset);
 
         handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);

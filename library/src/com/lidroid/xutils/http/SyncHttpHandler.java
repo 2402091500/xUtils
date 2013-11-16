@@ -15,13 +15,11 @@
 
 package com.lidroid.xutils.http;
 
-import android.text.TextUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.callback.DefaultHttpRedirectHandler;
 import com.lidroid.xutils.http.callback.HttpRedirectHandler;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -110,8 +108,8 @@ public class SyncHttpHandler {
         if (statusCode < 300) {
 
             // Set charset from response header if it's exist.
-            String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
-            charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
+            //String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
+            //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
             return new ResponseStream(response, charset, requestUrl, expiry);
         } else if (statusCode == 301 || statusCode == 302) {

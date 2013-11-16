@@ -98,7 +98,7 @@ public class HttpFragment extends Fragment {
     @ResInject(id = R.string.download_label, type = ResType.String)
     private String label;
 
-    @OnClick(R.id.download_btn)
+    //@OnClick(R.id.download_btn)
     public void download(View view) {
         String target = "/sdcard/xUtils/" + System.currentTimeMillis() + "lzfile.apk";
         downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
@@ -133,19 +133,21 @@ public class HttpFragment extends Fragment {
 
     /////////////////////////////////////// other ////////////////////////////////////////////////////////////////
 
-    //@OnClick(R.id.download_btn)
+    @OnClick(R.id.download_btn)
     public void testUpload(View view) {
-        RequestParams params = new RequestParams();
+        RequestParams params = new RequestParams("GBK");
         //params.addQueryStringParameter("method", "upload");
         //params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
         // 请在百度的开放api测试页面找到自己的access_token
         //params.addQueryStringParameter("access_token",
         //        "3.9b885b6c56b8798ab69b3ba39238e4fc.2592000.1384929178.3590808424-248414");
-        params.addBodyParameter("file", new File("/sdcard/test.zip"));
+        //params.addBodyParameter("file", new File("/sdcard/test.zip"));
+        params.addBodyParameter("msg", "喊哈哈哈");
 
         HttpUtils http = new HttpUtils();
+        http.configResponseTextCharset("GBK");
         http.send(HttpRequest.HttpMethod.POST,
-                "http://192.168.1.6:8080/UploadServlet",
+                "http://192.168.43.144:8080/UploadServlet",
                 params,
                 new RequestCallBack<String>() {
 
