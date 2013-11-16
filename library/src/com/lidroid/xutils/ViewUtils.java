@@ -16,6 +16,7 @@
 package com.lidroid.xutils;
 
 import android.app.Activity;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
@@ -24,6 +25,7 @@ import com.lidroid.xutils.view.ResLoader;
 import com.lidroid.xutils.view.ViewCommonEventListener;
 import com.lidroid.xutils.view.ViewCustomEventListener;
 import com.lidroid.xutils.view.ViewFinder;
+import com.lidroid.xutils.view.annotation.PreferenceInject;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.EventBase;
@@ -110,6 +112,19 @@ public class ViewUtils {
                             }
                         } catch (Throwable e) {
                             LogUtils.e(e.getMessage(), e);
+                        }
+                    } else {
+                        PreferenceInject preferenceInject = field.getAnnotation(PreferenceInject.class);
+                        if (preferenceInject != null) {
+                            try {
+                                Preference preference = finder.findPreference(preferenceInject.value());
+                                if (preference != null) {
+                                    field.setAccessible(true);
+                                    field.set(handler, preference);
+                                }
+                            } catch (Throwable e) {
+                                LogUtils.e(e.getMessage(), e);
+                            }
                         }
                     }
                 }
