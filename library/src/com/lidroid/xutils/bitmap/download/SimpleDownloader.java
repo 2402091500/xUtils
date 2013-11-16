@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.bitmap.download;
 
+import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
@@ -36,7 +37,10 @@ public class SimpleDownloader extends Downloader {
      * @return The expiry time stamp or -1 if failed to download.
      */
     @Override
-    public long downloadToStream(String uri, OutputStream outputStream) {
+    public long downloadToStream(String uri, OutputStream outputStream, final BitmapUtils.BitmapLoadTask<?> task) {
+
+        if (task == null || task.isCancelled() || task.getTargetContainer() == null) return -1;
+
         URLConnection urlConnection = null;
         BufferedInputStream bis = null;
 
@@ -54,14 +58,17 @@ public class SimpleDownloader extends Downloader {
                 urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
                 urlConnection.setReadTimeout(this.getDefaultReadTimeout());
                 bis = new BufferedInputStream(urlConnection.getInputStream());
-                result = urlConnection.getExpiration(); // 如果header中不包含expires返回0
+                result = urlConnection.getExpiration();
                 result = result < System.currentTimeMillis() ? System.currentTimeMillis() + this.getDefaultExpiry() : result;
             }
+
+            if (task.isCancelled() || task.getTargetContainer() == null) return -1;
 
             byte[] buffer = new byte[4096];
             int len = 0;
             while ((len = bis.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
+                if (task.isCancelled() || task.getTargetContainer() == null) return -1;
             }
             outputStream.flush();
         } catch (Throwable e) {

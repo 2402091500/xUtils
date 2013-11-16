@@ -519,7 +519,7 @@ public class BitmapUtils {
         }
     }
 
-    private class BitmapLoadTask<T extends View> extends CompatibleAsyncTask<Object, Object, Bitmap> {
+    public class BitmapLoadTask<T extends View> extends CompatibleAsyncTask<Object, Object, Bitmap> {
         private final String url;
         private final WeakReference<T> containerReference;
         private final BitmapLoadCallBack<T> callBack;
@@ -560,7 +560,7 @@ public class BitmapUtils {
 
             // download image
             if (bitmap == null && !this.isCancelled() && this.getTargetContainer() != null) {
-                bitmap = globalConfig.getBitmapCache().downloadBitmap(url, displayConfig);
+                bitmap = globalConfig.getBitmapCache().downloadBitmap(url, displayConfig, this);
                 from = BitmapLoadFrom.URL;
             }
 
@@ -604,7 +604,7 @@ public class BitmapUtils {
             }
         }
 
-        private T getTargetContainer() {
+        public T getTargetContainer() {
             final T container = containerReference.get();
             final BitmapLoadTask<T> bitmapWorkerTask = getBitmapTaskFromContainer(container, callBack);
 

@@ -16,6 +16,7 @@
 package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
+import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
@@ -126,7 +127,7 @@ public class BitmapCache {
         }
     }
 
-    public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config) {
+    public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config, final BitmapUtils.BitmapLoadTask<?> task) {
 
         BitmapMeta bitmapMeta = new BitmapMeta();
 
@@ -153,7 +154,7 @@ public class BitmapCache {
                                 LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
                                 if (editor != null) {
                                     outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
-                                    bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
+                                    bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream, task);
                                     if (bitmapMeta.expiryTimestamp < 0) {
                                         editor.abort();
                                         return null;
@@ -177,7 +178,7 @@ public class BitmapCache {
             // download to memory stream
             if (!globalConfig.isDiskCacheEnabled() || mDiskLruCache == null || bitmapMeta.inputStream == null) {
                 outputStream = new ByteArrayOutputStream();
-                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream);
+                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream, task);
                 if (bitmapMeta.expiryTimestamp < 0) {
                     return null;
                 } else {
