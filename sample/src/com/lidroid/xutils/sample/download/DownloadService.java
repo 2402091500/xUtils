@@ -33,8 +33,8 @@ public class DownloadService extends Service {
     @Override
     public void onDestroy() {
         if (DOWNLOAD_MANAGER != null) {
-            DOWNLOAD_MANAGER.stopAllDownload();
             try {
+                DOWNLOAD_MANAGER.stopAllDownload();
                 DOWNLOAD_MANAGER.backupDownloadInfoList();
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);

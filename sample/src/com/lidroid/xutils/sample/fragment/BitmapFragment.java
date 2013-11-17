@@ -75,7 +75,7 @@ public class BitmapFragment extends Fragment {
         // 滑动时加载图片，快速滑动时不加载图片
         //imageListView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
 
-        imageListAdapter = new ImageListAdapter(this.getActivity());
+        imageListAdapter = new ImageListAdapter(inflater.getContext());
         imageListView.setAdapter(imageListAdapter);
 
         // 加载url请求返回的图片连接给listview

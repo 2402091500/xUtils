@@ -56,7 +56,7 @@ public class HttpFragment extends Fragment {
             this.getActivity().startService(downloadSvr);
         }
 
-        mAppContext = this.getActivity().getApplicationContext();
+        mAppContext = inflater.getContext().getApplicationContext();
         downloadListAdapter = new DownloadListAdapter(mAppContext);
         downloadList.setAdapter(downloadListAdapter);
 
@@ -103,12 +103,16 @@ public class HttpFragment extends Fragment {
     @OnClick(R.id.download_btn)
     public void download(View view) {
         String target = "/sdcard/xUtils/" + System.currentTimeMillis() + "lzfile.apk";
-        downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
-                "力卓文件",
-                target,
-                true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
-                false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
-                new DownloadRequestCallBack());
+        try {
+            downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
+                    "力卓文件",
+                    target,
+                    true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
+                    false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
+                    new DownloadRequestCallBack());
+        } catch (DbException e) {
+            LogUtils.e(e.getMessage(), e);
+        }
         downloadListAdapter.notifyDataSetChanged();
     }
 
@@ -294,11 +298,11 @@ public class HttpFragment extends Fragment {
                 holder = new DownloadItemViewHolder(downloadInfo);
                 ViewUtils.inject(holder, view);
                 view.setTag(holder);
+                holder.refresh();
             } else {
                 holder = (DownloadItemViewHolder) view.getTag();
+                holder.update(downloadInfo);
             }
-
-            holder.updateDownloadInfo(downloadInfo);
 
             HttpHandler<File> handler = downloadInfo.getHandler();
             if (handler != null) {
@@ -322,7 +326,7 @@ public class HttpFragment extends Fragment {
         @ViewInject(R.id.download_remove_btn)
         Button removeBtn;
 
-        public DownloadInfo downloadInfo;
+        private DownloadInfo downloadInfo;
 
         public DownloadItemViewHolder(DownloadInfo downloadInfo) {
             this.downloadInfo = downloadInfo;
@@ -330,11 +334,28 @@ public class HttpFragment extends Fragment {
 
         @OnClick(R.id.download_stop_btn)
         public void stop(View view) {
-            if (downloadInfo.getState() != HttpHandler.State.STOPPED) {
-                downloadListAdapter.downloadManager.stopDownload(downloadInfo);
-            } else {
-                downloadListAdapter.downloadManager.resumeDownload(downloadInfo, new DownloadRequestCallBack());
-                downloadListAdapter.notifyDataSetChanged();
+            HttpHandler.State state = downloadInfo.getState();
+            switch (state) {
+                case WAITING:
+                case STARTED:
+                case LOADING:
+                    try {
+                        downloadListAdapter.downloadManager.stopDownload(downloadInfo);
+                    } catch (DbException e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+                    break;
+                case STOPPED:
+                case FAILURE:
+                    try {
+                        downloadListAdapter.downloadManager.resumeDownload(downloadInfo, new DownloadRequestCallBack());
+                    } catch (DbException e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+                    downloadListAdapter.notifyDataSetChanged();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -348,28 +369,44 @@ public class HttpFragment extends Fragment {
             }
         }
 
-        public void updateDownloadInfo(DownloadInfo downloadInfo) {
+        public void update(DownloadInfo downloadInfo) {
             this.downloadInfo = downloadInfo;
-            this.refresh();
+            refresh();
         }
 
         public void refresh() {
             label.setText(downloadInfo.getFileName());
             state.setText(downloadInfo.getState().toString());
-            if (downloadInfo.getFileLength() != 0) {
+            if (downloadInfo.getFileLength() > 0) {
                 progressBar.setProgress((int) (downloadInfo.getProgress() * 100 / downloadInfo.getFileLength()));
             } else {
                 progressBar.setProgress(0);
             }
+
+            stopBtn.setVisibility(View.VISIBLE);
+            stopBtn.setText(mAppContext.getString(R.string.stop));
             HttpHandler.State state = downloadInfo.getState();
-            if (state == HttpHandler.State.SUCCESS) {
-                stopBtn.setVisibility(View.INVISIBLE);
-            } else {
-                stopBtn.setVisibility(View.VISIBLE);
-                stopBtn.setText(
-                        state == HttpHandler.State.FAILURE ? mAppContext.getString(R.string.retry) :
-                                state == HttpHandler.State.STOPPED ?
-                                        mAppContext.getString(R.string.resume) : mAppContext.getString(R.string.stop));
+            switch (state) {
+                case WAITING:
+                    stopBtn.setText(mAppContext.getString(R.string.stop));
+                    break;
+                case STARTED:
+                    stopBtn.setText(mAppContext.getString(R.string.stop));
+                    break;
+                case LOADING:
+                    stopBtn.setText(mAppContext.getString(R.string.stop));
+                    break;
+                case STOPPED:
+                    stopBtn.setText(mAppContext.getString(R.string.resume));
+                    break;
+                case SUCCESS:
+                    stopBtn.setVisibility(View.INVISIBLE);
+                    break;
+                case FAILURE:
+                    stopBtn.setText(mAppContext.getString(R.string.retry));
+                    break;
+                default:
+                    break;
             }
         }
     }

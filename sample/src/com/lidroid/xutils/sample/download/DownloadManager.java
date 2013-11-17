@@ -55,7 +55,8 @@ public class DownloadManager {
     }
 
     public void addNewDownload(String url, String fileName, String target,
-                               boolean autoResume, boolean autoRename, final RequestCallBack<File> callback) {
+                               boolean autoResume, boolean autoRename,
+                               final RequestCallBack<File> callback) throws DbException {
         final DownloadInfo downloadInfo = new DownloadInfo();
         downloadInfo.setDownloadUrl(url);
         downloadInfo.setAutoRename(autoRename);
@@ -68,14 +69,15 @@ public class DownloadManager {
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
         downloadInfoList.add(downloadInfo);
+        db.saveBindingId(downloadInfo);
     }
 
-    public void resumeDownload(int index, final RequestCallBack<File> callback) {
+    public void resumeDownload(int index, final RequestCallBack<File> callback) throws DbException {
         final DownloadInfo downloadInfo = downloadInfoList.get(index);
         resumeDownload(downloadInfo, callback);
     }
 
-    public void resumeDownload(DownloadInfo downloadInfo, final RequestCallBack<File> callback) {
+    public void resumeDownload(DownloadInfo downloadInfo, final RequestCallBack<File> callback) throws DbException {
         HttpUtils http = new HttpUtils();
         http.configRequestThreadPoolSize(maxDownloadThread);
         HttpHandler<File> handler = http.download(
@@ -86,10 +88,11 @@ public class DownloadManager {
                 new DownloadCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
+        db.saveOrUpdate(downloadInfo);
     }
 
     public void removeDownload(int index) throws DbException {
-        final DownloadInfo downloadInfo = downloadInfoList.get(index);
+        DownloadInfo downloadInfo = downloadInfoList.get(index);
         removeDownload(downloadInfo);
     }
 
@@ -98,25 +101,26 @@ public class DownloadManager {
         if (handler != null && !handler.isStopped()) {
             handler.stop();
         }
-        db.delete(downloadInfo);
         downloadInfoList.remove(downloadInfo);
+        db.delete(downloadInfo);
     }
 
-    public void stopDownload(int index) {
-        final DownloadInfo downloadInfo = downloadInfoList.get(index);
+    public void stopDownload(int index) throws DbException {
+        DownloadInfo downloadInfo = downloadInfoList.get(index);
         stopDownload(downloadInfo);
     }
 
-    public void stopDownload(DownloadInfo downloadInfo) {
+    public void stopDownload(DownloadInfo downloadInfo) throws DbException {
         HttpHandler<File> handler = downloadInfo.getHandler();
         if (handler != null && !handler.isStopped()) {
             handler.stop();
         } else {
             downloadInfo.setState(HttpHandler.State.STOPPED);
         }
+        db.saveOrUpdate(downloadInfo);
     }
 
-    public void stopAllDownload() {
+    public void stopAllDownload() throws DbException {
         for (DownloadInfo downloadInfo : downloadInfoList) {
             HttpHandler<File> handler = downloadInfo.getHandler();
             if (handler != null && !handler.isStopped()) {
@@ -125,6 +129,7 @@ public class DownloadManager {
                 downloadInfo.setState(HttpHandler.State.STOPPED);
             }
         }
+        db.saveOrUpdateAll(downloadInfoList);
     }
 
     public void backupDownloadInfoList() throws DbException {

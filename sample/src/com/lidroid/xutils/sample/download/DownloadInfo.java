@@ -124,13 +124,13 @@ public class DownloadInfo {
 
         DownloadInfo that = (DownloadInfo) o;
 
-        if (fileSavePath != null ? !fileSavePath.equals(that.fileSavePath) : that.fileSavePath != null) return false;
+        if (id != that.id) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return fileSavePath != null ? fileSavePath.hashCode() : 0;
+        return (int) (id ^ (id >>> 32));
     }
 }
