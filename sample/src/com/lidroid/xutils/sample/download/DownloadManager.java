@@ -103,16 +103,16 @@ public class DownloadManager {
     }
 
     public void stopDownload(int index) {
-        HttpHandler<File> handler = downloadInfoList.get(index).getHandler();
-        if (handler != null && !handler.isStopped()) {
-            handler.stop();
-        }
+        final DownloadInfo downloadInfo = downloadInfoList.get(index);
+        stopDownload(downloadInfo);
     }
 
     public void stopDownload(DownloadInfo downloadInfo) {
         HttpHandler<File> handler = downloadInfo.getHandler();
         if (handler != null && !handler.isStopped()) {
             handler.stop();
+        } else {
+            downloadInfo.setState(HttpHandler.State.STOPPED);
         }
     }
 
@@ -121,6 +121,8 @@ public class DownloadManager {
             HttpHandler<File> handler = downloadInfo.getHandler();
             if (handler != null && !handler.isStopped()) {
                 handler.stop();
+            } else {
+                downloadInfo.setState(HttpHandler.State.STOPPED);
             }
         }
     }
