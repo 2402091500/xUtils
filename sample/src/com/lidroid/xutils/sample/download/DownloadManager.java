@@ -70,12 +70,12 @@ public class DownloadManager {
         downloadInfoList.add(downloadInfo);
     }
 
-    public HttpHandler.State getDownloadState(int index) {
-        return downloadInfoList.get(index).getState();
-    }
-
     public void resumeDownload(int index, final RequestCallBack<File> callback) {
         final DownloadInfo downloadInfo = downloadInfoList.get(index);
+        resumeDownload(downloadInfo, callback);
+    }
+
+    public void resumeDownload(DownloadInfo downloadInfo, final RequestCallBack<File> callback) {
         HttpUtils http = new HttpUtils();
         http.configRequestThreadPoolSize(maxDownloadThread);
         HttpHandler<File> handler = http.download(
@@ -89,16 +89,28 @@ public class DownloadManager {
     }
 
     public void removeDownload(int index) throws DbException {
-        HttpHandler<File> handler = downloadInfoList.get(index).getHandler();
+        final DownloadInfo downloadInfo = downloadInfoList.get(index);
+        removeDownload(downloadInfo);
+    }
+
+    public void removeDownload(DownloadInfo downloadInfo) throws DbException {
+        HttpHandler<File> handler = downloadInfo.getHandler();
         if (handler != null && !handler.isStopped()) {
             handler.stop();
         }
-        db.delete(downloadInfoList.get(index));
-        downloadInfoList.remove(index);
+        db.delete(downloadInfo);
+        downloadInfoList.remove(downloadInfo);
     }
 
     public void stopDownload(int index) {
         HttpHandler<File> handler = downloadInfoList.get(index).getHandler();
+        if (handler != null && !handler.isStopped()) {
+            handler.stop();
+        }
+    }
+
+    public void stopDownload(DownloadInfo downloadInfo) {
+        HttpHandler<File> handler = downloadInfo.getHandler();
         if (handler != null && !handler.isStopped()) {
             handler.stop();
         }

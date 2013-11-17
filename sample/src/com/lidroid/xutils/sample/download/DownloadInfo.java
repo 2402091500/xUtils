@@ -116,4 +116,21 @@ public class DownloadInfo {
     public void setAutoRename(boolean autoRename) {
         this.autoRename = autoRename;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DownloadInfo)) return false;
+
+        DownloadInfo that = (DownloadInfo) o;
+
+        if (fileSavePath != null ? !fileSavePath.equals(that.fileSavePath) : that.fileSavePath != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return fileSavePath != null ? fileSavePath.hashCode() : 0;
+    }
 }
