@@ -37,10 +37,7 @@ public class BitmapDisplayConfig {
     }
 
     public BitmapSize getBitmapMaxSize() {
-        if (bitmapMaxSize == null) {
-            return BitmapSize.ZERO;
-        }
-        return bitmapMaxSize;
+        return bitmapMaxSize == null ? BitmapSize.ZERO : bitmapMaxSize;
     }
 
     public void setBitmapMaxSize(BitmapSize bitmapMaxSize) {
