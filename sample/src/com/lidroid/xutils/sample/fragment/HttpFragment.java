@@ -358,6 +358,8 @@ public class HttpFragment extends Fragment {
             state.setText(downloadInfo.getState().toString());
             if (downloadInfo.getFileLength() != 0) {
                 progressBar.setProgress((int) (downloadInfo.getProgress() * 100 / downloadInfo.getFileLength()));
+            } else {
+                progressBar.setProgress(0);
             }
             HttpHandler.State state = downloadInfo.getState();
             if (state == HttpHandler.State.SUCCESS) {
