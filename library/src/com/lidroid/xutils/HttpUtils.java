@@ -46,6 +46,7 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -235,7 +236,7 @@ public class HttpUtils {
                                    RequestCallBack<T> callBack) {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
-        HttpRequest request = new HttpRequest(method, url);
+        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
         return sendRequest(request, params, contentType, callBack);
     }
 
@@ -250,7 +251,7 @@ public class HttpUtils {
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
-        HttpRequest request = new HttpRequest(method, url);
+        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
         return sendSyncRequest(request, params, contentType);
     }
 
@@ -317,7 +318,7 @@ public class HttpUtils {
         if (url == null) throw new IllegalArgumentException("url may not be null");
         if (target == null) throw new IllegalArgumentException("target may not be null");
 
-        HttpRequest request = new HttpRequest(method, url);
+        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
 
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, responseTextCharset, callback);
 

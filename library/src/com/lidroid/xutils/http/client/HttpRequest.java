@@ -30,6 +30,7 @@ import org.apache.http.protocol.HTTP;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -45,19 +46,30 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
 
     private URIBuilder uriBuilder;
 
-    public HttpRequest(HttpMethod method) {
+    private Charset charset = Charset.forName(HTTP.UTF_8);
+
+    public HttpRequest(HttpMethod method, Charset charset) {
         super();
+        if (charset != null) {
+            this.charset = charset;
+        }
         this.method = method;
     }
 
-    public HttpRequest(HttpMethod method, String uri) {
+    public HttpRequest(HttpMethod method, String uri, Charset charset) {
         super();
+        if (charset != null) {
+            this.charset = charset;
+        }
         this.method = method;
         setURI(URI.create(uri));
     }
 
-    public HttpRequest(HttpMethod method, URI uri) {
+    public HttpRequest(HttpMethod method, URI uri, Charset charset) {
         super();
+        if (charset != null) {
+            this.charset = charset;
+        }
         this.method = method;
         setURI(uri);
     }
@@ -133,7 +145,7 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
 
     @Override
     public void setURI(URI uri) {
-        this.uriBuilder = new URIBuilder(uri);
+        this.uriBuilder = new URIBuilder(uri, this.charset);
     }
 
     @Override

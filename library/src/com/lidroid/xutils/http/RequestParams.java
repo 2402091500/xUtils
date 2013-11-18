@@ -15,6 +15,7 @@
 
 package com.lidroid.xutils.http;
 
+import android.text.TextUtils;
 import com.lidroid.xutils.http.client.entity.BodyParamsEntity;
 import com.lidroid.xutils.http.client.multipart.HttpMultipartMode;
 import com.lidroid.xutils.http.client.multipart.MultipartEntity;
@@ -55,7 +56,13 @@ public class RequestParams {
     }
 
     public RequestParams(String charset) {
-        this.charset = charset;
+        if (!TextUtils.isEmpty(charset)) {
+            this.charset = charset;
+        }
+    }
+
+    public String getCharset() {
+        return charset;
     }
 
     /**
