@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HttpUtils {
 
-    public final static HttpGetCache sHttpGetCache = new HttpGetCache();
+    public final static HttpCache sHttpCache = new HttpCache();
 
     private final DefaultHttpClient httpClient;
     private final HttpContext httpContext = new BasicHttpContext();
@@ -120,7 +120,7 @@ public class HttpUtils {
 
     private String responseTextCharset = HTTP.UTF_8;
 
-    private long currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+    private long currentRequestExpiry = HttpCache.getDefaultExpiryTime();
 
     private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 15s
 
@@ -158,7 +158,7 @@ public class HttpUtils {
     }
 
     public HttpUtils configHttpGetCacheSize(int httpGetCacheSize) {
-        sHttpGetCache.setCacheSize(httpGetCacheSize);
+        sHttpCache.setCacheSize(httpGetCacheSize);
         return this;
     }
 
@@ -168,8 +168,8 @@ public class HttpUtils {
     }
 
     public HttpUtils configDefaultHttpGetCacheExpiry(long defaultExpiry) {
-        HttpGetCache.setDefaultExpiryTime(defaultExpiry);
-        currentRequestExpiry = HttpGetCache.getDefaultExpiryTime();
+        HttpCache.setDefaultExpiryTime(defaultExpiry);
+        currentRequestExpiry = HttpCache.getDefaultExpiryTime();
         return this;
     }
 

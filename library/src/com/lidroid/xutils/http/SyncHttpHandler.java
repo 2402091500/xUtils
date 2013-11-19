@@ -52,7 +52,7 @@ public class SyncHttpHandler {
     }
 
     private String requestUrl;
-    private long expiry = HttpGetCache.getDefaultExpiryTime();
+    private long expiry = HttpCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
         this.expiry = expiry;
@@ -67,7 +67,7 @@ public class SyncHttpHandler {
             try {
                 requestUrl = request.getURI().toString();
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
-                    String result = HttpUtils.sHttpGetCache.get(requestUrl);
+                    String result = HttpUtils.sHttpCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseStream(result);
                     }

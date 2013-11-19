@@ -76,7 +76,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         return state;
     }
 
-    private long expiry = HttpGetCache.getDefaultExpiryTime();
+    private long expiry = HttpCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
         this.expiry = expiry;
@@ -102,7 +102,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             IOException exception = null;
             try {
                 if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
-                    String result = HttpUtils.sHttpGetCache.get(requestUrl);
+                    String result = HttpUtils.sHttpCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseInfo<T>(null, (T) result, true);
                     }
@@ -235,7 +235,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                     //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
                     result = mStringDownloadHandler.handleEntity(entity, this, charset);
-                    HttpUtils.sHttpGetCache.put(requestUrl, (String) result, expiry);
+                    HttpUtils.sHttpCache.put(requestUrl, (String) result, expiry);
                 }
             }
             return new ResponseInfo<T>(response, (T) result, false);

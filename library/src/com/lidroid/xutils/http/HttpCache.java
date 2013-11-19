@@ -22,7 +22,7 @@ import com.lidroid.xutils.util.core.LruMemoryCache;
  * Date: 13-8-1
  * Time: 下午12:04
  */
-public class HttpGetCache {
+public class HttpCache {
 
     /**
      * key: url
@@ -40,15 +40,15 @@ public class HttpGetCache {
     private static long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
 
     /**
-     * HttpGetCache(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+     * HttpCache(HttpCache.DEFAULT_CACHE_SIZE, HttpCache.DEFAULT_EXPIRY_TIME);
      */
-    public HttpGetCache() {
-        this(HttpGetCache.DEFAULT_CACHE_SIZE, HttpGetCache.DEFAULT_EXPIRY_TIME);
+    public HttpCache() {
+        this(HttpCache.DEFAULT_CACHE_SIZE, HttpCache.DEFAULT_EXPIRY_TIME);
     }
 
-    public HttpGetCache(int strLength, long defaultExpiryTime) {
+    public HttpCache(int strLength, long defaultExpiryTime) {
         this.cacheSize = strLength;
-        HttpGetCache.defaultExpiryTime = defaultExpiryTime;
+        HttpCache.defaultExpiryTime = defaultExpiryTime;
 
         mMemoryCache = new LruMemoryCache<String, String>(this.cacheSize) {
             @Override
@@ -64,11 +64,11 @@ public class HttpGetCache {
     }
 
     public static void setDefaultExpiryTime(long defaultExpiryTime) {
-        HttpGetCache.defaultExpiryTime = defaultExpiryTime;
+        HttpCache.defaultExpiryTime = defaultExpiryTime;
     }
 
     public static long getDefaultExpiryTime() {
-        return HttpGetCache.defaultExpiryTime;
+        return HttpCache.defaultExpiryTime;
     }
 
     public void put(String url, String result) {

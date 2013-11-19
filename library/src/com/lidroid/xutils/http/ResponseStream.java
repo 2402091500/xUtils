@@ -103,7 +103,7 @@ public class ResponseStream extends InputStream {
             }
             _directResult = sb.toString();
             if (requestUrl != null) {
-                HttpUtils.sHttpGetCache.put(requestUrl, _directResult, expiry);
+                HttpUtils.sHttpCache.put(requestUrl, _directResult, expiry);
             }
             return _directResult;
         } finally {
