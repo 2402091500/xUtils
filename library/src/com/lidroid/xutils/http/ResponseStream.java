@@ -36,6 +36,7 @@ public class ResponseStream extends InputStream {
     private String charset;
 
     private String requestUrl;
+    private String requestMethod;
     private long expiry;
 
     public ResponseStream(HttpResponse baseResponse, String requestUrl, long expiry) throws IOException {
@@ -66,6 +67,14 @@ public class ResponseStream extends InputStream {
 
     public String getRequestUrl() {
         return requestUrl;
+    }
+
+    public String getRequestMethod() {
+        return requestMethod;
+    }
+
+    /*package*/ void setRequestMethod(String requestMethod) {
+        this.requestMethod = requestMethod;
     }
 
     public InputStream getBaseStream() {
@@ -102,7 +111,7 @@ public class ResponseStream extends InputStream {
                 sb.append(line);
             }
             _directResult = sb.toString();
-            if (requestUrl != null) {
+            if (requestUrl != null && HttpUtils.sHttpCache.isEnabled(requestMethod)) {
                 HttpUtils.sHttpCache.put(requestUrl, _directResult, expiry);
             }
             return _directResult;

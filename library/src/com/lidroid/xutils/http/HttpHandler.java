@@ -19,7 +19,6 @@ import android.os.SystemClock;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.callback.*;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import org.apache.http.HttpEntity;
@@ -52,6 +51,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     }
 
     private String requestUrl;
+    private String requestMethod;
     private HttpRequestBase request;
     private boolean isUploading = true;
     private final RequestCallBack<T> callback;
@@ -101,7 +101,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         while (retry) {
             IOException exception = null;
             try {
-                if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
+                requestMethod = request.getMethod();
+                if (HttpUtils.sHttpCache.isEnabled(requestMethod)) {
                     String result = HttpUtils.sHttpCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseInfo<T>(null, (T) result, true);
@@ -235,7 +236,9 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                     //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
                     result = mStringDownloadHandler.handleEntity(entity, this, charset);
-                    HttpUtils.sHttpCache.put(requestUrl, (String) result, expiry);
+                    if (HttpUtils.sHttpCache.isEnabled(requestMethod)) {
+                        HttpUtils.sHttpCache.put(requestUrl, (String) result, expiry);
+                    }
                 }
             }
             return new ResponseInfo<T>(response, (T) result, false);

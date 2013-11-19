@@ -15,7 +15,11 @@
 
 package com.lidroid.xutils.http;
 
+import android.text.TextUtils;
+import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.util.core.LruMemoryCache;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Author: wyouflf
@@ -89,11 +93,28 @@ public class HttpCache {
         mMemoryCache.evictAll();
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isEnabled(HttpRequest.HttpMethod method) {
+        if (method == null) return false;
+
+        Boolean enabled = httpMethod_enabled_map.get(method.toString());
+        return enabled == null ? false : enabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public boolean isEnabled(String method) {
+        if (TextUtils.isEmpty(method)) return false;
+
+        Boolean enabled = httpMethod_enabled_map.get(method.toUpperCase());
+        return enabled == null ? false : enabled;
+    }
+
+    public void setEnabled(HttpRequest.HttpMethod method, boolean enabled) {
+        httpMethod_enabled_map.put(method.toString(), enabled);
+    }
+
+    private final static ConcurrentHashMap<String, Boolean> httpMethod_enabled_map;
+
+    static {
+        httpMethod_enabled_map = new ConcurrentHashMap<String, Boolean>(10);
+        httpMethod_enabled_map.put(HttpRequest.HttpMethod.GET.toString(), true);
     }
 }

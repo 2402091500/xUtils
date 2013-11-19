@@ -19,7 +19,6 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.callback.DefaultHttpRedirectHandler;
 import com.lidroid.xutils.http.callback.HttpRedirectHandler;
-import com.lidroid.xutils.http.client.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -35,15 +34,17 @@ public class SyncHttpHandler {
     private final AbstractHttpClient client;
     private final HttpContext context;
 
-    private int retriedTimes = 0;
-
-    private String charset; // The default charset of response header info.
-
     private HttpRedirectHandler httpRedirectHandler;
 
     public void setHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
         this.httpRedirectHandler = httpRedirectHandler;
     }
+
+    private String requestUrl;
+    private String requestMethod;
+    private String charset; // The default charset of response header info.
+
+    private int retriedTimes = 0;
 
     public SyncHttpHandler(AbstractHttpClient client, HttpContext context, String charset) {
         this.client = client;
@@ -51,7 +52,7 @@ public class SyncHttpHandler {
         this.charset = charset;
     }
 
-    private String requestUrl;
+
     private long expiry = HttpCache.getDefaultExpiryTime();
 
     public void setExpiry(long expiry) {
@@ -66,7 +67,8 @@ public class SyncHttpHandler {
             IOException exception = null;
             try {
                 requestUrl = request.getURI().toString();
-                if (request.getMethod().equals(HttpRequest.HttpMethod.GET.toString())) {
+                requestMethod = request.getMethod();
+                if (HttpUtils.sHttpCache.isEnabled(requestMethod)) {
                     String result = HttpUtils.sHttpCache.get(requestUrl);
                     if (result != null) {
                         return new ResponseStream(result);
@@ -111,7 +113,9 @@ public class SyncHttpHandler {
             //String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
             //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
 
-            return new ResponseStream(response, charset, requestUrl, expiry);
+            ResponseStream responseStream = new ResponseStream(response, charset, requestUrl, expiry);
+            responseStream.setRequestMethod(requestMethod);
+            return responseStream;
         } else if (statusCode == 301 || statusCode == 302) {
             if (httpRedirectHandler == null) {
                 httpRedirectHandler = new DefaultHttpRedirectHandler();
