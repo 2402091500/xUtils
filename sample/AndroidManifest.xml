@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ImageActivity"/>
+        <activity android:name=".DownloadListActivity"/>
         <service android:name=".download.DownloadService">
             <intent-filter  >
                 <action android:name="download.service.action"/>

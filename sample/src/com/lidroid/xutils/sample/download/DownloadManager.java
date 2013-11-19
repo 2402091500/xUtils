@@ -32,7 +32,7 @@ public class DownloadManager {
     private Context mContext;
     private DbUtils db;
 
-    public DownloadManager(Context appContext) {
+    /*package*/ DownloadManager(Context appContext) {
         ColumnConverterFactory.registerColumnConverter(HttpHandler.State.class, new HttpHandlerStateConverter());
         mContext = appContext;
         db = DbUtils.create(mContext);
@@ -65,7 +65,7 @@ public class DownloadManager {
         downloadInfo.setFileSavePath(target);
         HttpUtils http = new HttpUtils();
         http.configRequestThreadPoolSize(maxDownloadThread);
-        HttpHandler<File> handler = http.download(url, target, autoResume, autoRename, new DownloadCallBack(downloadInfo, callback));
+        HttpHandler<File> handler = http.download(url, target, autoResume, autoRename, new ManagerCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
         downloadInfoList.add(downloadInfo);
@@ -85,7 +85,7 @@ public class DownloadManager {
                 downloadInfo.getFileSavePath(),
                 downloadInfo.isAutoResume(),
                 downloadInfo.isAutoRename(),
-                new DownloadCallBack(downloadInfo, callback));
+                new ManagerCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
         db.saveOrUpdate(downloadInfo);
@@ -150,23 +150,33 @@ public class DownloadManager {
         this.maxDownloadThread = maxDownloadThread;
     }
 
-    private class DownloadCallBack extends RequestCallBack<File> {
+    public class ManagerCallBack extends RequestCallBack<File> {
         private DownloadInfo downloadInfo;
-        private RequestCallBack<File> callBack;
+        private RequestCallBack<File> baseCallBack;
 
-        private DownloadCallBack(DownloadInfo downloadInfo, RequestCallBack<File> callBack) {
-            this.callBack = callBack;
+        public RequestCallBack<File> getBaseCallBack() {
+            return baseCallBack;
+        }
+
+        public void setBaseCallBack(RequestCallBack<File> baseCallBack) {
+            this.baseCallBack = baseCallBack;
+        }
+
+        private ManagerCallBack(DownloadInfo downloadInfo, RequestCallBack<File> baseCallBack) {
+            this.baseCallBack = baseCallBack;
             this.downloadInfo = downloadInfo;
         }
 
         @Override
         public Object getUserTag() {
-            return callBack.getUserTag();
+            if (baseCallBack == null) return null;
+            return baseCallBack.getUserTag();
         }
 
         @Override
         public void setUserTag(Object userTag) {
-            callBack.setUserTag(userTag);
+            if (baseCallBack == null) return;
+            baseCallBack.setUserTag(userTag);
         }
 
         @Override
@@ -180,7 +190,9 @@ public class DownloadManager {
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            callBack.onStart();
+            if (baseCallBack != null) {
+                baseCallBack.onStart();
+            }
         }
 
         @Override
@@ -194,7 +206,9 @@ public class DownloadManager {
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            callBack.onStopped();
+            if (baseCallBack != null) {
+                baseCallBack.onStopped();
+            }
         }
 
         @Override
@@ -210,7 +224,9 @@ public class DownloadManager {
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            callBack.onLoading(total, current, isUploading);
+            if (baseCallBack != null) {
+                baseCallBack.onLoading(total, current, isUploading);
+            }
         }
 
         @Override
@@ -224,7 +240,9 @@ public class DownloadManager {
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            callBack.onSuccess(responseInfo);
+            if (baseCallBack != null) {
+                baseCallBack.onSuccess(responseInfo);
+            }
         }
 
         @Override
@@ -238,7 +256,9 @@ public class DownloadManager {
             } catch (DbException e) {
                 LogUtils.e(e.getMessage(), e);
             }
-            callBack.onFailure(error, msg);
+            if (baseCallBack != null) {
+                baseCallBack.onFailure(error, msg);
+            }
         }
     }
 

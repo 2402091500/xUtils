@@ -1,6 +1,5 @@
 package com.lidroid.xutils.sample.fragment;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,19 +7,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.lidroid.xutils.sample.DownloadListActivity;
 import com.lidroid.xutils.sample.R;
-import com.lidroid.xutils.sample.download.DownloadInfo;
 import com.lidroid.xutils.sample.download.DownloadManager;
 import com.lidroid.xutils.sample.download.DownloadService;
 import com.lidroid.xutils.util.LogUtils;
@@ -28,10 +28,6 @@ import com.lidroid.xutils.view.ResType;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.List;
 
 /**
  * Author: wyouflf
@@ -42,47 +38,19 @@ public class HttpFragment extends Fragment {
 
     //private HttpHandler handler;
 
-    private DownloadListAdapter downloadListAdapter;
-
     private Context mAppContext;
+    private DownloadManager downloadManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.http_fragment, container, false);
         ViewUtils.inject(this, view);
 
-        if (!isServiceRunning(this.getActivity(), DownloadService.class)) {
-            Intent downloadSvr = new Intent("download.service.action");
-            this.getActivity().startService(downloadSvr);
-        }
-
         mAppContext = inflater.getContext().getApplicationContext();
-        downloadListAdapter = new DownloadListAdapter(mAppContext);
-        downloadList.setAdapter(downloadListAdapter);
+
+        downloadManager = DownloadService.getDownloadManager(mAppContext);
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //downloadBtn.setEnabled(handler == null || handler.isStopped());
-        //stopBtn.setEnabled(!downloadBtn.isEnabled());
-
-        downloadListAdapter.downloadManager = DownloadService.DOWNLOAD_MANAGER;
-        downloadListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onDestroy() {
-        try {
-            if (downloadListAdapter != null && downloadListAdapter.downloadManager != null) {
-                downloadListAdapter.downloadManager.backupDownloadInfoList();
-            }
-        } catch (DbException e) {
-            LogUtils.e(e.getMessage(), e);
-        }
-        super.onDestroy();
     }
 
     @ViewInject(R.id.download_addr_edit)
@@ -91,11 +59,11 @@ public class HttpFragment extends Fragment {
     @ViewInject(R.id.download_btn)
     private Button downloadBtn;
 
+    @ViewInject(R.id.download_page_btn)
+    private Button downloadPageBtn;
+
     @ViewInject(R.id.result_txt)
     private TextView resultText;
-
-    @ViewInject(R.id.download_list)
-    private ListView downloadList;
 
     @ResInject(id = R.string.download_label, type = ResType.String)
     private String label;
@@ -104,16 +72,21 @@ public class HttpFragment extends Fragment {
     public void download(View view) {
         String target = "/sdcard/xUtils/" + System.currentTimeMillis() + "lzfile.apk";
         try {
-            downloadListAdapter.downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
+            downloadManager.addNewDownload(downloadAddrEdit.getText().toString(),
                     "力卓文件",
                     target,
                     true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
                     false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
-                    new DownloadRequestCallBack());
+                    null);
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);
         }
-        downloadListAdapter.notifyDataSetChanged();
+    }
+
+    @OnClick(R.id.download_page_btn)
+    public void downloadPage(View view) {
+        Intent intent = new Intent(this.getActivity(), DownloadListActivity.class);
+        this.getActivity().startActivity(intent);
     }
 
     /////////////////////////////////////// other ////////////////////////////////////////////////////////////////
@@ -253,221 +226,5 @@ public class HttpFragment extends Fragment {
             LogUtils.e(e.getMessage(), e);
         }
         return null;
-    }
-
-    private class DownloadListAdapter extends BaseAdapter {
-
-        private final Context mContext;
-        private final LayoutInflater mInflater;
-
-        public DownloadManager downloadManager;
-
-        private DownloadListAdapter(Context context) {
-            mContext = context;
-            mInflater = LayoutInflater.from(mContext);
-            if (DownloadService.DOWNLOAD_MANAGER != null) {
-                downloadManager = DownloadService.DOWNLOAD_MANAGER;
-            } else {
-                downloadManager = new DownloadManager(mContext);
-            }
-            DownloadService.DOWNLOAD_MANAGER = downloadManager;
-        }
-
-        @Override
-        public int getCount() {
-            if (downloadManager == null) return 0;
-            return downloadManager.getDownloadInfoListCount();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return downloadManager.getDownloadInfo(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            DownloadItemViewHolder holder = null;
-            DownloadInfo downloadInfo = downloadManager.getDownloadInfo(i);
-            if (view == null) {
-                view = mInflater.inflate(R.layout.download_item, null);
-                holder = new DownloadItemViewHolder(downloadInfo);
-                ViewUtils.inject(holder, view);
-                view.setTag(holder);
-                holder.refresh();
-            } else {
-                holder = (DownloadItemViewHolder) view.getTag();
-                holder.update(downloadInfo);
-            }
-
-            HttpHandler<File> handler = downloadInfo.getHandler();
-            if (handler != null) {
-                handler.getRequestCallBack().setUserTag(
-                        new WeakReference<DownloadItemViewHolder>(holder));
-            }
-
-            return view;
-        }
-    }
-
-    public class DownloadItemViewHolder {
-        @ViewInject(R.id.download_label)
-        TextView label;
-        @ViewInject(R.id.download_state)
-        TextView state;
-        @ViewInject(R.id.download_pb)
-        ProgressBar progressBar;
-        @ViewInject(R.id.download_stop_btn)
-        Button stopBtn;
-        @ViewInject(R.id.download_remove_btn)
-        Button removeBtn;
-
-        private DownloadInfo downloadInfo;
-
-        public DownloadItemViewHolder(DownloadInfo downloadInfo) {
-            this.downloadInfo = downloadInfo;
-        }
-
-        @OnClick(R.id.download_stop_btn)
-        public void stop(View view) {
-            HttpHandler.State state = downloadInfo.getState();
-            switch (state) {
-                case WAITING:
-                case STARTED:
-                case LOADING:
-                    try {
-                        downloadListAdapter.downloadManager.stopDownload(downloadInfo);
-                    } catch (DbException e) {
-                        LogUtils.e(e.getMessage(), e);
-                    }
-                    break;
-                case STOPPED:
-                case FAILURE:
-                    try {
-                        downloadListAdapter.downloadManager.resumeDownload(downloadInfo, new DownloadRequestCallBack());
-                    } catch (DbException e) {
-                        LogUtils.e(e.getMessage(), e);
-                    }
-                    downloadListAdapter.notifyDataSetChanged();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        @OnClick(R.id.download_remove_btn)
-        public void remove(View view) {
-            try {
-                downloadListAdapter.downloadManager.removeDownload(downloadInfo);
-                downloadListAdapter.notifyDataSetChanged();
-            } catch (DbException e) {
-                LogUtils.e(e.getMessage(), e);
-            }
-        }
-
-        public void update(DownloadInfo downloadInfo) {
-            this.downloadInfo = downloadInfo;
-            refresh();
-        }
-
-        public void refresh() {
-            label.setText(downloadInfo.getFileName());
-            state.setText(downloadInfo.getState().toString());
-            if (downloadInfo.getFileLength() > 0) {
-                progressBar.setProgress((int) (downloadInfo.getProgress() * 100 / downloadInfo.getFileLength()));
-            } else {
-                progressBar.setProgress(0);
-            }
-
-            stopBtn.setVisibility(View.VISIBLE);
-            stopBtn.setText(mAppContext.getString(R.string.stop));
-            HttpHandler.State state = downloadInfo.getState();
-            switch (state) {
-                case WAITING:
-                    stopBtn.setText(mAppContext.getString(R.string.stop));
-                    break;
-                case STARTED:
-                    stopBtn.setText(mAppContext.getString(R.string.stop));
-                    break;
-                case LOADING:
-                    stopBtn.setText(mAppContext.getString(R.string.stop));
-                    break;
-                case STOPPED:
-                    stopBtn.setText(mAppContext.getString(R.string.resume));
-                    break;
-                case SUCCESS:
-                    stopBtn.setVisibility(View.INVISIBLE);
-                    break;
-                case FAILURE:
-                    stopBtn.setText(mAppContext.getString(R.string.retry));
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    private class DownloadRequestCallBack extends RequestCallBack<File> {
-
-        @SuppressWarnings("unchecked")
-        private void refreshListItem() {
-            if (userTag == null) return;
-            WeakReference<DownloadItemViewHolder> tag = (WeakReference<DownloadItemViewHolder>) userTag;
-            DownloadItemViewHolder holder = tag.get();
-            if (holder != null) {
-                holder.refresh();
-            }
-        }
-
-        @Override
-        public void onStart() {
-            refreshListItem();
-        }
-
-        @Override
-        public void onLoading(long total, long current, boolean isUploading) {
-            refreshListItem();
-        }
-
-        @Override
-        public void onSuccess(ResponseInfo<File> responseInfo) {
-            refreshListItem();
-        }
-
-        @Override
-        public void onFailure(HttpException error, String msg) {
-            refreshListItem();
-        }
-
-        @Override
-        public void onStopped() {
-            refreshListItem();
-        }
-    }
-
-    public boolean isServiceRunning(Context context, Class serviceClass) {
-        boolean isRunning = false;
-
-        ActivityManager activityManager =
-                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> serviceList
-                = activityManager.getRunningServices(Integer.MAX_VALUE);
-
-        if (serviceList.size() < 1) {
-            return false;
-        }
-
-        for (int i = 0; i < serviceList.size(); i++) {
-            if (serviceList.get(i).service.getClassName().equals(serviceClass.getName())) {
-                isRunning = true;
-                break;
-            }
-        }
-        return isRunning;
     }
 }
