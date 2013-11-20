@@ -157,8 +157,8 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configHttpGetCacheSize(int httpGetCacheSize) {
-        sHttpCache.setCacheSize(httpGetCacheSize);
+    public HttpUtils configHttpCacheSize(int httpCacheSize) {
+        sHttpCache.setCacheSize(httpCacheSize);
         return this;
     }
 
@@ -167,13 +167,13 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configDefaultHttpGetCacheExpiry(long defaultExpiry) {
+    public HttpUtils configDefaultHttpCacheExpiry(long defaultExpiry) {
         HttpCache.setDefaultExpiryTime(defaultExpiry);
         currentRequestExpiry = HttpCache.getDefaultExpiryTime();
         return this;
     }
 
-    public HttpUtils configCurrentHttpGetCacheExpiry(long currRequestExpiry) {
+    public HttpUtils configCurrentHttpCacheExpiry(long currRequestExpiry) {
         this.currentRequestExpiry = currRequestExpiry;
         return this;
     }

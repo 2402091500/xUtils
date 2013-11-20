@@ -37,8 +37,6 @@ public class HttpCache {
     private final static int DEFAULT_CACHE_SIZE = 1024 * 100;// string length
     private final static long DEFAULT_EXPIRY_TIME = 1000 * 60; // 60 seconds
 
-    private boolean enabled = true;
-
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
     private static long defaultExpiryTime = DEFAULT_EXPIRY_TIME;
@@ -80,13 +78,13 @@ public class HttpCache {
     }
 
     public void put(String url, String result, long expiry) {
-        if (!enabled || url == null || result == null || expiry < 1) return;
+        if (url == null || result == null || expiry < 1) return;
 
         mMemoryCache.put(url, result, System.currentTimeMillis() + expiry);
     }
 
     public String get(String url) {
-        return (enabled && url != null) ? mMemoryCache.get(url) : null;
+        return (url != null) ? mMemoryCache.get(url) : null;
     }
 
     public void clear() {
