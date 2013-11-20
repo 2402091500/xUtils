@@ -157,13 +157,13 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils configHttpCacheSize(int httpCacheSize) {
-        sHttpCache.setCacheSize(httpCacheSize);
+    public HttpUtils configHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
+        this.httpRedirectHandler = httpRedirectHandler;
         return this;
     }
 
-    public HttpUtils configHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
-        this.httpRedirectHandler = httpRedirectHandler;
+    public HttpUtils configHttpCacheSize(int httpCacheSize) {
+        sHttpCache.setCacheSize(httpCacheSize);
         return this;
     }
 
