@@ -146,7 +146,7 @@ public class HttpFragment extends Fragment {
         //params.addQueryStringParameter("name", "value");
 
         HttpUtils http = new HttpUtils();
-        http.configCurrentHttpGetCacheExpiry(1000 * 10);
+        http.configCurrentHttpCacheExpiry(1000 * 10);
         http.send(HttpRequest.HttpMethod.GET,
                 "http://www.baidu.com",
                 //params,
@@ -216,7 +216,7 @@ public class HttpFragment extends Fragment {
         params.addQueryStringParameter("wd", "lidroid");
 
         HttpUtils http = new HttpUtils();
-        http.configCurrentHttpGetCacheExpiry(1000 * 10);
+        http.configCurrentHttpCacheExpiry(1000 * 10);
         try {
             ResponseStream responseStream = http.sendSync(HttpRequest.HttpMethod.GET, "http://www.baidu.com/s", params);
             //int statusCode = responseStream.getStatusCode();
