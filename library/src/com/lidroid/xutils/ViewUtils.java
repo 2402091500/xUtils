@@ -18,6 +18,7 @@ package com.lidroid.xutils;
 import android.app.Activity;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceGroup;
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.DoubleKeyValueMap;
@@ -75,6 +76,10 @@ public class ViewUtils {
 
     public static void inject(Object handler, Activity activity) {
         injectObject(handler, new ViewFinder(activity));
+    }
+
+    public static void inject(Object handler, PreferenceGroup preferenceGroup) {
+        injectObject(handler, new ViewFinder(preferenceGroup));
     }
 
     public static void inject(Object handler, PreferenceActivity preferenceActivity) {

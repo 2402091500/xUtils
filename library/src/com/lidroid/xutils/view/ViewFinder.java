@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceGroup;
 import android.view.View;
 
 /**
@@ -15,6 +16,7 @@ public class ViewFinder {
 
     private View view;
     private Activity activity;
+    private PreferenceGroup preferenceGroup;
     private PreferenceActivity preferenceActivity;
 
     public ViewFinder(View view) {
@@ -23,6 +25,10 @@ public class ViewFinder {
 
     public ViewFinder(Activity activity) {
         this.activity = activity;
+    }
+
+    public ViewFinder(PreferenceGroup preferenceGroup) {
+        this.preferenceGroup = preferenceGroup;
     }
 
     public ViewFinder(PreferenceActivity preferenceActivity) {
@@ -36,7 +42,7 @@ public class ViewFinder {
 
     @SuppressWarnings("deprecation")
     public Preference findPreference(CharSequence key) {
-        return preferenceActivity.findPreference(key);
+        return preferenceGroup == null ? preferenceActivity.findPreference(key) : preferenceGroup.findPreference(key);
     }
 
     public Context getContext() {
