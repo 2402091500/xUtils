@@ -100,7 +100,7 @@ public class TableUtils {
 
     public static Column getColumnOrId(Class<?> entityType, String columnName) {
         if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
-            return com.lidroid.xutils.db.table.Table.get(entityType).getId();
+            return getId(entityType);
         }
         return getColumnMap(entityType).get(columnName);
     }
@@ -108,7 +108,7 @@ public class TableUtils {
     public static Column getColumnOrId(Class<?> entityType, Field columnField) {
         String columnName = ColumnUtils.getColumnNameByField(columnField);
         if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
-            return com.lidroid.xutils.db.table.Table.get(entityType).getId();
+            return getId(entityType);
         }
         return getColumnMap(entityType).get(columnName);
     }

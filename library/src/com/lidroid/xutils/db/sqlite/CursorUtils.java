@@ -29,7 +29,7 @@ public class CursorUtils {
 
         EntityTempCache.setSeq(findCacheSequence);
         try {
-            Table table = Table.get(entityType);
+            Table table = Table.get(db, entityType);
             Id id = table.getId();
             String idColumnName = id.getColumnName();
             int idIndex = cursor.getColumnIndex(idColumnName);

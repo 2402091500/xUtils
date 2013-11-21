@@ -16,6 +16,7 @@
 package com.lidroid.xutils.db.table;
 
 import android.text.TextUtils;
+import com.lidroid.xutils.DbUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class Table {
     public final HashMap<String, Column> columnMap;
 
     /**
-     * key: className
+     * key: dbName#className
      */
     private static final HashMap<String, Table> tableMap = new HashMap<String, Table>();
 
@@ -43,29 +44,32 @@ public class Table {
         this.columnMap = TableUtils.getColumnMap(entityType);
     }
 
-    public static synchronized Table get(Class<?> entityType) {
-
-        Table table = tableMap.get(entityType.getCanonicalName());
+    public static synchronized Table get(DbUtils db, Class<?> entityType) {
+        String tableKey = db.getDaoConfig().getDbName() + "#" + entityType.getCanonicalName();
+        Table table = tableMap.get(tableKey);
         if (table == null) {
             table = new Table(entityType);
-            tableMap.put(entityType.getCanonicalName(), table);
+            tableMap.put(tableKey, table);
         }
 
         return table;
     }
 
-    public static synchronized void remove(Class<?> entityType) {
-        tableMap.remove(entityType.getCanonicalName());
+    public static synchronized void remove(DbUtils db, Class<?> entityType) {
+        String tableKey = db.getDaoConfig().getDbName() + "#" + entityType.getCanonicalName();
+        tableMap.remove(tableKey);
     }
 
-    public static synchronized void remove(String tableName) {
+    public static synchronized void remove(DbUtils db, String tableName) {
         if (tableMap.size() > 0) {
             String key = null;
             for (Map.Entry<String, Table> entry : tableMap.entrySet()) {
                 Table table = entry.getValue();
                 if (table != null && table.getTableName().equals(tableName)) {
                     key = entry.getKey();
-                    break;
+                    if (key.startsWith(db.getDaoConfig().getDbName() + "#")) {
+                        break;
+                    }
                 }
             }
             if (TextUtils.isEmpty(key)) {
@@ -82,14 +86,14 @@ public class Table {
         return id;
     }
 
-    private boolean checkDatabase;
+    private boolean checkedDatabase;
 
-    public boolean isCheckDatabase() {
-        return checkDatabase;
+    public boolean isCheckedDatabase() {
+        return checkedDatabase;
     }
 
-    public void setCheckDatabase(boolean checkDatabase) {
-        this.checkDatabase = checkDatabase;
+    public void setCheckedDatabase(boolean checkedDatabase) {
+        this.checkedDatabase = checkedDatabase;
     }
 
 }

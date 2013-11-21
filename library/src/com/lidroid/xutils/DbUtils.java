@@ -43,7 +43,7 @@ public class DbUtils {
     private static HashMap<String, DbUtils> daoMap = new HashMap<String, DbUtils>();
 
     private SQLiteDatabase database;
-    private DaoConfig config;
+    private DaoConfig daoConfig;
     private boolean debug = false;
     private boolean allowTransaction = false;
 
@@ -62,7 +62,7 @@ public class DbUtils {
         } else {
             this.database = createDbFileOnSDCard(config);
         }
-        this.config = config;
+        this.daoConfig = config;
     }
 
 
@@ -72,7 +72,7 @@ public class DbUtils {
             dao = new DbUtils(daoConfig);
             daoMap.put(daoConfig.getDbName(), dao);
         } else {
-            dao.config = daoConfig;
+            dao.daoConfig = daoConfig;
         }
         return dao;
     }
@@ -128,6 +128,10 @@ public class DbUtils {
 
     public SQLiteDatabase getDatabase() {
         return database;
+    }
+
+    public DaoConfig getDaoConfig() {
+        return daoConfig;
     }
 
     //*********************************************** operations ********************************************************
@@ -371,7 +375,7 @@ public class DbUtils {
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
         if (!tableIsExist(entityType)) return null;
 
-        Id id = Table.get(entityType).getId();
+        Id id = TableUtils.getId(entityType);
         Selector selector = Selector.from(entityType).where(id.getColumnName(), "=", idValue);
 
         String sql = selector.limit(1).toString();
@@ -661,14 +665,15 @@ public class DbUtils {
 
     private boolean saveBindingIdWithoutTransaction(Object entity) throws DbException {
         createTableIfNotExist(entity.getClass());
-        Table table = Table.get(entity.getClass());
-        Id idColumn = table.getId();
+        Class<?> entityType = entity.getClass();
+        String tableName = TableUtils.getTableName(entityType);
+        Id idColumn = TableUtils.getId(entityType);
         if (idColumn.isAutoIncrement()) {
             List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
             if (entityKvList != null && entityKvList.size() > 0) {
                 ContentValues cv = new ContentValues();
                 DbUtils.fillContentValues(cv, entityKvList);
-                long id = database.insert(table.getTableName(), null, cv);
+                long id = database.insert(tableName, null, cv);
                 if (id == -1) {
                     return false;
                 }
@@ -713,8 +718,8 @@ public class DbUtils {
     }
 
     public boolean tableIsExist(Class<?> entityType) throws DbException {
-        Table table = Table.get(entityType);
-        if (table.isCheckDatabase()) {
+        Table table = Table.get(this, entityType);
+        if (table.isCheckedDatabase()) {
             return true;
         }
 
@@ -724,7 +729,7 @@ public class DbUtils {
             if (cursor != null && cursor.moveToNext()) {
                 int count = cursor.getInt(0);
                 if (count > 0) {
-                    table.setCheckDatabase(true);
+                    table.setCheckedDatabase(true);
                     return true;
                 }
             }
@@ -744,7 +749,7 @@ public class DbUtils {
                     try {
                         String tableName = cursor.getString(0);
                         execNonQuery("DROP TABLE " + tableName);
-                        Table.remove(tableName);
+                        Table.remove(this, tableName);
                     } catch (Throwable e) {
                         LogUtils.e(e.getMessage(), e);
                     }
@@ -757,14 +762,14 @@ public class DbUtils {
 
     public void dropTable(Class<?> entityType) throws DbException {
         if (!tableIsExist(entityType)) return;
-        Table table = Table.get(entityType);
-        execNonQuery("DROP TABLE " + table.getTableName());
-        Table.remove(entityType);
+        String tableName = TableUtils.getTableName(entityType);
+        execNonQuery("DROP TABLE " + tableName);
+        Table.remove(this, entityType);
     }
 
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
     private void debugSql(String sql) {
-        if (config != null && debug) {
+        if (debug) {
             LogUtils.d(sql);
         }
     }
