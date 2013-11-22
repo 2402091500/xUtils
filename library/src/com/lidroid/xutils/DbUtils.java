@@ -424,6 +424,10 @@ public class DbUtils {
         return null;
     }
 
+    public <T> T findFirst(Class<T> entityType) throws DbException {
+        return findFirst(Selector.from(entityType));
+    }
+
     public <T> T findFirst(Object entity) throws DbException {
         if (!tableIsExist(entity.getClass())) return null;
         Selector selector = Selector.from(entity.getClass());
@@ -465,6 +469,10 @@ public class DbUtils {
             IOUtils.closeQuietly(cursor);
         }
         return result;
+    }
+
+    public <T> List<T> findAll(Class<T> entityType) throws DbException {
+        return findAll(Selector.from(entityType));
     }
 
     public <T> List<T> findAll(Object entity) throws DbException {
