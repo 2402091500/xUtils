@@ -141,7 +141,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     @Override
     protected Void doInBackground(Object... params) {
-        if (params == null || params.length < 1) return null;
+        if (mStopped || params == null || params.length < 1) return null;
 
         if (params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
@@ -151,6 +151,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         }
 
         try {
+            if (mStopped) return null;
             // init request & requestUrl
             request = (HttpRequestBase) params[0];
             requestUrl = request.getURI().toString();
@@ -266,7 +267,9 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     @Override
     public void stop() {
         this.mStopped = true;
-        if (!request.isAborted()) {
+        this.state = State.STOPPED;
+
+        if (request != null && !request.isAborted()) {
             try {
                 request.abort();
             } catch (Throwable e) {
@@ -279,7 +282,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
             }
         }
 
-        this.state = State.STOPPED;
         if (callback != null) {
             callback.onStopped();
         }
