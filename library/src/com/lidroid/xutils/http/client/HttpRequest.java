@@ -62,7 +62,7 @@ public class HttpRequest extends HttpRequestBase implements HttpEntityEnclosingR
             this.charset = charset;
         }
         this.method = method;
-        setURI(URI.create(uri));
+        setURI(URI.create(uri.replace(" ", "%20")));
     }
 
     public HttpRequest(HttpMethod method, URI uri, Charset charset) {

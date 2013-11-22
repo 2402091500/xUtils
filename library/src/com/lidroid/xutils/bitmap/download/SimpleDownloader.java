@@ -53,7 +53,7 @@ public class SimpleDownloader extends Downloader {
                 bis = new BufferedInputStream(fileInputStream);
                 result = System.currentTimeMillis() + this.getDefaultExpiry();
             } else {
-                final URL url = new URL(uri);
+                final URL url = new URL(uri.replace(" ", "%20"));
                 urlConnection = url.openConnection();
                 urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
                 urlConnection.setReadTimeout(this.getDefaultReadTimeout());
