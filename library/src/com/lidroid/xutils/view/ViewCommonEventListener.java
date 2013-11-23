@@ -41,6 +41,10 @@ public class ViewCommonEventListener implements
         OnTouchListener,
         OnItemClickListener,
         OnItemLongClickListener,
+        ExpandableListView.OnChildClickListener,
+        ExpandableListView.OnGroupClickListener,
+        ExpandableListView.OnGroupCollapseListener,
+        ExpandableListView.OnGroupExpandListener,
         RadioGroup.OnCheckedChangeListener,
         CompoundButton.OnCheckedChangeListener,
         Preference.OnPreferenceClickListener,
@@ -51,145 +55,18 @@ public class ViewCommonEventListener implements
         OnItemSelectedListener,
         SeekBar.OnSeekBarChangeListener {
 
-    private Object handler;
+    private final Object handler;
+    private final Method[] methods;
 
-    private Method clickMethod;
-    private Method longClickMethod;
-    private Method focusChangeMethod;
-    private Method keyMethod;
-    private Method touchMethod;
-    private Method itemClickMethod;
-    private Method itemLongClickMethod;
-    private Method radioGroupCheckedChangedMethod;
-    private Method compoundButtonCheckedChangedMethod;
-    private Method preferenceClickMethod;
-    private Method preferenceChangeMethod;
-    private Method tabChangedMethod;
-    private Method scrollChangedMethod;
-
-    // OnScrollListener
-    private Method scrollStateChangedMethod;
-    private Method scrollMethod;
-
-    // OnItemSelectedListener
-    private Method itemSelectMethod;
-    private Method nothingSelectedMethod;
-
-    // OnSeekBarChangeListener
-    private Method progressChangedMethod;
-    private Method startTrackingTouchMethod;
-    private Method stopTrackingTouchMethod;
-
-    public ViewCommonEventListener(Object handler) {
+    public ViewCommonEventListener(Object handler, Method... methods) {
         this.handler = handler;
+        this.methods = methods;
     }
-
-
-    public ViewCommonEventListener click(Method method) {
-        this.clickMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener longClick(Method method) {
-        this.longClickMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener focusChange(Method method) {
-        this.focusChangeMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener key(Method method) {
-        this.keyMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener touch(Method method) {
-        this.touchMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener itemClick(Method method) {
-        this.itemClickMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener itemLongClick(Method method) {
-        this.itemLongClickMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener radioGroupCheckedChanged(Method method) {
-        this.radioGroupCheckedChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener compoundButtonCheckedChanged(Method method) {
-        this.compoundButtonCheckedChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener preferenceClick(Method method) {
-        this.preferenceClickMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener preferenceChange(Method method) {
-        this.preferenceChangeMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener tabChanged(Method method) {
-        this.tabChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener scrollChanged(Method method) {
-        this.scrollChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener scrollStateChanged(Method method) {
-        this.scrollStateChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener scroll(Method method) {
-        this.scrollMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener selected(Method method) {
-        this.itemSelectMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener noSelected(Method method) {
-        this.nothingSelectedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener progressChanged(Method method) {
-        this.progressChangedMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener startTrackingTouch(Method method) {
-        this.startTrackingTouchMethod = method;
-        return this;
-    }
-
-    public ViewCommonEventListener stopTrackingTouch(Method method) {
-        this.stopTrackingTouchMethod = method;
-        return this;
-    }
-
 
     @Override
     public void onClick(View v) {
         try {
-            clickMethod.invoke(handler, v);
+            methods[0].invoke(handler, v);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -198,7 +75,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onLongClick(View v) {
         try {
-            return (Boolean) longClickMethod.invoke(handler, v);
+            return (Boolean) methods[0].invoke(handler, v);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -208,7 +85,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onFocusChange(View view, boolean b) {
         try {
-            focusChangeMethod.invoke(handler, view, b);
+            methods[0].invoke(handler, view, b);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -217,7 +94,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         try {
-            return (Boolean) keyMethod.invoke(handler, view, i, keyEvent);
+            return (Boolean) methods[0].invoke(handler, view, i, keyEvent);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -227,7 +104,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         try {
-            return (Boolean) touchMethod.invoke(handler, view, motionEvent);
+            return (Boolean) methods[0].invoke(handler, view, motionEvent);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -237,7 +114,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            itemClickMethod.invoke(handler, parent, view, position, id);
+            methods[0].invoke(handler, parent, view, position, id);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -246,7 +123,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            return (Boolean) itemLongClickMethod.invoke(handler, parent, view, position, id);
+            return (Boolean) methods[0].invoke(handler, parent, view, position, id);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -254,9 +131,47 @@ public class ViewCommonEventListener implements
     }
 
     @Override
+    public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i2, long l) {
+        try {
+            return (Boolean) methods[0].invoke(handler, expandableListView, view, i, i2, l);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+        try {
+            return (Boolean) methods[0].invoke(handler, expandableListView, view, i, l);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    @Override
+    public void onGroupCollapse(int i) {
+        try {
+            methods[0].invoke(handler, i);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void onGroupExpand(int i) {
+        try {
+            methods[0].invoke(handler, i);
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         try {
-            radioGroupCheckedChangedMethod.invoke(handler, group, checkedId);
+            methods[0].invoke(handler, group, checkedId);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -265,7 +180,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         try {
-            compoundButtonCheckedChangedMethod.invoke(handler, buttonView, isChecked);
+            methods[0].invoke(handler, buttonView, isChecked);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -274,7 +189,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onPreferenceClick(Preference preference) {
         try {
-            return (Boolean) preferenceClickMethod.invoke(handler, preference);
+            return (Boolean) methods[0].invoke(handler, preference);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -284,7 +199,7 @@ public class ViewCommonEventListener implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         try {
-            return (Boolean) preferenceChangeMethod.invoke(handler, preference, newValue);
+            return (Boolean) methods[0].invoke(handler, preference, newValue);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -294,7 +209,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onTabChanged(String tabId) {
         try {
-            tabChangedMethod.invoke(handler, tabId);
+            methods[0].invoke(handler, tabId);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -303,16 +218,17 @@ public class ViewCommonEventListener implements
     @Override
     public void onScrollChanged() {
         try {
-            scrollChangedMethod.invoke(handler);
+            methods[0].invoke(handler);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
 
+    // #region AbsListView.OnScrollListener
     @Override
     public void onScrollStateChanged(AbsListView absListView, int i) {
         try {
-            scrollStateChangedMethod.invoke(handler, absListView, i);
+            methods[0].invoke(handler, absListView, i);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -321,16 +237,18 @@ public class ViewCommonEventListener implements
     @Override
     public void onScroll(AbsListView absListView, int i, int i2, int i3) {
         try {
-            scrollMethod.invoke(handler, absListView, i, i2, i3);
+            methods[1].invoke(handler, absListView, i, i2, i3);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
+    // #endregion AbsListView.OnScrollListener
 
+    // #region OnItemSelectedListener
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         try {
-            itemSelectMethod.invoke(handler, parent, view, position, id);
+            methods[0].invoke(handler, parent, view, position, id);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -339,16 +257,19 @@ public class ViewCommonEventListener implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         try {
-            nothingSelectedMethod.invoke(handler, parent);
+            methods[1].invoke(handler, parent);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
+    // #endregion OnItemSelectedListener
 
+
+    // #region SeekBar.OnSeekBarChangeListener
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         try {
-            progressChangedMethod.invoke(handler, seekBar, progress, fromUser);
+            methods[0].invoke(handler, seekBar, progress, fromUser);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -357,7 +278,7 @@ public class ViewCommonEventListener implements
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         try {
-            startTrackingTouchMethod.invoke(handler, seekBar);
+            methods[1].invoke(handler, seekBar);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -366,11 +287,12 @@ public class ViewCommonEventListener implements
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         try {
-            stopTrackingTouchMethod.invoke(handler, seekBar);
+            methods[2].invoke(handler, seekBar);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         }
     }
+    // #endregion SeekBar.OnSeekBarChangeListener
 
     @SuppressWarnings("ConstantConditions")
     public static void setEventListener(Object handler, ViewFinder finder, DoubleKeyValueMap<Object, Annotation, Method> value_annotation_method_map) {
@@ -382,96 +304,112 @@ public class ViewCommonEventListener implements
                     if (annotation.annotationType().equals(OnClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.setOnClickListener(new ViewCommonEventListener(handler).click(method));
+                        view.setOnClickListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnLongClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.setOnLongClickListener(new ViewCommonEventListener(handler).longClick(method));
+                        view.setOnLongClickListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnFocusChange.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.setOnFocusChangeListener(new ViewCommonEventListener(handler).focusChange(method));
+                        view.setOnFocusChangeListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnKey.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.setOnKeyListener(new ViewCommonEventListener(handler).key(method));
+                        view.setOnKeyListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnTouch.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.setOnTouchListener(new ViewCommonEventListener(handler).touch(method));
+                        view.setOnTouchListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnItemClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ((AdapterView<?>) view).setOnItemClickListener(new ViewCommonEventListener(handler).itemClick(method));
+                        ((AdapterView<?>) view).setOnItemClickListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnItemLongClick.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ((AdapterView<?>) view).setOnItemLongClickListener(new ViewCommonEventListener(handler).itemLongClick(method));
+                        ((AdapterView<?>) view).setOnItemLongClickListener(new ViewCommonEventListener(handler, method));
+                    } else if (annotation.annotationType().equals(OnChildClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        ((ExpandableListView) view).setOnChildClickListener(new ViewCommonEventListener(handler, method));
+                    } else if (annotation.annotationType().equals(OnGroupClick.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        ((ExpandableListView) view).setOnGroupClickListener(new ViewCommonEventListener(handler, method));
+                    } else if (annotation.annotationType().equals(OnGroupCollapse.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        ((ExpandableListView) view).setOnGroupCollapseListener(new ViewCommonEventListener(handler, method));
+                    } else if (annotation.annotationType().equals(OnGroupExpand.class)) {
+                        View view = finder.findViewById((Integer) value);
+                        if (view == null) break;
+                        ((ExpandableListView) view).setOnGroupExpandListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnCheckedChange.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
                         if (view instanceof RadioGroup) {
-                            ((RadioGroup) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).radioGroupCheckedChanged(method));
+                            ((RadioGroup) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler, method));
                         } else if (view instanceof CompoundButton) {
-                            ((CompoundButton) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler).compoundButtonCheckedChanged(method));
+                            ((CompoundButton) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler, method));
                         }
                     } else if (annotation.annotationType().equals(OnPreferenceClick.class)) {
                         Preference preference = finder.findPreference(value.toString());
                         if (preference == null) break;
-                        preference.setOnPreferenceClickListener(new ViewCommonEventListener(handler).preferenceClick(method));
+                        preference.setOnPreferenceClickListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnPreferenceChange.class)) {
                         Preference preference = finder.findPreference(value.toString());
                         if (preference == null) break;
-                        preference.setOnPreferenceChangeListener(new ViewCommonEventListener(handler).preferenceChange(method));
+                        preference.setOnPreferenceChangeListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnTabChange.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ((TabHost) view).setOnTabChangedListener(new ViewCommonEventListener(handler).tabChanged(method));
+                        ((TabHost) view).setOnTabChangedListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnScrollChanged.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler).scrollChanged(method));
+                        view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler, method));
                     } else if (annotation.annotationType().equals(OnScrollStateChanged.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        Method method0 = null, method1 = null;
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a.annotationType().equals(OnScrollStateChanged.class)) {
-                                listener.scrollStateChanged(a_m_map.get(a));
+                                method0 = a_m_map.get(a);
                             } else if (a.annotationType().equals(OnScroll.class)) {
-                                listener.scroll(a_m_map.get(a));
+                                method1 = a_m_map.get(a);
                             }
                         }
-                        ((AbsListView) view).setOnScrollListener(listener);
+                        ((AbsListView) view).setOnScrollListener(new ViewCommonEventListener(handler, method0, method1));
                     } else if (annotation.annotationType().equals(OnItemSelected.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        Method method0 = null, method1 = null;
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a.annotationType().equals(OnItemSelected.class)) {
-                                listener.selected(a_m_map.get(a));
+                                method0 = a_m_map.get(a);
                             } else if (a.annotationType().equals(OnNothingSelected.class)) {
-                                listener.noSelected(a_m_map.get(a));
+                                method1 = a_m_map.get(a);
                             }
                         }
-                        ((AdapterView<?>) view).setOnItemSelectedListener(listener);
+                        ((AdapterView<?>) view).setOnItemSelectedListener(new ViewCommonEventListener(handler, method0, method1));
                     } else if (annotation.annotationType().equals(OnProgressChanged.class)) {
                         View view = finder.findViewById((Integer) value);
                         if (view == null) break;
-                        ViewCommonEventListener listener = new ViewCommonEventListener(handler);
+                        Method method0 = null, method1 = null, method2 = null;
                         ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a.annotationType().equals(OnProgressChanged.class)) {
-                                listener.progressChanged(a_m_map.get(a));
+                                method0 = a_m_map.get(a);
                             } else if (a.annotationType().equals(OnStartTrackingTouch.class)) {
-                                listener.startTrackingTouch(a_m_map.get(a));
+                                method1 = a_m_map.get(a);
                             } else if (a.annotationType().equals(OnStopTrackingTouch.class)) {
-                                listener.stopTrackingTouch(a_m_map.get(a));
+                                method2 = a_m_map.get(a);
                             }
                         }
-                        ((SeekBar) view).setOnSeekBarChangeListener(listener);
+                        ((SeekBar) view).setOnSeekBarChangeListener(new ViewCommonEventListener(handler, method0, method1, method2));
                     }
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
