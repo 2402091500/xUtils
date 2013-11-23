@@ -16,14 +16,14 @@
 * ViewUtils模块：
   > * android中的ioc框架，完全注解方式就可以进行UI，资源和事件绑定；
   > * 新的事件绑定方式，使用混淆工具混淆后仍可正常工作；
-  > * 目前支持常用的16种事件绑定，参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
+  > * 目前支持常用的20种事件绑定，参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
 
 * HttpUtils模块：
   > * 支持同步，异步方式的请求；
   > * 支持大文件上传，上传大文件不会oom；
   > * 支持GET，POST，PUT，MOVE，COPY，DELETE，HEAD，OPTIONS，TRACE，CONNECT请求；
   > * 下载支持301/302重定向，支持设置是否根据Content-Disposition重命名下载的文件；
-  > * 返回文本内容的GET请求支持缓存，可设置默认过期时间和针对当前请求的过期时间。
+  > * 返回文本内容的请求(默认只启用了GET请求)支持缓存，可设置默认过期时间和针对当前请求的过期时间。
 
 * BitmapUtils模块：
   > * 加载bitmap的时候无需考虑bitmap加载过程中出现的oom和android容器快速滑动时候出现的图片错位等现象；
@@ -247,8 +247,15 @@ handler.stop();
 
 ```java
 BitmapUtils bitmapUtils = new BitmapUtils(this);
+
+// 加载网络图片
 bitmapUtils.display(testImageView, "http://bbs.lidroid.com/static/image/common/logo.png");
-//bitmapUtils.display(testImageView, "/sdcard/test.jpg"); //支持加载本地图片
+
+// 加载本地图片(路径以/开头， 绝对路径)
+bitmapUtils.display(testImageView, "/sdcard/test.jpg");
+
+// 加载assets中的图片(路径以assets开头)
+bitmapUtils.display(testImageView, "assets/img/wallpaper.jpg");
 
 // 使用ListView等容器展示图片时可通过PauseOnScrollListener控制滑动和快速滑动过程中时候暂停加载图片
 listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));

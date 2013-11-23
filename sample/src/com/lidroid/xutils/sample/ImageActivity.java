@@ -62,5 +62,7 @@ public class ImageActivity extends Activity {
         };
 
         bitmapUtils.display(bigImage, imgUrl, bigPicDisplayConfig, callback);
+        // 读取assets中的图片
+        //bitmapUtils.display(bigImage, "assets/img/wallpaper.jpg", bigPicDisplayConfig, callback);
     }
 }
