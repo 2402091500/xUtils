@@ -22,6 +22,7 @@ import com.lidroid.xutils.util.OtherUtils;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,6 +53,10 @@ public class SimpleDownloader extends Downloader {
                 FileInputStream fileInputStream = new FileInputStream(uri);
                 bis = new BufferedInputStream(fileInputStream);
                 result = System.currentTimeMillis() + this.getDefaultExpiry();
+            } else if (uri.startsWith("assets/")) {
+                InputStream inputStream = this.getContext().getAssets().open(uri.substring(7, uri.length()));
+                bis = new BufferedInputStream(inputStream);
+                result = Long.MAX_VALUE;
             } else {
                 final URL url = new URL(uri.replace(" ", "%20"));
                 urlConnection = url.openConnection();
