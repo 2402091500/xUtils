@@ -23,11 +23,14 @@ import com.lidroid.xutils.sample.DownloadListActivity;
 import com.lidroid.xutils.sample.R;
 import com.lidroid.xutils.sample.download.DownloadManager;
 import com.lidroid.xutils.sample.download.DownloadService;
+import com.lidroid.xutils.util.CookieUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.ResType;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.io.File;
 
 /**
  * Author: wyouflf
@@ -41,6 +44,8 @@ public class HttpFragment extends Fragment {
     private Context mAppContext;
     private DownloadManager downloadManager;
 
+    private CookieUtils cookieUtils;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.http_fragment, container, false);
@@ -49,6 +54,9 @@ public class HttpFragment extends Fragment {
         mAppContext = inflater.getContext().getApplicationContext();
 
         downloadManager = DownloadService.getDownloadManager(mAppContext);
+
+        cookieUtils = new CookieUtils(mAppContext);
+        //cookieUtils.addCookie(cookie); ....
 
         return view;
     }
@@ -93,19 +101,32 @@ public class HttpFragment extends Fragment {
 
     //@OnClick(R.id.download_btn)
     public void testUpload(View view) {
-        RequestParams params = new RequestParams("GBK");
-        //params.addQueryStringParameter("method", "upload");
-        //params.addQueryStringParameter("path", "/apps/测试应用/test.zip");
-        // 请在百度的开放api测试页面找到自己的access_token
-        //params.addQueryStringParameter("access_token",
-        //        "3.9b885b6c56b8798ab69b3ba39238e4fc.2592000.1384929178.3590808424-248414");
 
-        //params.addBodyParameter("file", new File("/sdcard/test.zip"));
-        params.addQueryStringParameter("qmsg", "你好");
-        params.addBodyParameter("msg", "测试");
+        // 设置请求参数的编码
+        //RequestParams params = new RequestParams("GBK");
+        RequestParams params = new RequestParams(); // 默认编码UTF-8
+
+        //params.addQueryStringParameter("qmsg", "你好");
+        //params.addBodyParameter("msg", "测试");
+
+        // 添加文件
+        params.addBodyParameter("file", new File("/sdcard/test.zip"));
+        //params.addBodyParameter("testfile", new File("/sdcard/test2.zip")); // 继续添加文件
+
+        // 用于非multipart表单的单文件上传
+        //params.setBodyEntity(new FileUploadEntity(new File("/sdcard/test.zip"), "binary/octet-stream"));
+
+        // 用于非multipart表单的流上传
+        //params.setBodyEntity(new InputStreamUploadEntity(stream ,length));
 
         HttpUtils http = new HttpUtils();
-        http.configResponseTextCharset("GBK");
+
+        // 设置返回文本的编码， 默认编码UTF-8
+        //http.configResponseTextCharset("GBK");
+
+        // 自动管理 cookie
+        // http.configCookieStore(cookieUtils);
+
         http.send(HttpRequest.HttpMethod.POST,
                 "http://192.168.1.5:8080/UploadServlet",
                 params,
