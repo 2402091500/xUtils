@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class FloatColumnConverter implements ColumnConverter<Float> {
     @Override
     public Float getFiledValue(final Cursor cursor, int index) {
-        return cursor.getFloat(index);
+        return cursor.isNull(index) ? null : cursor.getFloat(index);
     }
 
     @Override

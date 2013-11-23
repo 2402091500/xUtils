@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class LongColumnConverter implements ColumnConverter<Long> {
     @Override
     public Long getFiledValue(final Cursor cursor, int index) {
-        return cursor.getLong(index);
+        return cursor.isNull(index) ? null : cursor.getLong(index);
     }
 
     @Override

@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class CharColumnConverter implements ColumnConverter<Character> {
     @Override
     public Character getFiledValue(final Cursor cursor, int index) {
-        return (char) cursor.getInt(index);
+        return cursor.isNull(index) ? null : (char) cursor.getInt(index);
     }
 
     @Override

@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class BooleanColumnConverter implements ColumnConverter<Boolean> {
     @Override
     public Boolean getFiledValue(final Cursor cursor, int index) {
-        return cursor.getInt(index) == 1;
+        return cursor.isNull(index) ? null : cursor.getInt(index) == 1;
     }
 
     @Override

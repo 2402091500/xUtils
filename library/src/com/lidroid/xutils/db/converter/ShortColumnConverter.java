@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class ShortColumnConverter implements ColumnConverter<Short> {
     @Override
     public Short getFiledValue(final Cursor cursor, int index) {
-        return cursor.getShort(index);
+        return cursor.isNull(index) ? null : cursor.getShort(index);
     }
 
     @Override

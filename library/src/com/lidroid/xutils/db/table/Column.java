@@ -51,6 +51,7 @@ public class Column {
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
 
         Object value = columnConverter.getFiledValue(cursor, index);
+        if (value == null && defaultValue == null) return;
 
         if (setMethod != null) {
             try {

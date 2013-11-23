@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class ByteColumnConverter implements ColumnConverter<Byte> {
     @Override
     public Byte getFiledValue(final Cursor cursor, int index) {
-        return (byte) cursor.getInt(index);
+        return cursor.isNull(index) ? null : (byte) cursor.getInt(index);
     }
 
     @Override

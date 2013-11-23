@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class SqlDateColumnConverter implements ColumnConverter<java.sql.Date> {
     @Override
     public java.sql.Date getFiledValue(final Cursor cursor, int index) {
-        return new java.sql.Date(cursor.getLong(index));
+        return cursor.isNull(index) ? null : new java.sql.Date(cursor.getLong(index));
     }
 
     @Override

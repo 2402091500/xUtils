@@ -53,8 +53,10 @@ public class Foreign extends Column {
     @SuppressWarnings("unchecked")
     @Override
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
-        Object value = null;
         Object filedValue = foreignColumnConverter.getFiledValue(cursor, index);
+        if (filedValue == null) return;
+
+        Object value = null;
         Class<?> columnType = columnField.getType();
         if (columnType.equals(ForeignLazyLoader.class)) {
             value = new ForeignLazyLoader(this, filedValue);

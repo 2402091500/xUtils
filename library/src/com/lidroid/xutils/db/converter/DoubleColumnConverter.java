@@ -11,7 +11,7 @@ import android.text.TextUtils;
 public class DoubleColumnConverter implements ColumnConverter<Double> {
     @Override
     public Double getFiledValue(final Cursor cursor, int index) {
-        return cursor.getDouble(index);
+        return cursor.isNull(index) ? null : cursor.getDouble(index);
     }
 
     @Override
