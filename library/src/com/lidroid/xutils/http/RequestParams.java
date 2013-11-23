@@ -65,6 +65,10 @@ public class RequestParams {
         return charset;
     }
 
+    public void setContentType(String contentType) {
+        this.setHeader("Content-Type", contentType);
+    }
+
     /**
      * Adds a header to this message. The header will be appended to the end of the list.
      *

@@ -223,44 +223,26 @@ public class HttpUtils {
 
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url,
                                    RequestCallBack<T> callBack) {
-        return send(method, url, null, null, callBack);
+        return send(method, url, null, callBack);
     }
 
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params,
                                    RequestCallBack<T> callBack) {
-        return send(method, url, params, null, callBack);
-    }
-
-    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, String contentType,
-                                   RequestCallBack<T> callBack) {
-        return send(method, url, null, contentType, callBack);
-    }
-
-    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType,
-                                   RequestCallBack<T> callBack) {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
         HttpRequest request = new HttpRequest(method, url);
-        return sendRequest(request, params, contentType, callBack);
+        return sendRequest(request, params, callBack);
     }
 
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url) throws HttpException {
-        return sendSync(method, url, null, null);
+        return sendSync(method, url, null);
     }
 
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params) throws HttpException {
-        return sendSync(method, url, params, null);
-    }
-
-    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, String contentType) throws HttpException {
-        return sendSync(method, url, null, contentType);
-    }
-
-    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
         HttpRequest request = new HttpRequest(method, url);
-        return sendSyncRequest(request, params, contentType);
+        return sendSyncRequest(request, params);
     }
 
     // ***************************************** download *******************************************
@@ -296,21 +278,6 @@ public class HttpUtils {
     }
 
     public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
-                                      RequestCallBack<File> callback) {
-        return download(method, url, target, null, false, false, callback);
-    }
-
-    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
-                                      boolean autoResume, RequestCallBack<File> callback) {
-        return download(method, url, target, null, autoResume, false, callback);
-    }
-
-    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
-                                      boolean autoResume, boolean autoRename, RequestCallBack<File> callback) {
-        return download(method, url, target, null, autoResume, autoRename, callback);
-    }
-
-    public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
                                       RequestParams params, RequestCallBack<File> callback) {
         return download(method, url, target, params, false, false, callback);
     }
@@ -339,10 +306,7 @@ public class HttpUtils {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, String contentType, RequestCallBack<T> callBack) {
-        if (contentType != null) {
-            request.setHeader("Content-Type", contentType);
-        }
+    private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, RequestCallBack<T> callBack) {
 
         HttpHandler<T> handler = new HttpHandler<T>(httpClient, httpContext, responseTextCharset, callBack);
 
@@ -354,10 +318,7 @@ public class HttpUtils {
         return handler;
     }
 
-    private ResponseStream sendSyncRequest(HttpRequest request, RequestParams params, String contentType) throws HttpException {
-        if (contentType != null) {
-            request.setHeader("Content-Type", contentType);
-        }
+    private ResponseStream sendSyncRequest(HttpRequest request, RequestParams params) throws HttpException {
 
         SyncHttpHandler handler = new SyncHttpHandler(httpClient, httpContext, responseTextCharset);
 
