@@ -20,6 +20,7 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.protocol.HTTP;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -69,29 +70,29 @@ public class OtherUtils {
         return result;
     }
 
-    public static String getCharsetFromHttpResponse(final HttpResponse response) {
-        if (response == null) return null;
-        String result = null;
-        Header header = response.getEntity().getContentType();
+    public static Charset getCharsetFromHttpRequest(final HttpRequestBase request) {
+        if (request == null) return null;
+        String charsetName = null;
+        Header header = request.getFirstHeader("Content-Type");
         if (header != null) {
             for (HeaderElement element : header.getElements()) {
                 NameValuePair charsetPair = element.getParameterByName("charset");
                 if (charsetPair != null) {
-                    result = charsetPair.getValue();
+                    charsetName = charsetPair.getValue();
                     break;
                 }
             }
         }
 
         boolean isSupportedCharset = false;
-        if (!TextUtils.isEmpty(result)) {
+        if (!TextUtils.isEmpty(charsetName)) {
             try {
-                isSupportedCharset = Charset.isSupported(result);
+                isSupportedCharset = Charset.isSupported(charsetName);
             } catch (Throwable e) {
             }
         }
 
-        return isSupportedCharset ? result : null;
+        return isSupportedCharset ? Charset.forName(charsetName) : null;
     }
 
     private static final int STRING_BUFFER_LENGTH = 100;

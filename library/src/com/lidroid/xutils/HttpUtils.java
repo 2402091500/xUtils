@@ -46,7 +46,6 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -224,7 +223,7 @@ public class HttpUtils {
 
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url,
                                    RequestCallBack<T> callBack) {
-        return send(method, url, null, callBack);
+        return send(method, url, null, null, callBack);
     }
 
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params,
@@ -232,26 +231,35 @@ public class HttpUtils {
         return send(method, url, params, null, callBack);
     }
 
+    public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, String contentType,
+                                   RequestCallBack<T> callBack) {
+        return send(method, url, null, contentType, callBack);
+    }
+
     public <T> HttpHandler<T> send(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType,
                                    RequestCallBack<T> callBack) {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
-        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
+        HttpRequest request = new HttpRequest(method, url);
         return sendRequest(request, params, contentType, callBack);
     }
 
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url) throws HttpException {
-        return sendSync(method, url, null);
+        return sendSync(method, url, null, null);
     }
 
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params) throws HttpException {
         return sendSync(method, url, params, null);
     }
 
+    public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, String contentType) throws HttpException {
+        return sendSync(method, url, null, contentType);
+    }
+
     public ResponseStream sendSync(HttpRequest.HttpMethod method, String url, RequestParams params, String contentType) throws HttpException {
         if (url == null) throw new IllegalArgumentException("url may not be null");
 
-        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
+        HttpRequest request = new HttpRequest(method, url);
         return sendSyncRequest(request, params, contentType);
     }
 
@@ -318,7 +326,7 @@ public class HttpUtils {
         if (url == null) throw new IllegalArgumentException("url may not be null");
         if (target == null) throw new IllegalArgumentException("target may not be null");
 
-        HttpRequest request = new HttpRequest(method, url, params == null ? null : Charset.forName(params.getCharset()));
+        HttpRequest request = new HttpRequest(method, url);
 
         HttpHandler<File> handler = new HttpHandler<File>(httpClient, httpContext, responseTextCharset, callback);
 

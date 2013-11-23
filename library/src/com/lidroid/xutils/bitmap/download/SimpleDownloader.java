@@ -58,7 +58,7 @@ public class SimpleDownloader extends Downloader {
                 bis = new BufferedInputStream(inputStream);
                 result = Long.MAX_VALUE;
             } else {
-                final URL url = new URL(uri.replace(" ", "%20"));
+                final URL url = new URL(uri);
                 urlConnection = url.openConnection();
                 urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
                 urlConnection.setReadTimeout(this.getDefaultReadTimeout());

@@ -44,29 +44,6 @@ public class URLEncodedUtils {
     private static final String NAME_VALUE_SEPARATOR = "=";
 
     /**
-     * Returns a list of {@link org.apache.http.NameValuePair NameValuePairs} as built from the
-     * URI's query portion. For example, a URI of
-     * http://example.org/path/to/file?a=1&b=2&c=3 would return a list of three
-     * NameValuePairs, one for a=1, one for b=2, and one for c=3.
-     * <p/>
-     * This is typically useful while parsing an HTTP PUT.
-     *
-     * @param uri      uri to parse
-     * @param encoding encoding to use while parsing the query
-     */
-    public static List<NameValuePair> parse(final URI uri, final String encoding) {
-        final String query = uri.getRawQuery();
-        if (!TextUtils.isEmpty(query)) {
-            List<NameValuePair> result = new ArrayList<NameValuePair>();
-            Scanner scanner = new Scanner(query);
-            parse(result, scanner, encoding);
-            return result;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    /**
      * Returns true if the entity's Content-Type header is
      * <code>application/x-www-form-urlencoded</code>.
      */
@@ -86,20 +63,39 @@ public class URLEncodedUtils {
     }
 
     /**
-     * Adds all parameters within the Scanner to the list of
-     * <code>parameters</code>, as encoded by <code>encoding</code>. For
-     * example, a scanner containing the string <code>a=1&b=2&c=3</code> would
+     * Returns a list of {@link org.apache.http.NameValuePair NameValuePairs} as built from the
+     * URI's query portion. For example, a URI of
+     * http://example.org/path/to/file?a=1&b=2&c=3 would return a list of three
+     * NameValuePairs, one for a=1, one for b=2, and one for c=3.
+     * <p/>
+     * This is typically useful while parsing an HTTP PUT.
+     *
+     * @param uri uri to parse
+     */
+    public static List<NameValuePair> parse(final URI uri) {
+        final String query = uri.getRawQuery();
+        if (!TextUtils.isEmpty(query)) {
+            List<NameValuePair> result = new ArrayList<NameValuePair>();
+            Scanner scanner = new Scanner(query);
+            parse(result, scanner);
+            return result;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Adds all parameters within the Scanner to the list of <code>parameters</code>.
+     * For example,a scanner containing the string <code>a=1&b=2&c=3</code> would
      * add the {@link org.apache.http.NameValuePair NameValuePairs} a=1, b=2, and c=3 to the
      * list of parameters.
      *
      * @param parameters List to add parameters to.
      * @param scanner    Input that contains the parameters to parse.
-     * @param charset    Encoding to use when decoding the parameters.
      */
     public static void parse(
             final List<NameValuePair> parameters,
-            final Scanner scanner,
-            final String charset) {
+            final Scanner scanner) {
         scanner.useDelimiter(PARAMETER_SEPARATOR);
         while (scanner.hasNext()) {
             String name = null;
@@ -107,10 +103,10 @@ public class URLEncodedUtils {
             String token = scanner.next();
             int i = token.indexOf(NAME_VALUE_SEPARATOR);
             if (i != -1) {
-                name = decodeFormFields(token.substring(0, i).trim(), charset);
-                value = decodeFormFields(token.substring(i + 1).trim(), charset);
+                name = token.substring(0, i).trim();
+                value = token.substring(i + 1).trim();
             } else {
-                name = decodeFormFields(token.trim(), charset);
+                name = token.trim();
             }
             parameters.add(new BasicNameValuePair(name, value));
         }
@@ -119,14 +115,12 @@ public class URLEncodedUtils {
     private static final char[] DELIM = new char[]{'&'};
 
     /**
-     * Returns a list of {@link org.apache.http.NameValuePair NameValuePairs} as parsed from the given string
-     * using the given character encoding.
+     * Returns a list of {@link org.apache.http.NameValuePair NameValuePairs} as parsed.
      *
-     * @param s       text to parse.
-     * @param charset Encoding to use when decoding the parameters.
+     * @param s text to parse.
      * @since 4.2
      */
-    public static List<NameValuePair> parse(final String s, final Charset charset) {
+    public static List<NameValuePair> parse(final String s) {
         if (s == null) {
             return Collections.emptyList();
         }
@@ -138,9 +132,7 @@ public class URLEncodedUtils {
         while (!cursor.atEnd()) {
             NameValuePair nvp = parser.parseNameValuePair(buffer, cursor, DELIM);
             if (nvp.getName().length() > 0) {
-                list.add(new BasicNameValuePair(
-                        decodeFormFields(nvp.getName(), charset),
-                        decodeFormFields(nvp.getValue(), charset)));
+                list.add(new BasicNameValuePair(nvp.getName(), nvp.getValue()));
             }
         }
         return list;
