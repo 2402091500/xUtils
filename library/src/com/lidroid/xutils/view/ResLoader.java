@@ -19,37 +19,37 @@ public class ResLoader {
         if (context == null || id < 1) return null;
         switch (type) {
             case Animation:
-                return Animation(context, id);
+                return getAnimation(context, id);
             case Boolean:
-                return Boolean(context, id);
+                return getBoolean(context, id);
             case Color:
-                return Color(context, id);
+                return getColor(context, id);
             case ColorStateList:
-                return ColorStateList(context, id);
+                return getColorStateList(context, id);
             case Dimension:
-                return Dimension(context, id);
+                return getDimension(context, id);
             case DimensionPixelOffset:
-                return DimensionPixelOffset(context, id);
+                return getDimensionPixelOffset(context, id);
             case DimensionPixelSize:
-                return DimensionPixelSize(context, id);
+                return getDimensionPixelSize(context, id);
             case Drawable:
-                return Drawable(context, id);
+                return getDrawable(context, id);
             case Integer:
-                return Integer(context, id);
+                return getInteger(context, id);
             case IntArray:
-                return IntArray(context, id);
+                return getIntArray(context, id);
             case Movie:
-                return Movie(context, id);
+                return getMovie(context, id);
             case String:
-                return String(context, id);
+                return getString(context, id);
             case StringArray:
-                return StringArray(context, id);
+                return getStringArray(context, id);
             case Text:
-                return Text(context, id);
+                return getText(context, id);
             case TextArray:
-                return TextArray(context, id);
+                return getTextArray(context, id);
             case Xml:
-                return Xml(context, id);
+                return getXml(context, id);
             default:
                 break;
         }
@@ -57,67 +57,67 @@ public class ResLoader {
         return null;
     }
 
-    public static Animation Animation(Context context, int id) {
+    public static Animation getAnimation(Context context, int id) {
         return AnimationUtils.loadAnimation(context, id);
     }
 
-    public static boolean Boolean(Context context, int id) {
+    public static boolean getBoolean(Context context, int id) {
         return context.getResources().getBoolean(id);
     }
 
-    public static int Color(Context context, int id) {
+    public static int getColor(Context context, int id) {
         return context.getResources().getColor(id);
     }
 
-    public static ColorStateList ColorStateList(Context context, int id) {
+    public static ColorStateList getColorStateList(Context context, int id) {
         return context.getResources().getColorStateList(id);
     }
 
-    public static float Dimension(Context context, int id) {
+    public static float getDimension(Context context, int id) {
         return context.getResources().getDimension(id);
     }
 
-    public static int DimensionPixelOffset(Context context, int id) {
+    public static int getDimensionPixelOffset(Context context, int id) {
         return context.getResources().getDimensionPixelOffset(id);
     }
 
-    public static int DimensionPixelSize(Context context, int id) {
+    public static int getDimensionPixelSize(Context context, int id) {
         return context.getResources().getDimensionPixelSize(id);
     }
 
-    public static Drawable Drawable(Context context, int id) {
+    public static Drawable getDrawable(Context context, int id) {
         return context.getResources().getDrawable(id);
     }
 
-    public static int Integer(Context context, int id) {
+    public static int getInteger(Context context, int id) {
         return context.getResources().getInteger(id);
     }
 
-    public static int[] IntArray(Context context, int id) {
+    public static int[] getIntArray(Context context, int id) {
         return context.getResources().getIntArray(id);
     }
 
-    public static Movie Movie(Context context, int id) {
+    public static Movie getMovie(Context context, int id) {
         return context.getResources().getMovie(id);
     }
 
-    public static String String(Context context, int id) {
+    public static String getString(Context context, int id) {
         return context.getResources().getString(id);
     }
 
-    public static String[] StringArray(Context context, int id) {
+    public static String[] getStringArray(Context context, int id) {
         return context.getResources().getStringArray(id);
     }
 
-    public static CharSequence Text(Context context, int id) {
+    public static CharSequence getText(Context context, int id) {
         return context.getResources().getText(id);
     }
 
-    public static CharSequence[] TextArray(Context context, int id) {
+    public static CharSequence[] getTextArray(Context context, int id) {
         return context.getResources().getTextArray(id);
     }
 
-    public static XmlResourceParser Xml(Context context, int id) {
+    public static XmlResourceParser getXml(Context context, int id) {
         return context.getResources().getXml(id);
     }
 }
