@@ -8,14 +8,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.*;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.bitmap.BitmapCommonUtils;
+import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
+import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
+import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
@@ -121,12 +121,14 @@ public class BitmapFragment extends Fragment {
 
     private class ImageListAdapter extends BaseAdapter {
 
-        private Context context;
+        private Context mContext;
+        private final LayoutInflater mInflater;
         private ArrayList<String> imgSrcList;
 
         public ImageListAdapter(Context context) {
             super();
-            this.context = context;
+            this.mContext = context;
+            mInflater = LayoutInflater.from(context);
             imgSrcList = new ArrayList<String>();
         }
 
@@ -155,17 +157,53 @@ public class BitmapFragment extends Fragment {
 
         @Override
         public View getView(final int position, View view, ViewGroup parent) {
+            ImageItemHolder holder = null;
             if (view == null) {
-                view = new ImageView(this.context);
-                view.setMinimumWidth(150);
-                view.setMinimumHeight(150);
+                view = mInflater.inflate(R.layout.bitmap_item, null);
+                holder = new ImageItemHolder();
+                ViewUtils.inject(holder, view);
+                view.setTag(holder);
+            } else {
+                holder = (ImageItemHolder) view.getTag();
             }
-            bitmapUtils.display((ImageView) view, imgSrcList.get(position));
+            holder.imgPb.setProgress(0);
+            holder.uri = imgSrcList.get(position);
+            bitmapUtils.display(holder.imgItem, holder.uri, new CustomBitmapLoadCallBack(holder));
             //bitmapUtils.display((ImageView) view, imgSrcList.get(position), displayConfig);
+            //bitmapUtils.display((ImageView) view, imgSrcList.get(position));
             return view;
         }
     }
 
+    private class ImageItemHolder {
+
+        private String uri;
+
+        @ViewInject(R.id.img_item)
+        private ImageView imgItem;
+
+        @ViewInject(R.id.img_pb)
+        private ProgressBar imgPb;
+    }
+
+    public class CustomBitmapLoadCallBack extends SimpleBitmapLoadCallBack<ImageView> {
+        private final ImageItemHolder holder;
+
+        public CustomBitmapLoadCallBack(ImageItemHolder holder) {
+            this.holder = holder;
+        }
+
+        @Override
+        public void onLoading(ImageView container, String uri, BitmapDisplayConfig config, long total, long current) {
+            this.holder.imgPb.setProgress((int) (current * 100 / total));
+        }
+
+        @Override
+        public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
+            super.onLoadCompleted(container, uri, bitmap, config, from);
+            this.holder.imgPb.setProgress(100);
+        }
+    }
 
     /**
      * 得到网页中图片的地址

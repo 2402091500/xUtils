@@ -55,8 +55,8 @@ public class ImageActivity extends Activity {
             }
 
             @Override
-            public void onLoadCompleted(ImageView container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
-                super.onLoadCompleted(container, url, bitmap, config, from);
+            public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
+                super.onLoadCompleted(container, uri, bitmap, config, from);
                 Toast.makeText(getApplicationContext(), bitmap.getWidth() + "*" + bitmap.getHeight(), 300).show();
             }
         };
