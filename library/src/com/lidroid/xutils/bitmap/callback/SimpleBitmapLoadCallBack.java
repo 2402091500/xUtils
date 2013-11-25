@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack<T> {
 
     @Override
-    public void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
+    public void onLoadCompleted(T container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
         this.setBitmap(container, bitmap);
         Animation animation = config.getAnimation();
         if (animation != null) {
@@ -35,7 +35,7 @@ public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack
     }
 
     @Override
-    public void onLoadFailed(T container, String url, Drawable drawable) {
+    public void onLoadFailed(T container, String uri, Drawable drawable) {
         this.setDrawable(container, drawable);
     }
 

@@ -45,23 +45,35 @@ public abstract class BitmapLoadCallBack<T extends View> {
     }
 
     /**
+     * Call back when loading.
+     *
+     * @param container
+     * @param uri
+     * @param config
+     * @param total
+     * @param current
+     */
+    public void onLoading(T container, String uri, BitmapDisplayConfig config, long total, long current) {
+    }
+
+    /**
      * Call back when bitmap has loaded.
      *
      * @param container
-     * @param url
+     * @param uri
      * @param bitmap
      * @param config
      */
-    public abstract void onLoadCompleted(T container, String url, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
+    public abstract void onLoadCompleted(T container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from);
 
     /**
      * Call back when bitmap failed to load.
      *
      * @param container
-     * @param url
+     * @param uri
      * @param drawable
      */
-    public abstract void onLoadFailed(T container, String url, Drawable drawable);
+    public abstract void onLoadFailed(T container, String uri, Drawable drawable);
 
     private BitmapSetter<T> bitmapSetter;
 

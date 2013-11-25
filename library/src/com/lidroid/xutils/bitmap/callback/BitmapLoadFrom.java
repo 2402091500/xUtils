@@ -6,5 +6,5 @@ package com.lidroid.xutils.bitmap.callback;
  * Time: 下午8:17
  */
 public enum BitmapLoadFrom {
-    MEMORY_CACHE, DISK_CACHE, URL
+    MEMORY_CACHE, DISK_CACHE, URI
 }

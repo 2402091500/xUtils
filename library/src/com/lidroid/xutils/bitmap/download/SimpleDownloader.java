@@ -48,18 +48,23 @@ public class SimpleDownloader extends Downloader {
         OtherUtils.trustAllSSLForHttpsURLConnection();
 
         long result = -1;
+        long fileLen = 0;
+        long currCount = 0;
         try {
             if (uri.startsWith("/")) {
                 FileInputStream fileInputStream = new FileInputStream(uri);
+                fileLen = fileInputStream.available();
                 bis = new BufferedInputStream(fileInputStream);
                 result = System.currentTimeMillis() + this.getDefaultExpiry();
             } else if (uri.startsWith("assets/")) {
                 InputStream inputStream = this.getContext().getAssets().open(uri.substring(7, uri.length()));
+                fileLen = inputStream.available();
                 bis = new BufferedInputStream(inputStream);
                 result = Long.MAX_VALUE;
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
+                fileLen = urlConnection.getContentLength();
                 urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
                 urlConnection.setReadTimeout(this.getDefaultReadTimeout());
                 bis = new BufferedInputStream(urlConnection.getInputStream());
@@ -73,7 +78,9 @@ public class SimpleDownloader extends Downloader {
             int len = 0;
             while ((len = bis.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
+                currCount += len;
                 if (task.isCancelled() || task.getTargetContainer() == null) return -1;
+                task.updateProgress(fileLen, currCount);
             }
             outputStream.flush();
         } catch (Throwable e) {
