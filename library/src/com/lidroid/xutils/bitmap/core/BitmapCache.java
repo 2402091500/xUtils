@@ -188,7 +188,7 @@ public class BitmapCache {
 
             Bitmap bitmap = decodeBitmapMeta(bitmapMeta, config);
 
-            return addBitmapToMemoryCache(bitmap, uri, config, bitmapMeta.expiryTimestamp);
+            return addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         } finally {
@@ -199,7 +199,7 @@ public class BitmapCache {
         return null;
     }
 
-    private Bitmap addBitmapToMemoryCache(Bitmap bitmap, String uri, BitmapDisplayConfig config, long expiryTimestamp) throws IOException {
+    private Bitmap addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, Bitmap bitmap, long expiryTimestamp) throws IOException {
         if (uri != null && bitmap != null && globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
             String key = uri + (config == null ? "" : config.toString());
             mMemoryCache.put(key, bitmap, expiryTimestamp);
@@ -267,7 +267,7 @@ public class BitmapCache {
                                     config.getBitmapConfig());
                         }
 
-                        return addBitmapToMemoryCache(bitmap, uri, config, mDiskLruCache.getExpiryTimestamp(uri));
+                        return addBitmapToMemoryCache(uri, config, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
                     }
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
