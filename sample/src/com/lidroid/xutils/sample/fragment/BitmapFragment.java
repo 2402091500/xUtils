@@ -167,8 +167,7 @@ public class BitmapFragment extends Fragment {
                 holder = (ImageItemHolder) view.getTag();
             }
             holder.imgPb.setProgress(0);
-            holder.uri = imgSrcList.get(position);
-            bitmapUtils.display(holder.imgItem, holder.uri, new CustomBitmapLoadCallBack(holder));
+            bitmapUtils.display(holder.imgItem, imgSrcList.get(position), new CustomBitmapLoadCallBack(holder));
             //bitmapUtils.display((ImageView) view, imgSrcList.get(position), displayConfig);
             //bitmapUtils.display((ImageView) view, imgSrcList.get(position));
             return view;
@@ -176,9 +175,6 @@ public class BitmapFragment extends Fragment {
     }
 
     private class ImageItemHolder {
-
-        private String uri;
-
         @ViewInject(R.id.img_item)
         private ImageView imgItem;
 
