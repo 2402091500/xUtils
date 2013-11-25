@@ -62,6 +62,8 @@ db.save(user); // 使用saveBindingId保存实体时会为实体的id赋值
 Parent entity = db.findById(Parent.class, parent.getId());
 Parent entity = db.findFirst(entity);//通过entity的属性查找
 List<Parent> list = db.findAll(entity);//通过entity的属性查找
+List<Parent> list = db.findAll(Parent.class);//通过类型查找
+
 Parent Parent = db.findFirst(Selector.from(Parent.class).where("name","=","test"));
 
 // IS NULL
@@ -166,7 +168,7 @@ params.addBodyParameter("name", "value");
 // 如需"multipart/related"，xUtils中提供的MultipartEntity支持设置subType为"related"。
 // 使用params.setBodyEntity(httpEntity)可设置更多类型的HttpEntity（如：
 // MultipartEntity,BodyParamsEntity,FileUploadEntity,InputStreamUploadEntity,StringEntity）。
-// 例：params.setBodyEntity(new StringEntity(json,charset));
+// 例如发送json参数：params.setBodyEntity(new StringEntity(jsonStr,charset));
 params.addBodyParameter("file", new File("path"));
 ...
 
