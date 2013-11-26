@@ -79,7 +79,7 @@ public class BitmapFragment extends Fragment {
         imageListView.setAdapter(imageListAdapter);
 
         // 加载url请求返回的图片连接给listview
-        // 这里只是简单的示例，并非最贱实践，图片较多时，最好上拉加载更多...
+        // 这里只是简单的示例，并非最佳实践，图片较多时，最好上拉加载更多...
         for (String url : imgSites) {
             loadImgList(url);
         }
