@@ -39,6 +39,14 @@ public class TableUtils {
         return table.name();
     }
 
+    public static String getExecAfterTableCreated(Class<?> entityType) {
+        Table table = entityType.getAnnotation(Table.class);
+        if (table != null) {
+            return table.execAfterTableCreated();
+        }
+        return null;
+    }
+
     /**
      * key: entityType.canonicalName
      */

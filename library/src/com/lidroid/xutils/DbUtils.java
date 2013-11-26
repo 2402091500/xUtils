@@ -722,6 +722,10 @@ public class DbUtils {
         if (!tableIsExist(entityType)) {
             SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(entityType);
             execNonQuery(sqlInfo);
+            String execAfterTableCreated = TableUtils.getExecAfterTableCreated(entityType);
+            if (!TextUtils.isEmpty(execAfterTableCreated)) {
+                execNonQuery(execAfterTableCreated);
+            }
         }
     }
 
