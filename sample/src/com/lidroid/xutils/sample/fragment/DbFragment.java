@@ -49,7 +49,7 @@ public class DbFragment extends Fragment {
         String temp = "";
 
         Parent parent = new Parent();
-        parent.name = "测试";
+        parent.name = "测试" + System.currentTimeMillis();
         parent.setAdmin(true);
         parent.setEmail("wyouflf@gmail.com");
 
@@ -59,7 +59,7 @@ public class DbFragment extends Fragment {
 
         try {
 
-            //DbUtils db = DbUtils.create(this.getActivity(), "/sdcard/", "test");
+            //DbUtils db = DbUtils.create(this.getActivity(), "/sdcard/", "test.db");
             DbUtils db = DbUtils.create(this.getActivity());
             db.configAllowTransaction(true);
             db.configDebug(true);
