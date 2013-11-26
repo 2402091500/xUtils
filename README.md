@@ -120,7 +120,7 @@ public void testButtonClick(View v) { // 方法签名必须和接口中的要求
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-    ViewUtils.inject(this);
+    ViewUtils.inject(this); //注入view和事件
     ...
     textView.setText("some text...");
     ...
@@ -135,7 +135,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 //在PreferenceFragment中注入：
 public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    ViewUtils.inject(this, getPreferenceScreen());
+    ViewUtils.inject(this, getPreferenceScreen()); //注入view和事件
     ...
 }
 // 其他重载
