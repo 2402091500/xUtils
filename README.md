@@ -87,6 +87,11 @@ Parent test = db.findFirst(Selector.from(Parent.class).where("id", "between", ne
 DbModel dbModel = db.findDbModelAll(Selector.from(Parent.class).select("name"));//select("name")只取出name列
 List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("name").select("name", "count(name)"));
 ...
+
+List<DbModel> dbModels = db.findDbModelAll(sql); // 自定义sql查询
+db.execNonQuery(sql) // 执行自定义sql
+...
+
 ```
 
 ----
@@ -95,6 +100,7 @@ List<DbModel> dbModels = db.findDbModelAll(Selector.from(Parent.class).groupBy("
 * 无需findViewById和setClickListener等。
 
 ```java
+// xUtils的view注解要求必须提供id，以使代码混淆不受影响。
 @ViewInject(R.id.textView)
 TextView textView;
 
@@ -109,18 +115,37 @@ public void testButtonClick(View v) { // 方法签名必须和接口中的要求
     ...
 }
 ...
-//在使用注解对象之前调用(如onCreate中)：
+//在Activity中注入：
 @Override
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-
     ViewUtils.inject(this);
-
     ...
     textView.setText("some text...");
     ...
 }
+//在Fragment中注入：
+@Override
+public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.bitmap_fragment, container, false); // 加载fragment布局
+    ViewUtils.inject(this, view); //注入view和事件
+    ...
+}
+//在PreferenceFragment中注入：
+public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+    ViewUtils.inject(this, getPreferenceScreen());
+    ...
+}
+// 其他重载
+// inject(View view);
+// inject(Activity activity)
+// inject(PreferenceActivity preferenceActivity)
+// inject(Object handler, View view)
+// inject(Object handler, Activity activity)
+// inject(Object handler, PreferenceGroup preferenceGroup)
+// inject(Object handler, PreferenceActivity preferenceActivity)
 ```
 
 ----
