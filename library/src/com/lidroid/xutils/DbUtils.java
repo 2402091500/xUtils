@@ -140,6 +140,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entity.getClass());
             saveOrUpdateWithoutTransaction(entity);
 
             setTransactionSuccessful();
@@ -152,6 +153,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entities.get(0).getClass());
             for (Object entity : entities) {
                 saveOrUpdateWithoutTransaction(entity);
             }
@@ -166,7 +168,8 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            replaceWithoutTransaction(entity);
+            createTableIfNotExist(entity.getClass());
+            execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(this, entity));
 
             setTransactionSuccessful();
         } finally {
@@ -178,8 +181,9 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entities.get(0).getClass());
             for (Object entity : entities) {
-                replaceWithoutTransaction(entity);
+                execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(this, entity));
             }
 
             setTransactionSuccessful();
@@ -192,7 +196,8 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            saveWithoutTransaction(entity);
+            createTableIfNotExist(entity.getClass());
+            execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
 
             setTransactionSuccessful();
         } finally {
@@ -204,8 +209,9 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entities.get(0).getClass());
             for (Object entity : entities) {
-                saveWithoutTransaction(entity);
+                execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
             }
 
             setTransactionSuccessful();
@@ -219,6 +225,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entity.getClass());
             result = saveBindingIdWithoutTransaction(entity);
 
             setTransactionSuccessful();
@@ -232,54 +239,12 @@ public class DbUtils {
         try {
             beginTransaction();
 
+            createTableIfNotExist(entities.get(0).getClass());
             for (Object entity : entities) {
                 if (!saveBindingIdWithoutTransaction(entity)) {
                     throw new DbException("saveBindingId error, transaction will not commit!");
                 }
             }
-
-            setTransactionSuccessful();
-        } finally {
-            endTransaction();
-        }
-    }
-
-
-    public void delete(Object entity) throws DbException {
-        if (!tableIsExist(entity.getClass())) return;
-        try {
-            beginTransaction();
-
-            deleteWithoutTransaction(entity);
-
-            setTransactionSuccessful();
-        } finally {
-            endTransaction();
-        }
-    }
-
-    public void deleteAll(List<?> entities) throws DbException {
-        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
-        try {
-            beginTransaction();
-
-            for (Object entity : entities) {
-                deleteWithoutTransaction(entity);
-            }
-
-            setTransactionSuccessful();
-        } finally {
-            endTransaction();
-        }
-    }
-
-    public void deleteAll(Class<?> entityType) throws DbException {
-        if (!tableIsExist(entityType)) return;
-        try {
-            beginTransaction();
-
-            SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, null);
-            execNonQuery(sql);
 
             setTransactionSuccessful();
         } finally {
@@ -300,18 +265,49 @@ public class DbUtils {
         }
     }
 
-    public void delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
-        if (!tableIsExist(entityType)) return;
+    public void delete(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return;
         try {
             beginTransaction();
 
-            SqlInfo sql = SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder);
-            execNonQuery(sql);
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
 
             setTransactionSuccessful();
         } finally {
             endTransaction();
         }
+    }
+
+    public void delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
+        if (!tableIsExist(entityType)) return;
+        try {
+            beginTransaction();
+
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder));
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void deleteAll(List<?> entities) throws DbException {
+        if (!tableIsExist(entities.get(0).getClass())) return;
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public void deleteAll(Class<?> entityType) throws DbException {
+        delete(entityType, null);
     }
 
     /**
@@ -324,27 +320,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            updateWithoutTransaction(entity, updateColumnNames);
-
-            setTransactionSuccessful();
-        } finally {
-            endTransaction();
-        }
-    }
-
-    /**
-     * @param entities
-     * @param updateColumnNames if null, update all columns.
-     * @throws DbException
-     */
-    public void updateAll(List<?> entities, String... updateColumnNames) throws DbException {
-        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
-        try {
-            beginTransaction();
-
-            for (Object entity : entities) {
-                updateWithoutTransaction(entity, updateColumnNames);
-            }
+            execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, updateColumnNames));
 
             setTransactionSuccessful();
         } finally {
@@ -364,6 +340,46 @@ public class DbUtils {
             beginTransaction();
 
             execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, whereBuilder, updateColumnNames));
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    /**
+     * @param entities
+     * @param updateColumnNames if null, update all columns.
+     * @throws DbException
+     */
+    public void updateAll(List<?> entities, String... updateColumnNames) throws DbException {
+        if (!tableIsExist(entities.get(0).getClass())) return;
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, updateColumnNames));
+            }
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    /**
+     * @param entities
+     * @param updateColumnNames if null, update all columns.
+     * @throws DbException
+     */
+    public void updateAll(List<?> entities, WhereBuilder whereBuilder, String... updateColumnNames) throws DbException {
+        if (!tableIsExist(entities.get(0).getClass())) return;
+        try {
+            beginTransaction();
+
+            for (Object entity : entities) {
+                execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, whereBuilder, updateColumnNames));
+            }
 
             setTransactionSuccessful();
         } finally {
@@ -428,8 +444,13 @@ public class DbUtils {
         return findFirst(Selector.from(entityType));
     }
 
+    public <T> T findFirst(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
+        return findFirst(Selector.from(entityType).where(whereBuilder));
+    }
+
     public <T> T findFirst(Object entity) throws DbException {
         if (!tableIsExist(entity.getClass())) return null;
+
         Selector selector = Selector.from(entity.getClass());
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
@@ -475,8 +496,13 @@ public class DbUtils {
         return findAll(Selector.from(entityType));
     }
 
+    public <T> List<T> findAll(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
+        return findAll(Selector.from(entityType).where(whereBuilder));
+    }
+
     public <T> List<T> findAll(Object entity) throws DbException {
         if (!tableIsExist(entity.getClass())) return null;
+
         Selector selector = Selector.from(entity.getClass());
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
@@ -506,6 +532,7 @@ public class DbUtils {
 
     public DbModel findDbModelFirst(DbModelSelector selector) throws DbException {
         if (!tableIsExist(selector.getEntityType())) return null;
+
         Cursor cursor = execQuery(selector.limit(1).toString());
         try {
             if (cursor.moveToNext()) {
@@ -532,6 +559,7 @@ public class DbUtils {
 
     public List<DbModel> findDbModelAll(DbModelSelector selector) throws DbException {
         if (!tableIsExist(selector.getEntityType())) return null;
+
         Cursor cursor = execQuery(selector.toString());
         List<DbModel> dbModelList = new ArrayList<DbModel>();
         try {
@@ -542,6 +570,40 @@ public class DbUtils {
             IOUtils.closeQuietly(cursor);
         }
         return dbModelList;
+    }
+
+    public long count(Selector selector) throws DbException {
+        Class<?> entityType = selector.getEntityType();
+        if (!tableIsExist(entityType)) return 0;
+
+        DbModelSelector dmSelector = selector.select("count(" + TableUtils.getId(entityType).getColumnName() + ") as count");
+        return findDbModelFirst(dmSelector).getLong("count");
+    }
+
+    public long count(Class<?> entityType) throws DbException {
+        return count(Selector.from(entityType));
+    }
+
+    public long count(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
+        return count(Selector.from(entityType).where(whereBuilder));
+    }
+
+    public long count(Object entity) throws DbException {
+        if (!tableIsExist(entity.getClass())) return 0;
+
+        Selector selector = Selector.from(entity.getClass());
+        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
+        if (entityKvList != null) {
+            WhereBuilder wb = WhereBuilder.b();
+            for (KeyValue keyValue : entityKvList) {
+                Object value = keyValue.getValue();
+                if (value != null) {
+                    wb.and(keyValue.getKey(), "=", value);
+                }
+            }
+            selector.where(wb);
+        }
+        return count(selector);
     }
 
     //******************************************** config ******************************************************
@@ -652,27 +714,16 @@ public class DbUtils {
         Id id = TableUtils.getId(entity.getClass());
         if (id.isAutoIncrement()) {
             if (id.getColumnValue(entity) != null) {
-                updateWithoutTransaction(entity);
+                execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity));
             } else {
                 saveBindingIdWithoutTransaction(entity);
             }
         } else {
-            replaceWithoutTransaction(entity);
+            execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(this, entity));
         }
     }
 
-    private void replaceWithoutTransaction(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(this, entity));
-    }
-
-    private void saveWithoutTransaction(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
-        execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
-    }
-
     private boolean saveBindingIdWithoutTransaction(Object entity) throws DbException {
-        createTableIfNotExist(entity.getClass());
         Class<?> entityType = entity.getClass();
         String tableName = TableUtils.getTableName(entityType);
         Id idColumn = TableUtils.getId(entityType);
@@ -693,14 +744,6 @@ public class DbUtils {
             return true;
         }
         return false;
-    }
-
-    private void deleteWithoutTransaction(Object entity) throws DbException {
-        execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
-    }
-
-    private void updateWithoutTransaction(Object entity, String... updateColumnNames) throws DbException {
-        execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity, updateColumnNames));
     }
 
     //************************************************ tools ***********************************
