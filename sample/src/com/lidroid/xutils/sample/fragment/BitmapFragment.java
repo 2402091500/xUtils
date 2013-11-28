@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.*;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -64,10 +65,12 @@ public class BitmapFragment extends Fragment {
         //bitmapUtils.configMemoryCacheEnabled(false);
         //bitmapUtils.configDiskCacheEnabled(false);
 
-        /*ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        animation.setDuration(800);
-        bitmapUtils.configDefaultImageLoadAnimation(animation);*/
+        //ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+        //        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        //animation.setDuration(800);
+        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(1000);
+        bitmapUtils.configDefaultImageLoadAnimation(animation);
 
         // 设置最大宽高, 不设置时更具控件属性自适应.
         bitmapUtils.configDefaultBitmapMaxSize(BitmapCommonUtils.getScreenSize(getActivity()).scaleDown(3));
