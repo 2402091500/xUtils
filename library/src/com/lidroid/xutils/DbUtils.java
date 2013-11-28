@@ -691,6 +691,11 @@ public class DbUtils {
     private SQLiteDatabase createDbFileOnSDCard(DaoConfig config) {
         SQLiteDatabase result = null;
 
+        File dir = new File(config.getSdCardPath());
+        if (dir.exists()) {
+            dir.mkdirs();
+        }
+
         File dbFile = new File(config.getSdCardPath(), config.getDbName());
         boolean dbFileExists = dbFile.exists();
         result = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
