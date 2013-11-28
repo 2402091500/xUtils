@@ -231,11 +231,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                     String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
                     result = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
                 } else {
-
-                    // Set charset from response header info if it's exist.
-                    //String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
-                    //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
-
                     result = mStringDownloadHandler.handleEntity(entity, this, charset);
                     if (HttpUtils.sHttpCache.isEnabled(requestMethod)) {
                         HttpUtils.sHttpCache.put(requestUrl, (String) result, expiry);

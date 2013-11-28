@@ -108,11 +108,6 @@ public class SyncHttpHandler {
         StatusLine status = response.getStatusLine();
         int statusCode = status.getStatusCode();
         if (statusCode < 300) {
-
-            // Set charset from response header if it's exist.
-            //String responseCharset = OtherUtils.getCharsetFromHttpResponse(response);
-            //charset = TextUtils.isEmpty(responseCharset) ? charset : responseCharset;
-
             ResponseStream responseStream = new ResponseStream(response, charset, requestUrl, expiry);
             responseStream.setRequestMethod(requestMethod);
             return responseStream;

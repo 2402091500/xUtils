@@ -310,11 +310,6 @@ public class DbUtils {
         delete(entityType, null);
     }
 
-    /**
-     * @param entity
-     * @param updateColumnNames if null, update all columns.
-     * @throws DbException
-     */
     public void update(Object entity, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entity.getClass())) return;
         try {
@@ -328,12 +323,6 @@ public class DbUtils {
         }
     }
 
-    /**
-     * @param entity
-     * @param whereBuilder
-     * @param updateColumnNames if null, update all columns.
-     * @throws DbException
-     */
     public void update(Object entity, WhereBuilder whereBuilder, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entity.getClass())) return;
         try {
@@ -347,11 +336,6 @@ public class DbUtils {
         }
     }
 
-    /**
-     * @param entities
-     * @param updateColumnNames if null, update all columns.
-     * @throws DbException
-     */
     public void updateAll(List<?> entities, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entities.get(0).getClass())) return;
         try {
@@ -367,11 +351,6 @@ public class DbUtils {
         }
     }
 
-    /**
-     * @param entities
-     * @param updateColumnNames if null, update all columns.
-     * @throws DbException
-     */
     public void updateAll(List<?> entities, WhereBuilder whereBuilder, String... updateColumnNames) throws DbException {
         if (!tableIsExist(entities.get(0).getClass())) return;
         try {
@@ -692,7 +671,7 @@ public class DbUtils {
         SQLiteDatabase result = null;
 
         File dir = new File(config.getSdCardPath());
-        if (dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
