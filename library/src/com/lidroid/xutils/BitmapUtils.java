@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 import com.lidroid.xutils.bitmap.BitmapCacheListener;
 import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
@@ -199,11 +198,11 @@ public class BitmapUtils {
 
     ////////////////////////// display ////////////////////////////////////
 
-    public void display(ImageView container, String uri) {
+    public <T extends View> void display(T container, String uri) {
         display(container, uri, null, null);
     }
 
-    public void display(ImageView container, String uri, BitmapDisplayConfig displayConfig) {
+    public <T extends View> void display(T container, String uri, BitmapDisplayConfig displayConfig) {
         display(container, uri, displayConfig, null);
     }
 
