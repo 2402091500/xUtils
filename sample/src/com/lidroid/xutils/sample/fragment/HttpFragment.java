@@ -29,6 +29,7 @@ import com.lidroid.xutils.view.ResType;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import org.apache.http.impl.cookie.BasicClientCookie;
 
 import java.io.File;
 
@@ -56,7 +57,10 @@ public class HttpFragment extends Fragment {
         downloadManager = DownloadService.getDownloadManager(mAppContext);
 
         cookieUtils = new CookieUtils(mAppContext);
-        //cookieUtils.addCookie(cookie); ....
+        BasicClientCookie cookie = new BasicClientCookie("test", "hello");
+        cookie.setDomain("192.168.1.5");
+        cookie.setPath("/");
+        cookieUtils.addCookie(cookie);
 
         return view;
     }
@@ -125,7 +129,7 @@ public class HttpFragment extends Fragment {
         //http.configResponseTextCharset("GBK");
 
         // 自动管理 cookie
-        // http.configCookieStore(cookieUtils);
+        http.configCookieStore(cookieUtils);
 
         http.send(HttpRequest.HttpMethod.POST,
                 "http://192.168.1.5:8080/UploadServlet",
