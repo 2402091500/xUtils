@@ -65,6 +65,8 @@ public class BitmapFragment extends Fragment {
         //bitmapUtils.configMemoryCacheEnabled(false);
         //bitmapUtils.configDiskCacheEnabled(false);
 
+        //bitmapUtils.configDefaultAutoRotation(true);
+
         //ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
         //        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         //animation.setDuration(800);
