@@ -3,12 +3,15 @@ package com.lidroid.xutils.sample.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.*;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
@@ -70,9 +73,12 @@ public class BitmapFragment extends Fragment {
         //ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
         //        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         //animation.setDuration(800);
-        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(1000);
-        bitmapUtils.configDefaultImageLoadAnimation(animation);
+
+        // AlphaAnimation 在一些android系统上表现不正常, 造成图片列表中加载部分图片后剩余无法加载, 目前原因不明.
+        // 可以模仿下面示例里的fadeInDisplay方法实现一个颜色渐变动画。
+        //AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+        //animation.setDuration(1000);
+        //bitmapUtils.configDefaultImageLoadAnimation(animation);
 
         // 设置最大宽高, 不设置时更具控件属性自适应.
         bitmapUtils.configDefaultBitmapMaxSize(BitmapCommonUtils.getScreenSize(getActivity()).scaleDown(3));
@@ -201,9 +207,22 @@ public class BitmapFragment extends Fragment {
 
         @Override
         public void onLoadCompleted(ImageView container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {
-            super.onLoadCompleted(container, uri, bitmap, config, from);
+            //super.onLoadCompleted(container, uri, bitmap, config, from);
+            fadeInDisplay(container, bitmap);
             this.holder.imgPb.setProgress(100);
         }
+    }
+
+    private static final ColorDrawable TRANSPARENT_DRAWABLE = new ColorDrawable(android.R.color.transparent);
+
+    private void fadeInDisplay(ImageView imageView, Bitmap bitmap) {
+        final TransitionDrawable transitionDrawable =
+                new TransitionDrawable(new Drawable[]{
+                        TRANSPARENT_DRAWABLE,
+                        new BitmapDrawable(imageView.getResources(), bitmap)
+                });
+        imageView.setImageDrawable(transitionDrawable);
+        transitionDrawable.startTransition(500);
     }
 
     /**
