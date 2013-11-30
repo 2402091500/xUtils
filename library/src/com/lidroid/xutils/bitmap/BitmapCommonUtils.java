@@ -32,7 +32,7 @@ public class BitmapCommonUtils {
 
     /**
      * @param context
-     * @param dirName Only the folder name, not contain full path.
+     * @param dirName Only the folder name, not full path.
      * @return app_cache_path/dirName
      */
     public static String getDiskCacheDir(Context context, String dirName) {

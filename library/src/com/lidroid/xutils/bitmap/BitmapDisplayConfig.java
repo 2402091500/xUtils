@@ -28,6 +28,7 @@ public class BitmapDisplayConfig {
     private Animation animation;
     private Drawable loadingDrawable;
     private Drawable loadFailedDrawable;
+    private boolean autoRotation = false;
     private boolean showOriginal = false;
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 
@@ -68,6 +69,14 @@ public class BitmapDisplayConfig {
         this.loadFailedDrawable = loadFailedDrawable;
     }
 
+    public boolean isAutoRotation() {
+        return autoRotation;
+    }
+
+    public void setAutoRotation(boolean autoRotation) {
+        this.autoRotation = autoRotation;
+    }
+
     public boolean isShowOriginal() {
         return showOriginal;
     }
@@ -95,6 +104,7 @@ public class BitmapDisplayConfig {
         config.animation = this.animation;
         config.loadingDrawable = this.loadingDrawable;
         config.loadFailedDrawable = this.loadFailedDrawable;
+        config.autoRotation = this.autoRotation;
         config.showOriginal = this.showOriginal;
         config.bitmapConfig = this.bitmapConfig;
         return config;

@@ -131,6 +131,11 @@ public class BitmapUtils {
         return this;
     }
 
+    public BitmapUtils configDefaultAutoRotation(boolean autoRotation) {
+        defaultDisplayConfig.setAutoRotation(autoRotation);
+        return this;
+    }
+
     public BitmapUtils configDefaultShowOriginal(boolean showOriginal) {
         defaultDisplayConfig.setShowOriginal(showOriginal);
         return this;

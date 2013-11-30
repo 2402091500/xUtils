@@ -16,6 +16,8 @@
 package com.lidroid.xutils.bitmap.core;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
@@ -187,8 +189,9 @@ public class BitmapCache {
             }
 
             Bitmap bitmap = decodeBitmapMeta(bitmapMeta, config);
-
-            return addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
+            bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
+            addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
+            return bitmap;
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
         } finally {
@@ -199,12 +202,11 @@ public class BitmapCache {
         return null;
     }
 
-    private Bitmap addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, Bitmap bitmap, long expiryTimestamp) throws IOException {
+    private void addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, Bitmap bitmap, long expiryTimestamp) throws IOException {
         if (uri != null && bitmap != null && globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
             String key = uri + (config == null ? "" : config.toString());
             mMemoryCache.put(key, bitmap, expiryTimestamp);
         }
-        return bitmap;
     }
 
     /**
@@ -267,7 +269,9 @@ public class BitmapCache {
                                     config.getBitmapConfig());
                         }
 
-                        return addBitmapToMemoryCache(uri, config, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
+                        bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
+                        addBitmapToMemoryCache(uri, config, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
+                        return bitmap;
                     }
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
@@ -398,5 +402,44 @@ public class BitmapCache {
             }
         }
         return bitmap;
+    }
+
+    private Bitmap rotateBitmapIfNeeded(String uri, BitmapDisplayConfig config, Bitmap bitmap) {
+        Bitmap result = bitmap;
+        if (config != null && config.isAutoRotation()) {
+            File bitmapFile = this.getBitmapFileFromDiskCache(uri);
+            if (bitmapFile != null && bitmapFile.exists()) {
+                ExifInterface exif = null;
+                try {
+                    exif = new ExifInterface(bitmapFile.getPath());
+                } catch (Throwable e) {
+                    return result;
+                }
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                int angle = 0;
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        angle = 90;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        angle = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        angle = 270;
+                        break;
+                    default:
+                        angle = 0;
+                        break;
+                }
+                if (angle != 0) {
+                    Matrix m = new Matrix();
+                    m.postRotate(angle);
+                    result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+            }
+        }
+        return result;
     }
 }
