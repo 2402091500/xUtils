@@ -309,8 +309,11 @@ public class BitmapUtils {
         return globalConfig.getBitmapCache().getBitmapFileFromDiskCache(uri);
     }
 
-    public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig displayConfig) {
-        return globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
+    public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
+        if (config == null) {
+            config = defaultDisplayConfig;
+        }
+        return globalConfig.getBitmapCache().getBitmapFromMemCache(uri, config);
     }
 
     ////////////////////////////////////////// tasks //////////////////////////////////////////////////////////////////////

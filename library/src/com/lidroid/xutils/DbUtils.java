@@ -150,6 +150,7 @@ public class DbUtils {
     }
 
     public void saveOrUpdateAll(List<?> entities) throws DbException {
+        if (entities == null || entities.size() < 1) return;
         try {
             beginTransaction();
 
@@ -178,6 +179,7 @@ public class DbUtils {
     }
 
     public void replaceAll(List<?> entities) throws DbException {
+        if (entities == null || entities.size() < 1) return;
         try {
             beginTransaction();
 
@@ -206,6 +208,7 @@ public class DbUtils {
     }
 
     public void saveAll(List<?> entities) throws DbException {
+        if (entities == null || entities.size() < 1) return;
         try {
             beginTransaction();
 
@@ -236,6 +239,7 @@ public class DbUtils {
     }
 
     public void saveBindingIdAll(List<?> entities) throws DbException {
+        if (entities == null || entities.size() < 1) return;
         try {
             beginTransaction();
 
@@ -292,7 +296,7 @@ public class DbUtils {
     }
 
     public void deleteAll(List<?> entities) throws DbException {
-        if (!tableIsExist(entities.get(0).getClass())) return;
+        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
@@ -337,7 +341,7 @@ public class DbUtils {
     }
 
     public void updateAll(List<?> entities, String... updateColumnNames) throws DbException {
-        if (!tableIsExist(entities.get(0).getClass())) return;
+        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
@@ -352,7 +356,7 @@ public class DbUtils {
     }
 
     public void updateAll(List<?> entities, WhereBuilder whereBuilder, String... updateColumnNames) throws DbException {
-        if (!tableIsExist(entities.get(0).getClass())) return;
+        if (entities == null || entities.size() < 1 || !tableIsExist(entities.get(0).getClass())) return;
         try {
             beginTransaction();
 
