@@ -174,7 +174,7 @@ public class ViewUtils {
                     }
                 }
             }
-            ViewCommonEventListener.setEventListener(handler, finder, value_annotation_method_map);
+            ViewCommonEventListener.setAllEventListeners(handler, finder, value_annotation_method_map);
         }
     }
 
