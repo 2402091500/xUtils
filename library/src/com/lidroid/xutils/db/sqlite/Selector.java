@@ -75,11 +75,17 @@ public class Selector {
     }
 
     public Selector expr(String expr) {
+        if (this.whereBuilder == null) {
+            this.whereBuilder = WhereBuilder.b();
+        }
         this.whereBuilder.expr(expr);
         return this;
     }
 
     public Selector expr(String columnName, String op, Object value) {
+        if (this.whereBuilder == null) {
+            this.whereBuilder = WhereBuilder.b();
+        }
         this.whereBuilder.expr(columnName, op, value);
         return this;
     }
