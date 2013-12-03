@@ -286,7 +286,7 @@ bitmapUtils.display(testImageView, "assets/img/wallpaper.jpg");
 
 // 使用ListView等容器展示图片时可通过PauseOnScrollListener控制滑动和快速滑动过程中时候暂停加载图片
 listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true));
-listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true), customListener);
+listView.setOnScrollListener(new PauseOnScrollListener(bitmapUtils, false, true, customListener));
 ```
 
 ----
