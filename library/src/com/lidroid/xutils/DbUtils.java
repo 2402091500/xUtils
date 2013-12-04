@@ -19,7 +19,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import com.lidroid.xutils.db.sqlite.*;
 import com.lidroid.xutils.db.table.*;
@@ -51,17 +50,10 @@ public class DbUtils {
         if (config == null) {
             throw new IllegalArgumentException("daoConfig may not be null");
         }
-
         if (config.getContext() == null) {
             throw new IllegalArgumentException("context mey not be null");
         }
-
-        String sdCardPath = config.getSdCardPath();
-        if (TextUtils.isEmpty(sdCardPath)) {
-            this.database = new SQLiteDbHelper(config).getWritableDatabase();
-        } else {
-            this.database = createDbFileOnSDCard(config);
-        }
+        this.database = createDatabase(config);
         this.daoConfig = config;
     }
 
@@ -74,6 +66,27 @@ public class DbUtils {
         } else {
             dao.daoConfig = daoConfig;
         }
+
+        // update the database if needed
+        SQLiteDatabase database = dao.database;
+        int oldVersion = database.getVersion();
+        int newVersion = daoConfig.getDbVersion();
+        if (oldVersion != newVersion) {
+            if (oldVersion != 0) {
+                DbUpgradeListener upgradeListener = daoConfig.getDbUpgradeListener();
+                if (upgradeListener != null) {
+                    upgradeListener.onUpgrade(dao, oldVersion, newVersion);
+                } else {
+                    try {
+                        dao.dropDb();
+                    } catch (DbException e) {
+                        LogUtils.e(e.getMessage(), e);
+                    }
+                }
+            }
+            database.setVersion(newVersion);
+        }
+
         return dao;
     }
 
@@ -88,9 +101,9 @@ public class DbUtils {
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String sdCardPath, String dbName) {
+    public static DbUtils create(Context context, String dbDir, String dbName) {
         DaoConfig config = new DaoConfig(context);
-        config.setSdCardPath(sdCardPath);
+        config.setDbDir(dbDir);
         config.setDbName(dbName);
         return getInstance(config);
     }
@@ -103,9 +116,9 @@ public class DbUtils {
         return getInstance(config);
     }
 
-    public static DbUtils create(Context context, String sdCardPath, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) {
+    public static DbUtils create(Context context, String dbDir, String dbName, int dbVersion, DbUpgradeListener dbUpgradeListener) {
         DaoConfig config = new DaoConfig(context);
-        config.setSdCardPath(sdCardPath);
+        config.setDbDir(dbDir);
         config.setDbName(dbName);
         config.setDbVersion(dbVersion);
         config.setDbUpgradeListener(dbUpgradeListener);
@@ -597,7 +610,7 @@ public class DbUtils {
         private int dbVersion = 1;
         private DbUpgradeListener dbUpgradeListener;
 
-        private String sdCardPath;
+        private String dbDir;
 
         public DaoConfig(Context context) {
             this.context = context;
@@ -612,7 +625,9 @@ public class DbUtils {
         }
 
         public void setDbName(String dbName) {
-            this.dbName = dbName;
+            if (!TextUtils.isEmpty(dbName)) {
+                this.dbName = dbName;
+            }
         }
 
         public int getDbVersion() {
@@ -631,69 +646,38 @@ public class DbUtils {
             this.dbUpgradeListener = dbUpgradeListener;
         }
 
-        public String getSdCardPath() {
-            return sdCardPath;
+        public String getDbDir() {
+            return dbDir;
         }
 
-        public void setSdCardPath(String sdCardPath) {
-            this.sdCardPath = sdCardPath;
+        /**
+         * set database dir
+         *
+         * @param dbDir If dbDir is null or empty, use the app default db dir.
+         */
+        public void setDbDir(String dbDir) {
+            this.dbDir = dbDir;
         }
     }
 
     public interface DbUpgradeListener {
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+        public void onUpgrade(DbUtils db, int oldVersion, int newVersion);
     }
 
-    private class SQLiteDbHelper extends SQLiteOpenHelper {
-
-        private DbUpgradeListener mDbUpgradeListener;
-
-        public SQLiteDbHelper(DaoConfig config) {
-            super(config.getContext(), config.getDbName(), null, config.getDbVersion());
-            this.mDbUpgradeListener = config.getDbUpgradeListener();
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            if (mDbUpgradeListener != null) {
-                mDbUpgradeListener.onUpgrade(db, oldVersion, newVersion);
-            } else {
-                try {
-                    dropDb();
-                } catch (DbException e) {
-                    LogUtils.e(e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    private SQLiteDatabase createDbFileOnSDCard(DaoConfig config) {
+    private SQLiteDatabase createDatabase(DaoConfig config) {
         SQLiteDatabase result = null;
 
-        File dir = new File(config.getSdCardPath());
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        File dbFile = new File(config.getSdCardPath(), config.getDbName());
-        boolean dbFileExists = dbFile.exists();
-        result = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
-
-        if (result != null) {
-            int oldVersion = result.getVersion();
-            int newVersion = config.getDbVersion();
-            if (oldVersion != newVersion) {
-                if (dbFileExists && config.getDbUpgradeListener() != null) {
-                    config.getDbUpgradeListener().onUpgrade(result, oldVersion, newVersion);
-                }
-                result.setVersion(newVersion);
+        String dbDir = config.getDbDir();
+        if (!TextUtils.isEmpty(dbDir)) {
+            File dir = new File(dbDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
+            File dbFile = new File(dbDir, config.getDbName());
+            result = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+        } else {
+            result = config.getContext().openOrCreateDatabase(config.getDbName(), 0, null);
         }
-
         return result;
     }
 
