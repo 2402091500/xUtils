@@ -97,7 +97,7 @@ public class ViewUtils {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
                 if (viewInject != null) {
                     try {
-                        View view = finder.findViewById(viewInject.value());
+                        View view = finder.findViewById(viewInject.value(), viewInject.parentId());
                         if (view != null) {
                             field.setAccessible(true);
                             field.set(handler, view);

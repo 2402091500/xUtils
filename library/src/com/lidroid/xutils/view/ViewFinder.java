@@ -40,6 +40,21 @@ public class ViewFinder {
         return activity == null ? view.findViewById(id) : activity.findViewById(id);
     }
 
+    public View findViewById(int id, int pid) {
+        View pView = null;
+        if (pid > 0) {
+            pView = this.findViewById(pid);
+        }
+
+        View view = null;
+        if (pView != null) {
+            view = pView.findViewById(id);
+        } else {
+            view = this.findViewById(id);
+        }
+        return view;
+    }
+
     @SuppressWarnings("deprecation")
     public Preference findPreference(CharSequence key) {
         return preferenceGroup == null ? preferenceActivity.findPreference(key) : preferenceGroup.findPreference(key);
