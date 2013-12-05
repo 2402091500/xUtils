@@ -70,7 +70,7 @@ public class DownloadService extends Service {
         List<ActivityManager.RunningServiceInfo> serviceList
                 = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-        if (serviceList.size() < 1) {
+        if (serviceList == null || serviceList.size() == 0) {
             return false;
         }
 
