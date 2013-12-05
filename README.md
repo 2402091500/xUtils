@@ -104,11 +104,15 @@ db.execNonQuery(sql) // 执行自定义sql
 @ViewInject(R.id.textView)
 TextView textView;
 
+//@ViewInject(vale=R.id.textView, parentId=R.id.parentView)
+//TextView textView;
+
 @ResInject(id = R.string.label, type = ResType.String)
 private String label;
 
 // 取消了之前使用方法名绑定事件的方式，使用id绑定不受混淆影响
 // 支持绑定多个id @OnClick({R.id.id1, R.id.id2, R.id.id3})
+// or @OnClick(value={R.id.id1, R.id.id2, R.id.id3}, parentId={R.id.pid1, R.id.pid2, R.id.pid3})
 // 更多事件支持参见ViewCommonEventListener类和包com.lidroid.xutils.view.annotation.event。
 @OnClick(R.id.test_button)
 public void testButtonClick(View v) { // 方法签名必须和接口中的要求一致
