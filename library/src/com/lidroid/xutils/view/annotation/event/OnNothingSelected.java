@@ -30,4 +30,6 @@ import java.lang.annotation.Target;
 @EventBase
 public @interface OnNothingSelected {
     int[] value();
+
+    int[] parentId() default 0;
 }

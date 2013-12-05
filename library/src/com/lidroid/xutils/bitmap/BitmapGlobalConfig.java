@@ -257,7 +257,7 @@ public class BitmapGlobalConfig {
 
         @Override
         protected Object[] doInBackground(Object... params) {
-            if (params == null || params.length < 1) return params;
+            if (params == null || params.length == 0) return params;
             BitmapCache cache = getBitmapCache();
             if (cache == null) return params;
             try {
@@ -307,7 +307,7 @@ public class BitmapGlobalConfig {
 
         @Override
         protected void onPostExecute(Object[] params) {
-            if (bitmapCacheListener == null || params == null || params.length < 1) return;
+            if (bitmapCacheListener == null || params == null || params.length == 0) return;
             try {
                 switch ((Integer) params[0]) {
                     case MESSAGE_INIT_MEMORY_CACHE:

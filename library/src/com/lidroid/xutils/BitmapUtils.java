@@ -422,7 +422,7 @@ public class BitmapUtils {
 
         @Override
         protected void onProgressUpdate(Object... values) {
-            if (values == null || values.length < 1) return;
+            if (values == null || values.length == 0) return;
 
             final T container = this.getTargetContainer();
             if (container == null) return;

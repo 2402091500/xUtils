@@ -30,4 +30,6 @@ import java.lang.annotation.Target;
 @EventBase
 public @interface OnItemClick {
     int[] value();
+
+    int[] parentId() default 0;
 }

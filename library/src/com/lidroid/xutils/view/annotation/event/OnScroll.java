@@ -15,4 +15,6 @@ import java.lang.annotation.Target;
 @EventBase
 public @interface OnScroll {
     int[] value();
+
+    int[] parentId() default 0;
 }

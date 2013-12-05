@@ -295,80 +295,84 @@ public class ViewCommonEventListener implements
     // #endregion SeekBar.OnSeekBarChangeListener
 
     @SuppressWarnings("ConstantConditions")
-    public static void setAllEventListeners(Object handler, ViewFinder finder, DoubleKeyValueMap<Object, Annotation, Method> value_annotation_method_map) {
-        for (Object value : value_annotation_method_map.getFirstKeys()) {
-            ConcurrentHashMap<Annotation, Method> annotation_method_map = value_annotation_method_map.get(value);
+    public static void setAllEventListeners(
+            Object handler,
+            ViewFinder finder,
+            DoubleKeyValueMap<ViewInjectInfo, Annotation, Method> info_annotation_method_map) {
+
+        for (ViewInjectInfo info : info_annotation_method_map.getFirstKeys()) {
+            ConcurrentHashMap<Annotation, Method> annotation_method_map = info_annotation_method_map.get(info);
             for (Annotation annotation : annotation_method_map.keySet()) {
                 try {
                     Method method = annotation_method_map.get(annotation);
                     if (annotation instanceof OnClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.setOnClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnClickListener", OnClickListener.class, listener);
                     } else if (annotation instanceof OnLongClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.setOnLongClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnLongClickListener", OnLongClickListener.class, listener);
                     } else if (annotation instanceof OnFocusChange) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.setOnFocusChangeListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnFocusChangeListener", OnFocusChangeListener.class, listener);
                     } else if (annotation instanceof OnKey) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.setOnKeyListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnKeyListener", OnKeyListener.class, listener);
                     } else if (annotation instanceof OnTouch) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.setOnTouchListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnTouchListener", OnTouchListener.class, listener);
                     } else if (annotation instanceof OnItemClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((AdapterView<?>) view).setOnItemClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnItemClickListener", OnItemClickListener.class, listener);
                     } else if (annotation instanceof OnItemLongClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((AdapterView<?>) view).setOnItemLongClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnItemLongClickListener", OnItemLongClickListener.class, listener);
                     } else if (annotation instanceof OnChildClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((ExpandableListView) view).setOnChildClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnChildClickListener", ExpandableListView.OnChildClickListener.class, listener);
                     } else if (annotation instanceof OnGroupClick) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((ExpandableListView) view).setOnGroupClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnGroupClickListener", ExpandableListView.OnGroupClickListener.class, listener);
                     } else if (annotation instanceof OnGroupCollapse) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((ExpandableListView) view).setOnGroupCollapseListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnGroupCollapseListener", ExpandableListView.OnGroupCollapseListener.class, listener);
                     } else if (annotation instanceof OnGroupExpand) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((ExpandableListView) view).setOnGroupExpandListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnGroupExpandListener", ExpandableListView.OnGroupExpandListener.class, listener);
                     } else if (annotation instanceof OnCheckedChange) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         if (view instanceof RadioGroup) {
                             //((RadioGroup) view).setOnCheckedChangeListener(new ViewCommonEventListener(handler, method));
@@ -380,34 +384,34 @@ public class ViewCommonEventListener implements
                             setEventListener(view, "setOnCheckedChangeListener", CompoundButton.OnCheckedChangeListener.class, listener);
                         }
                     } else if (annotation instanceof OnPreferenceClick) {
-                        Preference preference = finder.findPreference(value.toString());
+                        Preference preference = finder.findPreference(info.value.toString());
                         if (preference == null) break;
                         //preference.setOnPreferenceClickListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(preference, "setOnPreferenceClickListener", Preference.OnPreferenceClickListener.class, listener);
                     } else if (annotation instanceof OnPreferenceChange) {
-                        Preference preference = finder.findPreference(value.toString());
+                        Preference preference = finder.findPreference(info.value.toString());
                         if (preference == null) break;
                         //preference.setOnPreferenceChangeListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(preference, "setOnPreferenceChangeListener", Preference.OnPreferenceChangeListener.class, listener);
                     } else if (annotation instanceof OnTabChange) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //((TabHost) view).setOnTabChangedListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "setOnTabChangedListener", TabHost.OnTabChangeListener.class, listener);
                     } else if (annotation instanceof OnScrollChanged) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         //view.getViewTreeObserver().addOnScrollChangedListener(new ViewCommonEventListener(handler, method));
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method);
                         setEventListener(view, "addOnScrollChangedListener", ViewTreeObserver.OnScrollChangedListener.class, listener);
                     } else if (annotation instanceof OnScrollStateChanged) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         Method method0 = null, method1 = null;
-                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = info_annotation_method_map.get(info);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a instanceof OnScrollStateChanged) {
                                 method0 = a_m_map.get(a);
@@ -419,10 +423,10 @@ public class ViewCommonEventListener implements
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method0, method1);
                         setEventListener(view, "setOnScrollListener", AbsListView.OnScrollListener.class, listener);
                     } else if (annotation instanceof OnItemSelected) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         Method method0 = null, method1 = null;
-                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = info_annotation_method_map.get(info);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a instanceof OnItemSelected) {
                                 method0 = a_m_map.get(a);
@@ -434,10 +438,10 @@ public class ViewCommonEventListener implements
                         ViewCommonEventListener listener = new ViewCommonEventListener(handler, method0, method1);
                         setEventListener(view, "setOnItemSelectedListener", AbsListView.OnItemSelectedListener.class, listener);
                     } else if (annotation instanceof OnProgressChanged) {
-                        View view = finder.findViewById((Integer) value);
+                        View view = finder.findViewByInfo(info);
                         if (view == null) break;
                         Method method0 = null, method1 = null, method2 = null;
-                        ConcurrentHashMap<Annotation, Method> a_m_map = value_annotation_method_map.get(value);
+                        ConcurrentHashMap<Annotation, Method> a_m_map = info_annotation_method_map.get(info);
                         for (Annotation a : a_m_map.keySet()) {
                             if (a instanceof OnProgressChanged) {
                                 method0 = a_m_map.get(a);

@@ -102,7 +102,7 @@ public class WhereBuilder {
 
     @Override
     public String toString() {
-        if (whereItems.size() < 1) {
+        if (whereItems.size() == 0) {
             return "";
         }
         StringBuilder sb = new StringBuilder();

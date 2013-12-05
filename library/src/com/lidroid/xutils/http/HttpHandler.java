@@ -141,7 +141,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     @Override
     protected Void doInBackground(Object... params) {
-        if (mStopped || params == null || params.length < 1) return null;
+        if (mStopped || params == null || params.length == 0) return null;
 
         if (params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
@@ -183,7 +183,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     @Override
     @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
-        if (mStopped || values == null || values.length < 1 || callback == null) return;
+        if (mStopped || values == null || values.length == 0 || callback == null) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
                 this.state = State.STARTED;
