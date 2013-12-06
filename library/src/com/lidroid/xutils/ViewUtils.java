@@ -161,7 +161,7 @@ public class ViewUtils {
                                     for (int i = 0; i < len; i++) {
                                         ViewInjectInfo info = new ViewInjectInfo();
                                         info.value = Array.get(values, i);
-                                        info.parentId = parentIdsLen > i ? 0 : (Integer) Array.get(parentIds, i);
+                                        info.parentId = parentIdsLen > i ? (Integer) Array.get(parentIds, i) : 0;
                                         info_annotation_method_map.put(info, annotation, method);
                                     }
                                 } catch (Throwable e) {
