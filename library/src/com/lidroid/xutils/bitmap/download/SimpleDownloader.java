@@ -64,12 +64,12 @@ public class SimpleDownloader extends Downloader {
             } else {
                 final URL url = new URL(uri);
                 urlConnection = url.openConnection();
-                fileLen = urlConnection.getContentLength();
                 urlConnection.setConnectTimeout(this.getDefaultConnectTimeout());
                 urlConnection.setReadTimeout(this.getDefaultReadTimeout());
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 result = urlConnection.getExpiration();
                 result = result < System.currentTimeMillis() ? System.currentTimeMillis() + this.getDefaultExpiry() : result;
+                fileLen = urlConnection.getContentLength();
             }
 
             if (task.isCancelled() || task.getTargetContainer() == null) return -1;
