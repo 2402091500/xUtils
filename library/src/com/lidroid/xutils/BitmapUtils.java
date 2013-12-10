@@ -279,18 +279,12 @@ public class BitmapUtils {
         globalConfig.clearDiskCache();
     }
 
-    public void clearCache(String uri, BitmapDisplayConfig config) {
-        if (config == null) {
-            config = defaultDisplayConfig;
-        }
-        globalConfig.clearCache(uri, config);
+    public void clearCache(String uri) {
+        globalConfig.clearCache(uri);
     }
 
-    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
-        if (config == null) {
-            config = defaultDisplayConfig;
-        }
-        globalConfig.clearMemoryCache(uri, config);
+    public void clearMemoryCache(String uri) {
+        globalConfig.clearMemoryCache(uri);
     }
 
     public void clearDiskCache(String uri) {

@@ -285,12 +285,12 @@ public class BitmapGlobalConfig {
                         cache.clearDiskCache();
                         break;
                     case MESSAGE_CLEAR_BY_KEY:
-                        if (params.length != 3) return params;
-                        cache.clearCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        if (params.length != 2) return params;
+                        cache.clearCache(String.valueOf(params[1]));
                         break;
                     case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                        if (params.length != 3) return params;
-                        cache.clearMemoryCache(String.valueOf(params[1]), (BitmapDisplayConfig) params[2]);
+                        if (params.length != 2) return params;
+                        cache.clearMemoryCache(String.valueOf(params[1]));
                         break;
                     case MESSAGE_CLEAR_DISK_BY_KEY:
                         if (params.length != 2) return params;
@@ -332,16 +332,12 @@ public class BitmapGlobalConfig {
                         bitmapCacheListener.onClearDiskCacheFinished();
                         break;
                     case MESSAGE_CLEAR_BY_KEY:
-                        if (params.length != 3) return;
-                        bitmapCacheListener.onClearCacheFinished(
-                                String.valueOf(params[1]),
-                                (BitmapDisplayConfig) params[2]);
+                        if (params.length != 2) return;
+                        bitmapCacheListener.onClearCacheFinished(String.valueOf(params[1]));
                         break;
                     case MESSAGE_CLEAR_MEMORY_BY_KEY:
-                        if (params.length != 3) return;
-                        bitmapCacheListener.onClearMemoryCacheFinished(
-                                String.valueOf(params[1]),
-                                (BitmapDisplayConfig) params[2]);
+                        if (params.length != 2) return;
+                        bitmapCacheListener.onClearMemoryCacheFinished(String.valueOf(params[1]));
                         break;
                     case MESSAGE_CLEAR_DISK_BY_KEY:
                         if (params.length != 2) return;
@@ -368,12 +364,12 @@ public class BitmapGlobalConfig {
         new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_DISK);
     }
 
-    public void clearCache(String uri, BitmapDisplayConfig config) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_BY_KEY, uri, config);
+    public void clearCache(String uri) {
+        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_BY_KEY, uri);
     }
 
-    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
-        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_MEMORY_BY_KEY, uri, config);
+    public void clearMemoryCache(String uri) {
+        new BitmapCacheManagementTask().execute(BitmapCacheManagementTask.MESSAGE_CLEAR_MEMORY_BY_KEY, uri);
     }
 
     public void clearDiskCache(String uri) {

@@ -17,9 +17,9 @@ public interface BitmapCacheListener {
 
     void onClearDiskCacheFinished();
 
-    void onClearCacheFinished(String uri, BitmapDisplayConfig config);
+    void onClearCacheFinished(String uri);
 
-    void onClearMemoryCacheFinished(String uri, BitmapDisplayConfig config);
+    void onClearMemoryCacheFinished(String uri);
 
     void onClearDiskCacheFinished(String uri);
 

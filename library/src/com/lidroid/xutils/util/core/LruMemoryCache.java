@@ -211,6 +211,10 @@ public class LruMemoryCache<K, V> {
         return previous;
     }
 
+    public final boolean containsKey(K key) {
+        return map.containsKey(key);
+    }
+
     /**
      * Called for entries that have been evicted or removed. This method is
      * invoked when a value is evicted to make space, removed by a call to

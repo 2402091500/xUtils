@@ -35,7 +35,7 @@ public class BitmapCache {
     private final int DISK_CACHE_INDEX = 0;
 
     private LruDiskCache mDiskLruCache;
-    private LruMemoryCache<String, Bitmap> mMemoryCache;
+    private LruMemoryCache<MemoryCacheKey, Bitmap> mMemoryCache;
 
     private final Object mDiskCacheLock = new Object();
     private boolean isDiskCacheReadied = false;
@@ -66,13 +66,13 @@ public class BitmapCache {
             } catch (Throwable e) {
             }
         }
-        mMemoryCache = new LruMemoryCache<String, Bitmap>(globalConfig.getMemoryCacheSize()) {
+        mMemoryCache = new LruMemoryCache<MemoryCacheKey, Bitmap>(globalConfig.getMemoryCacheSize()) {
             /**
              * Measure item size in bytes rather than units which is more practical
              * for a bitmap cache
              */
             @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
+            protected int sizeOf(MemoryCacheKey key, Bitmap bitmap) {
                 if (bitmap == null) return 0;
                 return bitmap.getRowBytes() * bitmap.getHeight();
             }
@@ -204,7 +204,7 @@ public class BitmapCache {
 
     private void addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, Bitmap bitmap, long expiryTimestamp) throws IOException {
         if (uri != null && bitmap != null && globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
-            String key = uri + (config == null ? "" : config.toString());
+            MemoryCacheKey key = new MemoryCacheKey(uri, config == null ? null : config.toString());
             mMemoryCache.put(key, bitmap, expiryTimestamp);
         }
     }
@@ -218,7 +218,7 @@ public class BitmapCache {
      */
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
         if (mMemoryCache != null && globalConfig.isMemoryCacheEnabled()) {
-            String key = uri + (config == null ? "" : config.toString());
+            MemoryCacheKey key = new MemoryCacheKey(uri, config == null ? null : config.toString());
             return mMemoryCache.get(key);
         }
         return null;
@@ -314,15 +314,17 @@ public class BitmapCache {
     }
 
 
-    public void clearCache(String uri, BitmapDisplayConfig config) {
-        clearMemoryCache(uri, config);
+    public void clearCache(String uri) {
+        clearMemoryCache(uri);
         clearDiskCache(uri);
     }
 
-    public void clearMemoryCache(String uri, BitmapDisplayConfig config) {
-        String key = uri + (config == null ? "" : config.toString());
+    public void clearMemoryCache(String uri) {
+        MemoryCacheKey key = new MemoryCacheKey(uri, null);
         if (mMemoryCache != null) {
-            mMemoryCache.remove(key);
+            while (mMemoryCache.containsKey(key)) {
+                mMemoryCache.remove(key);
+            }
         }
     }
 
@@ -441,5 +443,36 @@ public class BitmapCache {
             }
         }
         return result;
+    }
+
+    public class MemoryCacheKey {
+        private String uri;
+        private String subKey;
+
+        private MemoryCacheKey(String uri, String subKey) {
+            this.uri = uri;
+            this.subKey = subKey;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof MemoryCacheKey)) return false;
+
+            MemoryCacheKey that = (MemoryCacheKey) o;
+
+            if (!uri.equals(that.uri)) return false;
+
+            if (subKey != null && that.subKey != null) {
+                return subKey.equals(that.subKey);
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return uri.hashCode();
+        }
     }
 }
