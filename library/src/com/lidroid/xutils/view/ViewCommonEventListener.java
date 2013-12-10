@@ -236,6 +236,10 @@ public class ViewCommonEventListener implements
 
     @Override
     public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+        if (methods.length < 2 || methods[1] == null) {
+            LogUtils.w("onScroll not implement");
+            return;
+        }
         try {
             methods[1].invoke(handler, absListView, i, i2, i3);
         } catch (Throwable e) {
@@ -256,6 +260,10 @@ public class ViewCommonEventListener implements
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+        if (methods.length < 2 || methods[1] == null) {
+            LogUtils.w("onNothingSelected not implement");
+            return;
+        }
         try {
             methods[1].invoke(handler, parent);
         } catch (Throwable e) {
@@ -277,6 +285,10 @@ public class ViewCommonEventListener implements
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+        if (methods.length < 2 || methods[1] == null) {
+            LogUtils.w("onStartTrackingTouch not implement");
+            return;
+        }
         try {
             methods[1].invoke(handler, seekBar);
         } catch (Throwable e) {
@@ -286,6 +298,10 @@ public class ViewCommonEventListener implements
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        if (methods.length < 3 || methods[2] == null) {
+            LogUtils.w("onStopTrackingTouch not implement");
+            return;
+        }
         try {
             methods[2].invoke(handler, seekBar);
         } catch (Throwable e) {
