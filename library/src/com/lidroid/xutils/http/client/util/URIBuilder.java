@@ -31,14 +31,18 @@ import java.util.List;
 public class URIBuilder {
 
     private String scheme;
+    private String encodedSchemeSpecificPart;
     private String encodedAuthority;
     private String userInfo;
     private String encodedUserInfo;
     private String host;
     private int port;
     private String path;
+    private String encodedPath;
+    private String encodedQuery;
     private List<NameValuePair> queryParams;
     private String fragment;
+    private String encodedFragment;
 
     public URIBuilder() {
         this.port = -1;
@@ -46,7 +50,7 @@ public class URIBuilder {
 
     public URIBuilder(final String uri) {
         try {
-            _digestURI(new URI(uri.replace(" ", "%20")));
+            digestURI(new URI(uri));
         } catch (URISyntaxException e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -56,30 +60,19 @@ public class URIBuilder {
         digestURI(uri);
     }
 
-    private void _digestURI(final URI uri) {
-        this.scheme = uri.getScheme();
-        this.encodedAuthority = uri.getRawAuthority();
-        this.host = uri.getHost();
-        this.port = uri.getPort();
-        this.encodedUserInfo = uri.getRawUserInfo();
-        this.userInfo = uri.getUserInfo();
-        this.path = uri.getPath();
-        if (path != null) path = path.replace("%20", " ");
-        String query = uri.getRawQuery();
-        if (query != null) query = query.replace("%20", " ");
-        this.queryParams = parseQuery(query);
-        this.fragment = uri.getFragment();
-    }
-
     private void digestURI(final URI uri) {
         this.scheme = uri.getScheme();
+        this.encodedSchemeSpecificPart = uri.getRawSchemeSpecificPart();
         this.encodedAuthority = uri.getRawAuthority();
         this.host = uri.getHost();
         this.port = uri.getPort();
         this.encodedUserInfo = uri.getRawUserInfo();
         this.userInfo = uri.getUserInfo();
+        this.encodedPath = uri.getRawPath();
         this.path = uri.getPath();
+        this.encodedQuery = uri.getRawQuery();
         this.queryParams = parseQuery(uri.getRawQuery());
+        this.encodedFragment = uri.getRawFragment();
         this.fragment = uri.getFragment();
     }
 
@@ -100,39 +93,45 @@ public class URIBuilder {
     }
 
     private String buildString(Charset charset) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         if (this.scheme != null) {
             sb.append(this.scheme).append(':');
         }
-
-        if (this.encodedAuthority != null) {
-            sb.append("//").append(this.encodedAuthority);
-        } else if (this.host != null) {
-            sb.append("//");
-            if (this.encodedUserInfo != null) {
-                sb.append(this.encodedUserInfo).append("@");
-            } else if (this.userInfo != null) {
-                sb.append(encodeUserInfo(this.userInfo, charset)).append("@");
+        if (this.encodedSchemeSpecificPart != null) {
+            sb.append(this.encodedSchemeSpecificPart);
+        } else {
+            if (this.encodedAuthority != null) {
+                sb.append("//").append(this.encodedAuthority);
+            } else if (this.host != null) {
+                sb.append("//");
+                if (this.encodedUserInfo != null) {
+                    sb.append(this.encodedUserInfo).append("@");
+                } else if (this.userInfo != null) {
+                    sb.append(encodeUserInfo(this.userInfo, charset)).append("@");
+                }
+                if (InetAddressUtils.isIPv6Address(this.host)) {
+                    sb.append("[").append(this.host).append("]");
+                } else {
+                    sb.append(this.host);
+                }
+                if (this.port >= 0) {
+                    sb.append(":").append(this.port);
+                }
             }
-            if (InetAddressUtils.isIPv6Address(this.host)) {
-                sb.append("[").append(this.host).append("]");
-            } else {
-                sb.append(this.host);
+            if (this.encodedPath != null) {
+                sb.append(normalizePath(this.encodedPath));
+            } else if (this.path != null) {
+                sb.append(encodePath(normalizePath(this.path), charset));
             }
-            if (this.port >= 0) {
-                sb.append(":").append(this.port);
+            if (this.encodedQuery != null) {
+                sb.append("?").append(this.encodedQuery);
+            } else if (this.queryParams != null) {
+                sb.append("?").append(encodeQuery(this.queryParams, charset));
             }
         }
-
-        if (this.path != null) {
-            sb.append(encodePath(normalizePath(this.path), charset));
-        }
-
-        if (this.queryParams != null) {
-            sb.append("?").append(encodeQuery(this.queryParams, charset));
-        }
-
-        if (this.fragment != null) {
+        if (this.encodedFragment != null) {
+            sb.append("#").append(this.encodedFragment);
+        } else if (this.fragment != null) {
             sb.append("#").append(encodeFragment(this.fragment, charset));
         }
         return sb.toString();
@@ -168,6 +167,7 @@ public class URIBuilder {
      */
     public URIBuilder setUserInfo(final String userInfo) {
         this.userInfo = userInfo;
+        this.encodedSchemeSpecificPart = null;
         this.encodedAuthority = null;
         this.encodedUserInfo = null;
         return this;
@@ -186,6 +186,7 @@ public class URIBuilder {
      */
     public URIBuilder setHost(final String host) {
         this.host = host;
+        this.encodedSchemeSpecificPart = null;
         this.encodedAuthority = null;
         return this;
     }
@@ -195,6 +196,7 @@ public class URIBuilder {
      */
     public URIBuilder setPort(final int port) {
         this.port = port < 0 ? -1 : port;
+        this.encodedSchemeSpecificPart = null;
         this.encodedAuthority = null;
         return this;
     }
@@ -204,14 +206,8 @@ public class URIBuilder {
      */
     public URIBuilder setPath(final String path) {
         this.path = path;
-        return this;
-    }
-
-    /**
-     * Removes URI query.
-     */
-    public URIBuilder removeQuery() {
-        this.queryParams = null;
+        this.encodedSchemeSpecificPart = null;
+        this.encodedPath = null;
         return this;
     }
 
@@ -222,6 +218,8 @@ public class URIBuilder {
      */
     public URIBuilder setQuery(final String query) {
         this.queryParams = parseQuery(query);
+        this.encodedQuery = null;
+        this.encodedSchemeSpecificPart = null;
         return this;
     }
 
@@ -234,6 +232,8 @@ public class URIBuilder {
             this.queryParams = new ArrayList<NameValuePair>();
         }
         this.queryParams.add(new BasicNameValuePair(param, value));
+        this.encodedQuery = null;
+        this.encodedSchemeSpecificPart = null;
         return this;
     }
 
@@ -246,14 +246,16 @@ public class URIBuilder {
             this.queryParams = new ArrayList<NameValuePair>();
         }
         if (!this.queryParams.isEmpty()) {
-            for (Iterator<NameValuePair> it = this.queryParams.iterator(); it.hasNext(); ) {
-                NameValuePair nvp = it.next();
+            for (final Iterator<NameValuePair> it = this.queryParams.iterator(); it.hasNext(); ) {
+                final NameValuePair nvp = it.next();
                 if (nvp.getName().equals(param)) {
                     it.remove();
                 }
             }
         }
         this.queryParams.add(new BasicNameValuePair(param, value));
+        this.encodedQuery = null;
+        this.encodedSchemeSpecificPart = null;
         return this;
     }
 
@@ -263,6 +265,7 @@ public class URIBuilder {
      */
     public URIBuilder setFragment(final String fragment) {
         this.fragment = fragment;
+        this.encodedFragment = null;
         return this;
     }
 
