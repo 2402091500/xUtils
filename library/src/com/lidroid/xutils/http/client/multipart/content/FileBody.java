@@ -41,10 +41,11 @@ public class FileBody extends AbstractContentBody {
             throw new IllegalArgumentException("File may not be null");
         }
         this.file = file;
-        if (filename != null)
+        if (filename != null) {
             this.filename = filename;
-        else
+        } else {
             this.filename = file.getName();
+        }
         this.charset = charset;
     }
 
@@ -58,11 +59,11 @@ public class FileBody extends AbstractContentBody {
     }
 
     public FileBody(final File file, final String mimeType) {
-        this(file, mimeType, null);
+        this(file, null, mimeType, null);
     }
 
     public FileBody(final File file) {
-        this(file, "application/octet-stream");
+        this(file, null, "application/octet-stream", null);
     }
 
     public InputStream getInputStream() throws IOException {

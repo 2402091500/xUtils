@@ -220,6 +220,20 @@ public class RequestParams {
         fileParams.put(key, new FileBody(file, mimeType, charset));
     }
 
+    public void addBodyParameter(String key, File file, String fileName, String mimeType, String charset) {
+        if (fileParams == null) {
+            fileParams = new HashMap<String, ContentBody>();
+        }
+        fileParams.put(key, new FileBody(file, fileName, mimeType, charset));
+    }
+
+    public void addBodyParameter(String key, InputStream stream, long length) {
+        if (fileParams == null) {
+            fileParams = new HashMap<String, ContentBody>();
+        }
+        fileParams.put(key, new InputStreamBody(stream, length));
+    }
+
     public void addBodyParameter(String key, InputStream stream, long length, String fileName) {
         if (fileParams == null) {
             fileParams = new HashMap<String, ContentBody>();
@@ -227,11 +241,11 @@ public class RequestParams {
         fileParams.put(key, new InputStreamBody(stream, length, fileName));
     }
 
-    public void addBodyParameter(String key, InputStream stream, long length, String mimeType, String fileName) {
+    public void addBodyParameter(String key, InputStream stream, long length, String fileName, String mimeType) {
         if (fileParams == null) {
             fileParams = new HashMap<String, ContentBody>();
         }
-        fileParams.put(key, new InputStreamBody(stream, length, mimeType, fileName));
+        fileParams.put(key, new InputStreamBody(stream, length, fileName, mimeType));
     }
 
     public void setBodyEntity(HttpEntity bodyEntity) {

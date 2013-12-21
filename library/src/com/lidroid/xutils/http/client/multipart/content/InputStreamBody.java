@@ -32,7 +32,7 @@ public class InputStreamBody extends AbstractContentBody {
     private final String filename;
     private long length;
 
-    public InputStreamBody(final InputStream in, long length, final String mimeType, final String filename) {
+    public InputStreamBody(final InputStream in, long length, final String filename, final String mimeType) {
         super(mimeType);
         if (in == null) {
             throw new IllegalArgumentException("Input stream may not be null");
@@ -43,11 +43,11 @@ public class InputStreamBody extends AbstractContentBody {
     }
 
     public InputStreamBody(final InputStream in, long length, final String filename) {
-        this(in, length, "application/octet-stream", filename);
+        this(in, length, filename, "application/octet-stream");
     }
 
     public InputStreamBody(final InputStream in, long length) {
-        this(in, length, "application/octet-stream", "no_name");
+        this(in, length, "no_name", "application/octet-stream");
     }
 
     public InputStream getInputStream() {
