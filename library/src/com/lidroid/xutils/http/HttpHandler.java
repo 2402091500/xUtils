@@ -141,7 +141,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     @Override
     protected Void doInBackground(Object... params) {
-        if (mStopped || params == null || params.length == 0) return null;
+        if (this.state == State.STOPPED || params == null || params.length == 0) return null;
 
         if (params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
@@ -151,7 +151,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         }
 
         try {
-            if (mStopped) return null;
+            if (this.state == State.STOPPED) return null;
             // init request & requestUrl
             request = (HttpRequestBase) params[0];
             requestUrl = request.getURI().toString();
@@ -183,7 +183,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     @Override
     @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
-        if (mStopped || values == null || values.length == 0 || callback == null) return;
+        if (this.state == State.STOPPED || values == null || values.length == 0 || callback == null) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
                 this.state = State.STARTED;
@@ -254,14 +254,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         return null;
     }
 
-    private boolean mStopped = false;
-
     /**
      * stop request task.
      */
-    @Override
     public void stop() {
-        this.mStopped = true;
         this.state = State.STOPPED;
 
         if (request != null && !request.isAborted()) {
@@ -282,9 +278,8 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         }
     }
 
-    @Override
     public boolean isStopped() {
-        return mStopped;
+        return this.state == State.STOPPED;
     }
 
     public RequestCallBack<T> getRequestCallBack() {
@@ -295,7 +290,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     @Override
     public boolean updateProgress(long total, long current, boolean forceUpdateUI) {
-        if (callback != null && !mStopped) {
+        if (callback != null && this.state != State.STOPPED) {
             if (forceUpdateUI) {
                 this.publishProgress(UPDATE_LOADING, total, current);
             } else {
@@ -306,7 +301,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                 }
             }
         }
-        return !mStopped;
+        return this.state != State.STOPPED;
     }
 
     public enum State {

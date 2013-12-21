@@ -23,8 +23,4 @@ public interface RequestCallBackHandler {
      * @return continue
      */
     boolean updateProgress(long total, long current, boolean forceUpdateUI);
-
-    void stop();
-
-    boolean isStopped();
 }
