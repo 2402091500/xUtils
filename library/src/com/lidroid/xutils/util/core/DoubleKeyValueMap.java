@@ -47,13 +47,13 @@ public class DoubleKeyValueMap<K1, K2, V> {
         return k1_k2V_map.keySet();
     }
 
+    public ConcurrentHashMap<K2, V> get(K1 key1) {
+        return k1_k2V_map.get(key1);
+    }
+
     public V get(K1 key1, K2 key2) {
         ConcurrentHashMap<K2, V> k2_v = k1_k2V_map.get(key1);
         return k2_v == null ? null : k2_v.get(key2);
-    }
-
-    public ConcurrentHashMap<K2, V> get(K1 key1) {
-        return k1_k2V_map.get(key1);
     }
 
     public boolean containsKey(K1 key1, K2 key2) {
@@ -65,6 +65,16 @@ public class DoubleKeyValueMap<K1, K2, V> {
 
     public boolean containsKey(K1 key1) {
         return k1_k2V_map.containsKey(key1);
+    }
+
+    public int size() {
+        if (k1_k2V_map.size() == 0) return 0;
+
+        int result = 0;
+        for (ConcurrentHashMap<K2, V> k2V_map : k1_k2V_map.values()) {
+            result += k2V_map.size();
+        }
+        return result;
     }
 
     public void clear() {
