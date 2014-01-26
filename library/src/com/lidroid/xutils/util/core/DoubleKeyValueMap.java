@@ -15,6 +15,8 @@
 
 package com.lidroid.xutils.util.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,6 +58,26 @@ public class DoubleKeyValueMap<K1, K2, V> {
         return k2_v == null ? null : k2_v.get(key2);
     }
 
+    public Collection<V> getAllValues(K1 key1) {
+        ConcurrentHashMap<K2, V> k2_v = k1_k2V_map.get(key1);
+        return k2_v == null ? null : k2_v.values();
+    }
+
+    public Collection<V> getAllValues() {
+        Collection<V> result = null;
+        Set<K1> k1Set = k1_k2V_map.keySet();
+        if (k1Set != null) {
+            result = new ArrayList<V>();
+            for (K1 k1 : k1Set) {
+                Collection<V> values = k1_k2V_map.get(k1).values();
+                if (values != null) {
+                    result.addAll(values);
+                }
+            }
+        }
+        return result;
+    }
+
     public boolean containsKey(K1 key1, K2 key2) {
         if (k1_k2V_map.containsKey(key1)) {
             return k1_k2V_map.get(key1).containsKey(key2);
@@ -75,6 +97,17 @@ public class DoubleKeyValueMap<K1, K2, V> {
             result += k2V_map.size();
         }
         return result;
+    }
+
+    public void remove(K1 key1) {
+        k1_k2V_map.remove(key1);
+    }
+
+    public void remove(K1 key1, K2 key2) {
+        ConcurrentHashMap<K2, V> k2_v = k1_k2V_map.get(key1);
+        if (k2_v != null) {
+            k2_v.remove(key2);
+        }
     }
 
     public void clear() {
