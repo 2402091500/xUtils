@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DbUtils {
 
@@ -801,9 +803,15 @@ public class DbUtils {
         }
     }
 
+    private Lock writeLock = new ReentrantLock();
+    private volatile boolean writeLocked = false;
+
     private void beginTransaction() {
         if (allowTransaction) {
             database.beginTransaction();
+        } else {
+            writeLock.lock();
+            writeLocked = true;
         }
     }
 
@@ -816,6 +824,10 @@ public class DbUtils {
     private void endTransaction() {
         if (allowTransaction) {
             database.endTransaction();
+        }
+        if (writeLocked) {
+            writeLock.unlock();
+            writeLocked = false;
         }
     }
 
