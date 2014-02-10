@@ -13,8 +13,10 @@ import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.sample.fragment.DbFragment;
 import com.lidroid.xutils.sample.fragment.HttpFragment;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.annotation.ContentView;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
+@ContentView(R.layout.main)
 public class MyActivity extends FragmentActivity {
 
     @ViewInject(R.id.tabhost)
@@ -36,7 +38,6 @@ public class MyActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
         LogUtils.customTagPrefix = "xUtilsSample"; // 方便调试时过滤 adb logcat 输出
         LogUtils.allowI = false; //关闭 LogUtils.i(...) 的 adb log 输出

@@ -23,6 +23,7 @@ import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.DoubleKeyValueMap;
 import com.lidroid.xutils.view.*;
+import com.lidroid.xutils.view.annotation.ContentView;
 import com.lidroid.xutils.view.annotation.PreferenceInject;
 import com.lidroid.xutils.view.annotation.ResInject;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -87,8 +88,18 @@ public class ViewUtils {
     @SuppressWarnings("ConstantConditions")
     private static void injectObject(Object handler, ViewFinder finder) {
 
+        Class<?> handlerType = handler.getClass();
+
+        // inject ContentView
+        if (Activity.class.isAssignableFrom(handlerType)) {
+            ContentView contentView = handlerType.getAnnotation(ContentView.class);
+            if (contentView != null) {
+                ((Activity) handler).setContentView(contentView.value());
+            }
+        }
+
         // inject view
-        Field[] fields = handler.getClass().getDeclaredFields();
+        Field[] fields = handlerType.getDeclaredFields();
         if (fields != null && fields.length > 0) {
             for (Field field : fields) {
                 ViewInject viewInject = field.getAnnotation(ViewInject.class);
@@ -134,7 +145,7 @@ public class ViewUtils {
         }
 
         // inject event
-        Method[] methods = handler.getClass().getDeclaredMethods();
+        Method[] methods = handlerType.getDeclaredMethods();
         if (methods != null && methods.length > 0) {
             String eventName = OnClick.class.getCanonicalName();
             String prefix = eventName.substring(0, eventName.lastIndexOf('.'));
