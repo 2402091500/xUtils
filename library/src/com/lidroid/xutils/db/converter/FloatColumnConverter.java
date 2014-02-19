@@ -2,6 +2,7 @@ package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
 import android.text.TextUtils;
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
 
 /**
  * Author: wyouflf
@@ -26,7 +27,7 @@ public class FloatColumnConverter implements ColumnConverter<Float> {
     }
 
     @Override
-    public String getColumnDbType() {
-        return "REAL";
+    public ColumnDbType getColumnDbType() {
+        return ColumnDbType.REAL;
     }
 }

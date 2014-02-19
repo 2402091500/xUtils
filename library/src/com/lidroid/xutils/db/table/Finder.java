@@ -2,6 +2,7 @@ package com.lidroid.xutils.db.table;
 
 import android.database.Cursor;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
 import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
@@ -86,7 +87,7 @@ public class Finder extends Column {
     }
 
     @Override
-    public String getColumnDbType() {
-        return "";
+    public ColumnDbType getColumnDbType() {
+        return ColumnDbType.TEXT;
     }
 }

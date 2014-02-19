@@ -1,5 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
+
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,12 +31,12 @@ public class ColumnConverterFactory {
         return null;
     }
 
-    public static String getDbColumnType(Class columnType) {
+    public static ColumnDbType getDbColumnType(Class columnType) {
         ColumnConverter converter = getColumnConverter(columnType);
         if (converter != null) {
             return converter.getColumnDbType();
         }
-        return "TEXT";
+        return ColumnDbType.TEXT;
     }
 
     public static void registerColumnConverter(Class columnType, ColumnConverter columnConverter) {

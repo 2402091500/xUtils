@@ -18,6 +18,7 @@ package com.lidroid.xutils.db.table;
 import android.database.Cursor;
 import com.lidroid.xutils.db.converter.ColumnConverter;
 import com.lidroid.xutils.db.converter.ColumnConverterFactory;
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.lang.reflect.Field;
@@ -108,7 +109,7 @@ public class Column {
         return columnField;
     }
 
-    public String getColumnDbType() {
+    public ColumnDbType getColumnDbType() {
         return columnConverter.getColumnDbType();
     }
 }

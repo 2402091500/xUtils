@@ -1,6 +1,7 @@
 package com.lidroid.xutils.db.converter;
 
 import android.database.Cursor;
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
 
 /**
  * Author: wyouflf
@@ -24,7 +25,7 @@ public class StringColumnConverter implements ColumnConverter<String> {
     }
 
     @Override
-    public String getColumnDbType() {
-        return "TEXT";
+    public ColumnDbType getColumnDbType() {
+        return ColumnDbType.TEXT;
     }
 }

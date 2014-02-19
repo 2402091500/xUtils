@@ -6,6 +6,7 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.db.converter.ColumnConverter;
 import com.lidroid.xutils.db.converter.ColumnConverterFactory;
+import com.lidroid.xutils.db.sqlite.ColumnDbType;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.exception.HttpException;
@@ -281,8 +282,8 @@ public class DownloadManager {
         }
 
         @Override
-        public String getColumnDbType() {
-            return "INTEGER";
+        public ColumnDbType getColumnDbType() {
+            return ColumnDbType.INTEGER;
         }
     }
 }
