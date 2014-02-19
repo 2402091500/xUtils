@@ -162,7 +162,7 @@ public class WhereBuilder {
                     StringBuffer stringBuffer = new StringBuffer("(");
                     for (Object item : items) {
                         Object itemColValue = ColumnUtils.convert2DbColumnValueIfNeeded(item);
-                        if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(itemColValue.getClass()))) {
+                        if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(itemColValue.getClass()))) {
                             String valueStr = itemColValue.toString();
                             if (valueStr.indexOf('\'') != -1) { // convert single quotations
                                 valueStr = valueStr.replace("'", "''");
@@ -201,7 +201,7 @@ public class WhereBuilder {
                     Object startColValue = ColumnUtils.convert2DbColumnValueIfNeeded(start);
                     Object endColValue = ColumnUtils.convert2DbColumnValueIfNeeded(end);
 
-                    if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(startColValue.getClass()))) {
+                    if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(startColValue.getClass()))) {
                         String startStr = startColValue.toString();
                         if (startStr.indexOf('\'') != -1) { // convert single quotations
                             startStr = startStr.replace("'", "''");
@@ -223,7 +223,7 @@ public class WhereBuilder {
                 }
             } else {
                 value = ColumnUtils.convert2DbColumnValueIfNeeded(value);
-                if ("TEXT".equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
+                if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
                     String valueStr = value.toString();
                     if (valueStr.indexOf('\'') != -1) { // convert single quotations
                         valueStr = valueStr.replace("'", "''");
