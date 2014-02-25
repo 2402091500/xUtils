@@ -100,8 +100,8 @@ public class BitmapGlobalConfig {
     public Downloader getDownloader() {
         if (downloader == null) {
             downloader = new SimpleDownloader();
-            downloader.setContext(mContext);
         }
+        downloader.setContext(mContext);
         downloader.setDefaultExpiry(getDefaultCacheExpiry());
         downloader.setDefaultConnectTimeout(getDefaultConnectTimeout());
         downloader.setDefaultReadTimeout(getDefaultReadTimeout());
