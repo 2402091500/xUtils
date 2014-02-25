@@ -138,7 +138,8 @@ public class BitmapCache {
 
         try {
 
-            // download to disk
+            Bitmap bitmap = null;
+            // try download to disk
             if (globalConfig.isDiskCacheEnabled()) {
                 synchronized (mDiskCacheLock) {
                     // Wait for disk cache to initialize
@@ -169,6 +170,11 @@ public class BitmapCache {
                             }
                             if (snapshot != null) {
                                 bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                                bitmap = decodeBitmapMeta(bitmapMeta, config);
+                                if (bitmap == null) {
+                                    bitmapMeta.inputStream = null;
+                                    mDiskLruCache.remove(uri);
+                                }
                             }
                         } catch (Throwable e) {
                             LogUtils.e(e.getMessage(), e);
@@ -177,20 +183,22 @@ public class BitmapCache {
                 }
             }
 
-            // download to memory stream
-            if (!globalConfig.isDiskCacheEnabled() || mDiskLruCache == null || bitmapMeta.inputStream == null) {
+            // try download to memory stream
+            if (bitmap == null) {
                 outputStream = new ByteArrayOutputStream();
                 bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream, task);
                 if (bitmapMeta.expiryTimestamp < 0) {
                     return null;
                 } else {
                     bitmapMeta.data = ((ByteArrayOutputStream) outputStream).toByteArray();
+                    bitmap = decodeBitmapMeta(bitmapMeta, config);
                 }
             }
 
-            Bitmap bitmap = decodeBitmapMeta(bitmapMeta, config);
-            bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
-            addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
+            if (bitmap != null) {
+                bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
+                addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
+            }
             return bitmap;
         } catch (Throwable e) {
             LogUtils.e(e.getMessage(), e);
