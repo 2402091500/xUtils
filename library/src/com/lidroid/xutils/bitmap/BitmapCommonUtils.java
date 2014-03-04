@@ -36,8 +36,16 @@ public class BitmapCommonUtils {
      * @return app_cache_path/dirName
      */
     public static String getDiskCacheDir(Context context, String dirName) {
-        final String cachePath = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ?
-                context.getExternalCacheDir().getPath() : context.getCacheDir().getPath();
+        String cachePath = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            File externalCacheDir = context.getExternalCacheDir();
+            if (externalCacheDir != null) {
+                cachePath = externalCacheDir.getPath();
+            }
+        }
+        if (cachePath == null) {
+            cachePath = context.getCacheDir().getPath();
+        }
 
         return cachePath + File.separator + dirName;
     }
