@@ -54,7 +54,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     private String requestMethod;
     private HttpRequestBase request;
     private boolean isUploading = true;
-    private final RequestCallBack<T> callback;
+    private RequestCallBack<T> callback;
 
     private int retriedTimes = 0;
     private String fileSavePath = null;
@@ -80,6 +80,14 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     public void setExpiry(long expiry) {
         this.expiry = expiry;
+    }
+
+    public void setRequestCallBack(RequestCallBack<T> callback) {
+        this.callback = callback;
+    }
+
+    public RequestCallBack<T> getRequestCallBack() {
+        return this.callback;
     }
 
     // 执行请求
@@ -280,10 +288,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
     public boolean isStopped() {
         return this.state == State.STOPPED;
-    }
-
-    public RequestCallBack<T> getRequestCallBack() {
-        return this.callback;
     }
 
     private long lastUpdateTime;
