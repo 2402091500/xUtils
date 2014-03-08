@@ -23,14 +23,17 @@ import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.RedirectHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 
@@ -68,6 +71,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         this.context = context;
         this.callback = callback;
         this.charset = charset;
+        this.client.setRedirectHandler(notUseApacheRedirectHandler);
     }
 
     private State state = State.WAITING;
@@ -337,6 +341,20 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
 
         public int value() {
             return this.value;
+        }
+    }
+
+    private static final NotUseApacheRedirectHandler notUseApacheRedirectHandler = new NotUseApacheRedirectHandler();
+
+    private static final class NotUseApacheRedirectHandler implements RedirectHandler {
+        @Override
+        public boolean isRedirectRequested(HttpResponse httpResponse, HttpContext httpContext) {
+            return false;
+        }
+
+        @Override
+        public URI getLocationURI(HttpResponse httpResponse, HttpContext httpContext) throws ProtocolException {
+            return null;
         }
     }
 }
