@@ -91,10 +91,13 @@ public class ViewUtils {
         Class<?> handlerType = handler.getClass();
 
         // inject ContentView
-        if (Activity.class.isAssignableFrom(handlerType)) {
-            ContentView contentView = handlerType.getAnnotation(ContentView.class);
-            if (contentView != null) {
-                ((Activity) handler).setContentView(contentView.value());
+        ContentView contentView = handlerType.getAnnotation(ContentView.class);
+        if (contentView != null) {
+            try {
+                Method setContentViewMethod = handlerType.getMethod("setContentView", int.class);
+                setContentViewMethod.invoke(handler, contentView.value());
+            } catch (Throwable e) {
+                LogUtils.e(e.getMessage(), e);
             }
         }
 
