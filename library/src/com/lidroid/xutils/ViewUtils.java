@@ -156,6 +156,7 @@ public class ViewUtils {
                     for (Annotation annotation : annotations) {
                         Class<?> annType = annotation.annotationType();
                         if (annType.getAnnotation(EventBase.class) != null) {
+                            method.setAccessible(true);
                             if (annType.getCanonicalName().startsWith(prefix)) {
                                 try {
                                     // ProGuard：-keep class * extends java.lang.annotation.Annotation { *; }
