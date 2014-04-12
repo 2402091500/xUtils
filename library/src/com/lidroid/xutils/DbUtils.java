@@ -702,25 +702,34 @@ public class DbUtils {
         String tableName = TableUtils.getTableName(entityType);
         Id idColumn = TableUtils.getId(entityType);
         if (idColumn.isAutoIncrement()) {
-            List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-            if (entityKvList != null && entityKvList.size() > 0) {
-                ContentValues cv = new ContentValues();
-                DbUtils.fillContentValues(cv, entityKvList);
-                long id = database.insert(tableName, null, cv);
-                if (id == -1) {
-                    return false;
-                }
-                idColumn.setAutoIncrementId(entity, id);
-                return true;
+            execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
+            long id = getLastAutoIncrementId(tableName);
+            if (id == -1) {
+                return false;
             }
+            idColumn.setAutoIncrementId(entity, id);
+            return true;
         } else {
             execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
             return true;
         }
-        return false;
     }
 
     //************************************************ tools ***********************************
+
+    private long getLastAutoIncrementId(String tableName) throws DbException {
+        long id = -1;
+        Cursor cursor = null;
+        try {
+            cursor = execQuery("SELECT seq FROM sqlite_sequence WHERE name ='" + tableName + "'");
+            if (cursor != null && cursor.moveToNext()) {
+                id = cursor.getLong(0);
+            }
+        } finally {
+            IOUtils.closeQuietly(cursor);
+        }
+        return id;
+    }
 
     private static void fillContentValues(ContentValues contentValues, List<KeyValue> list) {
         if (list != null && contentValues != null) {
