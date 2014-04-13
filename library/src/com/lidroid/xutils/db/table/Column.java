@@ -40,7 +40,7 @@ public class Column {
         this.columnConverter = ColumnConverterFactory.getColumnConverter(field.getType());
         this.columnName = ColumnUtils.getColumnNameByField(field);
         if (this.columnConverter != null) {
-            this.defaultValue = this.columnConverter.getFiledValue(ColumnUtils.getColumnDefaultValue(field));
+            this.defaultValue = this.columnConverter.getFieldValue(ColumnUtils.getColumnDefaultValue(field));
         } else {
             this.defaultValue = null;
         }
@@ -51,7 +51,7 @@ public class Column {
     @SuppressWarnings("unchecked")
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
 
-        Object value = columnConverter.getFiledValue(cursor, index);
+        Object value = columnConverter.getFieldValue(cursor, index);
         if (value == null && defaultValue == null) return;
 
         if (setMethod != null) {

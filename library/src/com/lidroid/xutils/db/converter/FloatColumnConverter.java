@@ -11,12 +11,12 @@ import com.lidroid.xutils.db.sqlite.ColumnDbType;
  */
 public class FloatColumnConverter implements ColumnConverter<Float> {
     @Override
-    public Float getFiledValue(final Cursor cursor, int index) {
+    public Float getFieldValue(final Cursor cursor, int index) {
         return cursor.isNull(index) ? null : cursor.getFloat(index);
     }
 
     @Override
-    public Float getFiledValue(String fieldStringValue) {
+    public Float getFieldValue(String fieldStringValue) {
         if (TextUtils.isEmpty(fieldStringValue)) return null;
         return Float.valueOf(fieldStringValue);
     }

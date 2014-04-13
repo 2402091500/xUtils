@@ -10,9 +10,9 @@ import com.lidroid.xutils.db.sqlite.ColumnDbType;
  */
 public interface ColumnConverter<T> {
 
-    T getFiledValue(final Cursor cursor, int index);
+    T getFieldValue(final Cursor cursor, int index);
 
-    T getFiledValue(String fieldStringValue);
+    T getFieldValue(String fieldStringValue);
 
     Object fieldValue2ColumnValue(T fieldValue);
 

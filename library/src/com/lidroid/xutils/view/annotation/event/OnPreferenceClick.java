@@ -15,6 +15,8 @@
 
 package com.lidroid.xutils.view.annotation.event;
 
+import android.preference.Preference;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,7 +29,10 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@EventBase
+@EventBase(
+        eventListenerType = Preference.OnPreferenceClickListener.class,
+        eventListenerSetter = "setOnPreferenceClickListener",
+        methodName = "onPreferenceClick")
 public @interface OnPreferenceClick {
     String[] value();
 }

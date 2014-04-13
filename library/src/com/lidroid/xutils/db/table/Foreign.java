@@ -54,7 +54,7 @@ public class Foreign extends Column {
     @SuppressWarnings("unchecked")
     @Override
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
-        Object filedValue = foreignColumnConverter.getFiledValue(cursor, index);
+        Object filedValue = foreignColumnConverter.getFieldValue(cursor, index);
         if (filedValue == null) return;
 
         Object value = null;

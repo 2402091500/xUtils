@@ -11,12 +11,12 @@ import com.lidroid.xutils.db.sqlite.ColumnDbType;
  */
 public class CharColumnConverter implements ColumnConverter<Character> {
     @Override
-    public Character getFiledValue(final Cursor cursor, int index) {
+    public Character getFieldValue(final Cursor cursor, int index) {
         return cursor.isNull(index) ? null : (char) cursor.getInt(index);
     }
 
     @Override
-    public Character getFiledValue(String fieldStringValue) {
+    public Character getFieldValue(String fieldStringValue) {
         if (TextUtils.isEmpty(fieldStringValue)) return null;
         return fieldStringValue.charAt(0);
     }

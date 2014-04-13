@@ -11,12 +11,12 @@ import com.lidroid.xutils.db.sqlite.ColumnDbType;
  */
 public class ByteColumnConverter implements ColumnConverter<Byte> {
     @Override
-    public Byte getFiledValue(final Cursor cursor, int index) {
+    public Byte getFieldValue(final Cursor cursor, int index) {
         return cursor.isNull(index) ? null : (byte) cursor.getInt(index);
     }
 
     @Override
-    public Byte getFiledValue(String fieldStringValue) {
+    public Byte getFieldValue(String fieldStringValue) {
         if (TextUtils.isEmpty(fieldStringValue)) return null;
         return Byte.valueOf(fieldStringValue);
     }
