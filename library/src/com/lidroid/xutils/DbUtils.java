@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -729,19 +728,6 @@ public class DbUtils {
             IOUtils.closeQuietly(cursor);
         }
         return id;
-    }
-
-    private static void fillContentValues(ContentValues contentValues, List<KeyValue> list) {
-        if (list != null && contentValues != null) {
-            for (KeyValue kv : list) {
-                Object value = kv.getValue();
-                if (value != null) {
-                    contentValues.put(kv.getKey(), value.toString());
-                }
-            }
-        } else {
-            LogUtils.w("List<KeyValue> is empty or ContentValues is empty!");
-        }
     }
 
     public void createTableIfNotExist(Class<?> entityType) throws DbException {

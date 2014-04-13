@@ -15,7 +15,6 @@
 
 package com.lidroid.xutils.view.annotation.event;
 
-import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
 import java.lang.annotation.ElementType;
