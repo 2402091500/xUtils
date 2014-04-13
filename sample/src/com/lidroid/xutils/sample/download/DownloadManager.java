@@ -266,12 +266,12 @@ public class DownloadManager {
     private class HttpHandlerStateConverter implements ColumnConverter<HttpHandler.State> {
 
         @Override
-        public HttpHandler.State getFiledValue(Cursor cursor, int index) {
+        public HttpHandler.State getFieldValue(Cursor cursor, int index) {
             return HttpHandler.State.valueOf(cursor.getInt(index));
         }
 
         @Override
-        public HttpHandler.State getFiledValue(String fieldStringValue) {
+        public HttpHandler.State getFieldValue(String fieldStringValue) {
             if (fieldStringValue == null) return null;
             return HttpHandler.State.valueOf(fieldStringValue);
         }
