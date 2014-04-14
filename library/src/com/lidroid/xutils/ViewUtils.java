@@ -21,8 +21,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.EventListenerManager;
 import com.lidroid.xutils.view.ResLoader;
-import com.lidroid.xutils.view.ViewEventListenerManager;
 import com.lidroid.xutils.view.ViewFinder;
 import com.lidroid.xutils.view.ViewInjectInfo;
 import com.lidroid.xutils.view.annotation.ContentView;
@@ -157,7 +157,7 @@ public class ViewUtils {
                                     ViewInjectInfo info = new ViewInjectInfo();
                                     info.value = Array.get(values, i);
                                     info.parentId = parentIdsLen > i ? (Integer) Array.get(parentIds, i) : 0;
-                                    ViewEventListenerManager.addEventMethod(finder, info, annotation, handler, method);
+                                    EventListenerManager.addEventMethod(finder, info, annotation, handler, method);
                                 }
                             } catch (Throwable e) {
                                 LogUtils.e(e.getMessage(), e);

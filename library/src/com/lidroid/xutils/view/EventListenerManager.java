@@ -27,9 +27,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 
-public class ViewEventListenerManager {
+public class EventListenerManager {
 
-    private ViewEventListenerManager() {
+    private EventListenerManager() {
     }
 
     /**
