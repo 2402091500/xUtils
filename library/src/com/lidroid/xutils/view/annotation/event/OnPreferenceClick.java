@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = Preference.OnPreferenceClickListener.class,
-        eventListenerSetter = "setOnPreferenceClickListener",
+        listenerType = Preference.OnPreferenceClickListener.class,
+        listenerSetter = "setOnPreferenceClickListener",
         methodName = "onPreferenceClick")
 public @interface OnPreferenceClick {
     String[] value();

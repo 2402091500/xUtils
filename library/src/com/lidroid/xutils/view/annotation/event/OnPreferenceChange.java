@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = Preference.OnPreferenceChangeListener.class,
-        eventListenerSetter = "setOnPreferenceChangeListener",
+        listenerType = Preference.OnPreferenceChangeListener.class,
+        listenerSetter = "setOnPreferenceChangeListener",
         methodName = "onPreferenceChange")
 public @interface OnPreferenceChange {
     String[] value();

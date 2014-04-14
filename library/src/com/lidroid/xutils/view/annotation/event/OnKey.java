@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = View.OnKeyListener.class,
-        eventListenerSetter = "setOnKeyListener",
+        listenerType = View.OnKeyListener.class,
+        listenerSetter = "setOnKeyListener",
         methodName = "onKey")
 public @interface OnKey {
     int[] value();

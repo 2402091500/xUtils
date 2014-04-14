@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = TabHost.OnTabChangeListener.class,
-        eventListenerSetter = "setOnTabChangeListener",
+        listenerType = TabHost.OnTabChangeListener.class,
+        listenerSetter = "setOnTabChangeListener",
         methodName = "onTabChange")
 public @interface OnTabChange {
     int[] value();

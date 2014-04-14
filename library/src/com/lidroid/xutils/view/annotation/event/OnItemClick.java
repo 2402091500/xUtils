@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = AdapterView.OnItemClickListener.class,
-        eventListenerSetter = "setOnItemClickListener",
+        listenerType = AdapterView.OnItemClickListener.class,
+        listenerSetter = "setOnItemClickListener",
         methodName = "onItemClick")
 public @interface OnItemClick {
     int[] value();

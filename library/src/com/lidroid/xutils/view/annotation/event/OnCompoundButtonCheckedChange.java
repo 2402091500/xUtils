@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = CompoundButton.OnCheckedChangeListener.class,
-        eventListenerSetter = "setOnCheckedChangeListener",
+        listenerType = CompoundButton.OnCheckedChangeListener.class,
+        listenerSetter = "setOnCheckedChangeListener",
         methodName = "onCheckedChanged")
 public @interface OnCompoundButtonCheckedChange {
     int[] value();

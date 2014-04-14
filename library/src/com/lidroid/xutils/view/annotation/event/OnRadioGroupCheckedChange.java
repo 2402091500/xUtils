@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = RadioGroup.OnCheckedChangeListener.class,
-        eventListenerSetter = "setOnCheckedChangeListener",
+        listenerType = RadioGroup.OnCheckedChangeListener.class,
+        listenerSetter = "setOnCheckedChangeListener",
         methodName = "onCheckedChanged")
 public @interface OnRadioGroupCheckedChange {
     int[] value();

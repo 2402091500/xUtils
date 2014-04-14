@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = AdapterView.OnItemSelectedListener.class,
-        eventListenerSetter = "setOnItemSelectedListener",
+        listenerType = AdapterView.OnItemSelectedListener.class,
+        listenerSetter = "setOnItemSelectedListener",
         methodName = "onItemSelected")
 public @interface OnItemSelected {
     int[] value();

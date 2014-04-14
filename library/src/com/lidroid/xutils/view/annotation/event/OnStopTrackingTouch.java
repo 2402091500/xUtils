@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = SeekBar.OnSeekBarChangeListener.class,
-        eventListenerSetter = "setOnSeekBarChangeListener",
+        listenerType = SeekBar.OnSeekBarChangeListener.class,
+        listenerSetter = "setOnSeekBarChangeListener",
         methodName = "onStopTrackingTouch")
 public @interface OnStopTrackingTouch {
     int[] value();

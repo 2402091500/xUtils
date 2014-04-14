@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = AbsListView.OnScrollListener.class,
-        eventListenerSetter = "setOnScrollListener",
+        listenerType = AbsListView.OnScrollListener.class,
+        listenerSetter = "setOnScrollListener",
         methodName = "onScrollStateChanged")
 public @interface OnScrollStateChanged {
     int[] value();

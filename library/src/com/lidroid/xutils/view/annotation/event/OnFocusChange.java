@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = View.OnFocusChangeListener.class,
-        eventListenerSetter = "setOnFocusChangeListener",
+        listenerType = View.OnFocusChangeListener.class,
+        listenerSetter = "setOnFocusChangeListener",
         methodName = "onFocusChange")
 public @interface OnFocusChange {
     int[] value();

@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = ExpandableListView.OnGroupExpandListener.class,
-        eventListenerSetter = "setOnGroupExpandListener",
+        listenerType = ExpandableListView.OnGroupExpandListener.class,
+        listenerSetter = "setOnGroupExpandListener",
         methodName = "onGroupExpand")
 public @interface OnGroupExpand {
     int[] value();

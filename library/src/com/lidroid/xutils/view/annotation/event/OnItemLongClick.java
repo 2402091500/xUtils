@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = AdapterView.OnItemLongClickListener.class,
-        eventListenerSetter = "setOnItemLongClickListener",
+        listenerType = AdapterView.OnItemLongClickListener.class,
+        listenerSetter = "setOnItemLongClickListener",
         methodName = "onItemLongClick")
 public @interface OnItemLongClick {
     int[] value();

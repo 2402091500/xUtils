@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = View.OnTouchListener.class,
-        eventListenerSetter = "setOnTouchListener",
+        listenerType = View.OnTouchListener.class,
+        listenerSetter = "setOnTouchListener",
         methodName = "onTouch")
 public @interface OnTouch {
     int[] value();

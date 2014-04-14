@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = ExpandableListView.OnChildClickListener.class,
-        eventListenerSetter = "setOnChildClickListener",
+        listenerType = ExpandableListView.OnChildClickListener.class,
+        listenerSetter = "setOnChildClickListener",
         methodName = "onChildClick")
 public @interface OnChildClick {
     int[] value();

@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventBase {
-    Class<?> eventListenerType();
+    Class<?> listenerType();
 
-    String eventListenerSetter();
+    String listenerSetter();
 
     String methodName();
 }

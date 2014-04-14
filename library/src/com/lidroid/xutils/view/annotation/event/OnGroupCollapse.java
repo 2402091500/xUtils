@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @EventBase(
-        eventListenerType = ExpandableListView.OnGroupCollapseListener.class,
-        eventListenerSetter = "setOnGroupCollapseListener",
+        listenerType = ExpandableListView.OnGroupCollapseListener.class,
+        listenerSetter = "setOnGroupCollapseListener",
         methodName = "onGroupCollapse")
 public @interface OnGroupCollapse {
     int[] value();
