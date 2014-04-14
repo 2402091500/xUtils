@@ -749,7 +749,7 @@ public class DbUtils {
 
     private long getLastAutoIncrementId(String tableName) throws DbException {
         long id = -1;
-        Cursor cursor = execQuery("SELECT seq FROM sqlite_sequence WHERE name ='" + tableName + "'");
+        Cursor cursor = execQuery("SELECT seq FROM sqlite_sequence WHERE name='" + tableName + "'");
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
@@ -781,7 +781,7 @@ public class DbUtils {
             return true;
         }
 
-        Cursor cursor = execQuery("SELECT COUNT(*) AS c FROM sqlite_master WHERE type ='table' AND name ='" + table.getTableName() + "'");
+        Cursor cursor = execQuery("SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='" + table.getTableName() + "'");
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
@@ -802,7 +802,7 @@ public class DbUtils {
     }
 
     public void dropDb() throws DbException {
-        Cursor cursor = execQuery("SELECT name FROM sqlite_master WHERE type ='table'");
+        Cursor cursor = execQuery("SELECT name FROM sqlite_master WHERE type='table' AND name<>'sqlite_sequence'");
         if (cursor != null) {
             try {
                 while (cursor.moveToNext()) {
