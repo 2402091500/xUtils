@@ -11,7 +11,7 @@ import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
 import com.lidroid.xutils.sample.fragment.BitmapFragment;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
@@ -47,7 +47,7 @@ public class ImageActivity extends Activity {
         bigPicDisplayConfig.setBitmapConfig(Bitmap.Config.RGB_565);
         bigPicDisplayConfig.setBitmapMaxSize(BitmapCommonUtils.getScreenSize(this));
 
-        BitmapLoadCallBack<ImageView> callback = new SimpleBitmapLoadCallBack<ImageView>() {
+        BitmapLoadCallBack<ImageView> callback = new DefaultBitmapLoadCallBack<ImageView>() {
             @Override
             public void onLoadStarted(ImageView container, String uri, BitmapDisplayConfig config) {
                 super.onLoadStarted(container, uri, config);

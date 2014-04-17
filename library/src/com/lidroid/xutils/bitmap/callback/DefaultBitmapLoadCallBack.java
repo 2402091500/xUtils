@@ -23,7 +23,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 
 import java.lang.reflect.Method;
 
-public class SimpleBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack<T> {
+public class DefaultBitmapLoadCallBack<T extends View> extends BitmapLoadCallBack<T> {
 
     @Override
     public void onLoadCompleted(T container, String uri, Bitmap bitmap, BitmapDisplayConfig config, BitmapLoadFrom from) {

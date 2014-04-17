@@ -19,8 +19,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
+import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
-import com.lidroid.xutils.bitmap.download.SimpleDownloader;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.LruDiskCache;
@@ -99,7 +99,7 @@ public class BitmapGlobalConfig {
 
     public Downloader getDownloader() {
         if (downloader == null) {
-            downloader = new SimpleDownloader();
+            downloader = new DefaultDownloader();
         }
         downloader.setContext(mContext);
         downloader.setDefaultExpiry(getDefaultCacheExpiry());

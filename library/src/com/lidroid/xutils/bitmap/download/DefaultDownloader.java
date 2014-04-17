@@ -27,14 +27,14 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-
-public class SimpleDownloader extends Downloader {
+public class DefaultDownloader extends Downloader {
 
     /**
      * Download bitmap to outputStream by uri.
      *
-     * @param uri
+     * @param uri          file path, assets path(assets/xxx) or http url.
      * @param outputStream
+     * @param task
      * @return The expiry time stamp or -1 if failed to download.
      */
     @Override

@@ -28,7 +28,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.core.AsyncDrawable;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
@@ -223,7 +223,7 @@ public class BitmapUtils {
         container.clearAnimation();
 
         if (callBack == null) {
-            callBack = new SimpleBitmapLoadCallBack<T>();
+            callBack = new DefaultBitmapLoadCallBack<T>();
         }
 
         if (displayConfig == null || displayConfig == defaultDisplayConfig) {

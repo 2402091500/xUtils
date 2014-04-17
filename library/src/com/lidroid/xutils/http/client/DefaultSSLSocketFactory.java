@@ -1,4 +1,4 @@
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.http.client;
 
 import com.lidroid.xutils.util.LogUtils;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -11,12 +11,9 @@ import java.net.Socket;
 import java.security.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: wyouflf
- * Date: 13-10-11
- * Time: 上午11:52
+ * trust all certs
  */
-public class SimpleSSLSocketFactory extends SSLSocketFactory {
+public class DefaultSSLSocketFactory extends SSLSocketFactory {
 
     private SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -31,12 +28,12 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
         }
     }
 
-    private static SimpleSSLSocketFactory instance;
+    private static DefaultSSLSocketFactory instance;
 
-    public static SimpleSSLSocketFactory getSocketFactory() {
+    public static DefaultSSLSocketFactory getSocketFactory() {
         if (instance == null) {
             try {
-                instance = new SimpleSSLSocketFactory();
+                instance = new DefaultSSLSocketFactory();
             } catch (Throwable e) {
                 LogUtils.e(e.getMessage(), e);
             }
@@ -44,7 +41,7 @@ public class SimpleSSLSocketFactory extends SSLSocketFactory {
         return instance;
     }
 
-    private SimpleSSLSocketFactory()
+    private DefaultSSLSocketFactory()
             throws UnrecoverableKeyException,
             NoSuchAlgorithmException,
             KeyStoreException,

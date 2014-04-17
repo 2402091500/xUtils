@@ -19,7 +19,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.lidroid.xutils.bitmap.callback.SimpleBitmapLoadCallBack;
+import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
@@ -193,7 +193,7 @@ public class BitmapFragment extends Fragment {
         private ProgressBar imgPb;
     }
 
-    public class CustomBitmapLoadCallBack extends SimpleBitmapLoadCallBack<ImageView> {
+    public class CustomBitmapLoadCallBack extends DefaultBitmapLoadCallBack<ImageView> {
         private final ImageItemHolder holder;
 
         public CustomBitmapLoadCallBack(ImageItemHolder holder) {
