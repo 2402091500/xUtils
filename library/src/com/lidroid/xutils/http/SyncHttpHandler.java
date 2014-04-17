@@ -61,9 +61,9 @@ public class SyncHttpHandler {
 
     public ResponseStream sendRequest(HttpRequestBase request) throws HttpException {
 
-        boolean retry = true;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
-        while (retry) {
+        while (true) {
+            boolean retry = true;
             IOException exception = null;
             try {
                 requestUrl = request.getURI().toString();
@@ -94,11 +94,10 @@ public class SyncHttpHandler {
                 exception.initCause(e);
                 retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
             }
-            if (!retry && exception != null) {
+            if (!retry) {
                 throw new HttpException(exception);
             }
         }
-        return null;
     }
 
     private ResponseStream handleResponse(HttpResponse response) throws HttpException, IOException {

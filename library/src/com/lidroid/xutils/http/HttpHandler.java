@@ -59,7 +59,7 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     private boolean isUploading = true;
     private RequestCallBack<T> callback;
 
-    private int retriedTimes = 0;
+    private int retriedCount = 0;
     private String fileSavePath = null;
     private boolean isDownloadingFile = false;
     private boolean autoResume = false; // Whether the downloading could continue from the point of interruption.
@@ -97,20 +97,22 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     // 执行请求
     @SuppressWarnings("unchecked")
     private ResponseInfo<T> sendRequest(HttpRequestBase request) throws HttpException {
-        if (autoResume && isDownloadingFile) {
-            File downloadFile = new File(fileSavePath);
-            long fileLen = 0;
-            if (downloadFile.isFile() && downloadFile.exists()) {
-                fileLen = downloadFile.length();
-            }
-            if (fileLen > 0) {
-                request.setHeader("RANGE", "bytes=" + fileLen + "-");
-            }
-        }
 
-        boolean retry = true;
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
-        while (retry) {
+        while (true) {
+
+            if (autoResume && isDownloadingFile) {
+                File downloadFile = new File(fileSavePath);
+                long fileLen = 0;
+                if (downloadFile.isFile() && downloadFile.exists()) {
+                    fileLen = downloadFile.length();
+                }
+                if (fileLen > 0) {
+                    request.setHeader("RANGE", "bytes=" + fileLen + "-");
+                }
+            }
+
+            boolean retry = true;
             IOException exception = null;
             try {
                 requestMethod = request.getMethod();
@@ -129,26 +131,25 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
                 return responseInfo;
             } catch (UnknownHostException e) {
                 exception = e;
-                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+                retry = retryHandler.retryRequest(exception, ++retriedCount, context);
             } catch (IOException e) {
                 exception = e;
-                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+                retry = retryHandler.retryRequest(exception, ++retriedCount, context);
             } catch (NullPointerException e) {
                 exception = new IOException(e.getMessage());
                 exception.initCause(e);
-                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+                retry = retryHandler.retryRequest(exception, ++retriedCount, context);
             } catch (HttpException e) {
                 throw e;
             } catch (Throwable e) {
                 exception = new IOException(e.getMessage());
                 exception.initCause(e);
-                retry = retryHandler.retryRequest(exception, ++retriedTimes, context);
+                retry = retryHandler.retryRequest(exception, ++retriedCount, context);
             }
-            if (!retry && exception != null) {
+            if (!retry) {
                 throw new HttpException(exception);
             }
         }
-        return null;
     }
 
     @Override
