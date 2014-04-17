@@ -43,7 +43,7 @@ public class StringDownloadHandler {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
             String line = "";
             while ((line = reader.readLine()) != null) {
-                sb.append(line);
+                sb.append(line).append('\n');
                 current += OtherUtils.sizeOfString(line, charset);
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
