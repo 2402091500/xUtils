@@ -43,27 +43,23 @@ public class FileDownloadHandler {
         }
 
         long current = 0;
-        InputStream inputStream = null;
-        FileOutputStream fileOutputStream = null;
-
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
         try {
-
+            FileOutputStream fileOutputStream = null;
             if (isResume) {
                 current = targetFile.length();
                 fileOutputStream = new FileOutputStream(target, true);
             } else {
                 fileOutputStream = new FileOutputStream(target);
             }
-
             long total = entity.getContentLength() + current;
+            bis = new BufferedInputStream(entity.getContent());
+            bos = new BufferedOutputStream(fileOutputStream);
 
             if (callBackHandler != null && !callBackHandler.updateProgress(total, current, true)) {
                 return targetFile;
             }
-
-
-            inputStream = entity.getContent();
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
 
             byte[] tmp = new byte[4096];
             int len;
@@ -81,8 +77,8 @@ public class FileDownloadHandler {
                 callBackHandler.updateProgress(total, current, true);
             }
         } finally {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(fileOutputStream);
+            IOUtils.closeQuietly(bis);
+            IOUtils.closeQuietly(bos);
         }
 
         if (targetFile.exists() && !TextUtils.isEmpty(responseFileName)) {
