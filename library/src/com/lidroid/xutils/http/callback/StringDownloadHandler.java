@@ -47,7 +47,7 @@ public class StringDownloadHandler {
                 current += OtherUtils.sizeOfString(line, charset);
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
-                        return sb.toString();
+                        break;
                     }
                 }
             }
@@ -57,7 +57,7 @@ public class StringDownloadHandler {
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
 
 }
