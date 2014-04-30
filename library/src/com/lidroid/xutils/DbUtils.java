@@ -829,6 +829,14 @@ public class DbUtils {
         Table.remove(this, entityType);
     }
 
+    public void close() {
+        String dbName = this.daoConfig.getDbName();
+        if (daoMap.containsKey(dbName)) {
+            daoMap.remove(dbName);
+            this.database.close();
+        }
+    }
+
     ///////////////////////////////////// exec sql /////////////////////////////////////////////////////
     private void debugSql(String sql) {
         if (debug) {
