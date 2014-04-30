@@ -275,7 +275,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, idValue));
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(this, entityType, idValue));
 
             setTransactionSuccessful();
         } finally {
@@ -288,7 +288,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(this, entity));
 
             setTransactionSuccessful();
         } finally {
@@ -301,7 +301,7 @@ public class DbUtils {
         try {
             beginTransaction();
 
-            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entityType, whereBuilder));
+            execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(this, entityType, whereBuilder));
 
             setTransactionSuccessful();
         } finally {
@@ -315,7 +315,7 @@ public class DbUtils {
             beginTransaction();
 
             for (Object entity : entities) {
-                execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
+                execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(this, entity));
             }
 
             setTransactionSuccessful();
@@ -388,8 +388,8 @@ public class DbUtils {
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
         if (!tableIsExist(entityType)) return null;
 
-        Id id = TableUtils.getId(entityType);
-        Selector selector = Selector.from(entityType).where(id.getColumnName(), "=", idValue);
+        Table table = Table.get(this, entityType);
+        Selector selector = Selector.from(entityType).where(table.id.getColumnName(), "=", idValue);
 
         String sql = selector.limit(1).toString();
         long seq = CursorUtils.FindCacheSequence.getSeq();
@@ -460,10 +460,9 @@ public class DbUtils {
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue keyValue : entityKvList) {
-                Object value = keyValue.getValue();
-                if (value != null) {
-                    wb.and(keyValue.getKey(), "=", value);
+            for (KeyValue kv : entityKvList) {
+                if (kv.value != null) {
+                    wb.and(kv.key, "=", kv.value);
                 }
             }
             selector.where(wb);
@@ -517,10 +516,9 @@ public class DbUtils {
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue keyValue : entityKvList) {
-                Object value = keyValue.getValue();
-                if (value != null) {
-                    wb.and(keyValue.getKey(), "=", value);
+            for (KeyValue kv : entityKvList) {
+                if (kv.value != null) {
+                    wb.and(kv.key, "=", kv.value);
                 }
             }
             selector.where(wb);
@@ -604,7 +602,8 @@ public class DbUtils {
         Class<?> entityType = selector.getEntityType();
         if (!tableIsExist(entityType)) return 0;
 
-        DbModelSelector dmSelector = selector.select("count(" + TableUtils.getId(entityType).getColumnName() + ") as count");
+        Table table = Table.get(this, entityType);
+        DbModelSelector dmSelector = selector.select("count(" + table.id.getColumnName() + ") as count");
         return findDbModelFirst(dmSelector).getLong("count");
     }
 
@@ -623,10 +622,9 @@ public class DbUtils {
         List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
         if (entityKvList != null) {
             WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue keyValue : entityKvList) {
-                Object value = keyValue.getValue();
-                if (value != null) {
-                    wb.and(keyValue.getKey(), "=", value);
+            for (KeyValue kv : entityKvList) {
+                if (kv.value != null) {
+                    wb.and(kv.key, "=", kv.value);
                 }
             }
             selector.where(wb);
@@ -715,7 +713,8 @@ public class DbUtils {
 
     //***************************** private operations with out transaction *****************************
     private void saveOrUpdateWithoutTransaction(Object entity) throws DbException {
-        Id id = TableUtils.getId(entity.getClass());
+        Table table = Table.get(this, entity.getClass());
+        Id id = table.id;
         if (id.isAutoIncrement()) {
             if (id.getColumnValue(entity) != null) {
                 execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity));
@@ -729,11 +728,11 @@ public class DbUtils {
 
     private boolean saveBindingIdWithoutTransaction(Object entity) throws DbException {
         Class<?> entityType = entity.getClass();
-        String tableName = TableUtils.getTableName(entityType);
-        Id idColumn = TableUtils.getId(entityType);
+        Table table = Table.get(this, entityType);
+        Id idColumn = table.id;
         if (idColumn.isAutoIncrement()) {
             execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(this, entity));
-            long id = getLastAutoIncrementId(tableName);
+            long id = getLastAutoIncrementId(table.tableName);
             if (id == -1) {
                 return false;
             }
@@ -766,7 +765,7 @@ public class DbUtils {
 
     public void createTableIfNotExist(Class<?> entityType) throws DbException {
         if (!tableIsExist(entityType)) {
-            SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(entityType);
+            SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(this, entityType);
             execNonQuery(sqlInfo);
             String execAfterTableCreated = TableUtils.getExecAfterTableCreated(entityType);
             if (!TextUtils.isEmpty(execAfterTableCreated)) {
@@ -781,7 +780,7 @@ public class DbUtils {
             return true;
         }
 
-        Cursor cursor = execQuery("SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='" + table.getTableName() + "'");
+        Cursor cursor = execQuery("SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='" + table.tableName + "'");
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {

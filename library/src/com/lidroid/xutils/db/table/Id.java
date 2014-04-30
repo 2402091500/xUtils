@@ -23,14 +23,14 @@ import java.util.HashSet;
 
 public class Id extends Column {
 
-    protected Id(Class<?> entityType, Field field) {
-        super(entityType, field);
-        columnFieldClassName = columnField.getType().getCanonicalName();
-    }
-
     private String columnFieldClassName;
     private boolean isAutoIncrementChecked = false;
     private boolean isAutoIncrement = false;
+
+    /* package */ Id(Class<?> entityType, Field field) {
+        super(entityType, field);
+        columnFieldClassName = columnField.getType().getName();
+    }
 
     public boolean isAutoIncrement() {
         if (!isAutoIncrementChecked) {
@@ -80,11 +80,11 @@ public class Id extends Column {
     private static final HashSet<String> AUTO_INCREMENT_TYPES = new HashSet<String>(4);
 
     static {
-        INTEGER_TYPES.add(int.class.getCanonicalName());
-        INTEGER_TYPES.add(Integer.class.getCanonicalName());
+        INTEGER_TYPES.add(int.class.getName());
+        INTEGER_TYPES.add(Integer.class.getName());
 
         AUTO_INCREMENT_TYPES.addAll(INTEGER_TYPES);
-        AUTO_INCREMENT_TYPES.add(long.class.getCanonicalName());
-        AUTO_INCREMENT_TYPES.add(Long.class.getCanonicalName());
+        AUTO_INCREMENT_TYPES.add(long.class.getName());
+        AUTO_INCREMENT_TYPES.add(Long.class.getName());
     }
 }

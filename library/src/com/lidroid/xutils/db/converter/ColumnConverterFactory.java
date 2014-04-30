@@ -16,13 +16,13 @@ public class ColumnConverterFactory {
     }
 
     public static ColumnConverter getColumnConverter(Class columnType) {
-        if (columnType_columnConverter_map.containsKey(columnType.getCanonicalName())) {
-            return columnType_columnConverter_map.get(columnType.getCanonicalName());
+        if (columnType_columnConverter_map.containsKey(columnType.getName())) {
+            return columnType_columnConverter_map.get(columnType.getName());
         } else if (ColumnConverter.class.isAssignableFrom(columnType)) {
             try {
                 ColumnConverter columnConverter = (ColumnConverter) columnType.newInstance();
                 if (columnConverter != null) {
-                    columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+                    columnType_columnConverter_map.put(columnType.getName(), columnConverter);
                 }
                 return columnConverter;
             } catch (Throwable e) {
@@ -40,17 +40,17 @@ public class ColumnConverterFactory {
     }
 
     public static void registerColumnConverter(Class columnType, ColumnConverter columnConverter) {
-        columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+        columnType_columnConverter_map.put(columnType.getName(), columnConverter);
     }
 
     public static boolean isSupportColumnConverter(Class columnType) {
-        if (columnType_columnConverter_map.containsKey(columnType.getCanonicalName())) {
+        if (columnType_columnConverter_map.containsKey(columnType.getName())) {
             return true;
         } else if (ColumnConverter.class.isAssignableFrom(columnType)) {
             try {
                 ColumnConverter columnConverter = (ColumnConverter) columnType.newInstance();
                 if (columnConverter != null) {
-                    columnType_columnConverter_map.put(columnType.getCanonicalName(), columnConverter);
+                    columnType_columnConverter_map.put(columnType.getName(), columnConverter);
                 }
                 return columnConverter == null;
             } catch (Throwable e) {
@@ -65,47 +65,47 @@ public class ColumnConverterFactory {
         columnType_columnConverter_map = new ConcurrentHashMap<String, ColumnConverter>();
 
         BooleanColumnConverter booleanColumnConverter = new BooleanColumnConverter();
-        columnType_columnConverter_map.put(boolean.class.getCanonicalName(), booleanColumnConverter);
-        columnType_columnConverter_map.put(Boolean.class.getCanonicalName(), booleanColumnConverter);
+        columnType_columnConverter_map.put(boolean.class.getName(), booleanColumnConverter);
+        columnType_columnConverter_map.put(Boolean.class.getName(), booleanColumnConverter);
 
         ByteArrayColumnConverter byteArrayColumnConverter = new ByteArrayColumnConverter();
-        columnType_columnConverter_map.put(byte[].class.getCanonicalName(), byteArrayColumnConverter);
+        columnType_columnConverter_map.put(byte[].class.getName(), byteArrayColumnConverter);
 
         ByteColumnConverter byteColumnConverter = new ByteColumnConverter();
-        columnType_columnConverter_map.put(byte.class.getCanonicalName(), byteColumnConverter);
-        columnType_columnConverter_map.put(Byte.class.getCanonicalName(), byteColumnConverter);
+        columnType_columnConverter_map.put(byte.class.getName(), byteColumnConverter);
+        columnType_columnConverter_map.put(Byte.class.getName(), byteColumnConverter);
 
         CharColumnConverter charColumnConverter = new CharColumnConverter();
-        columnType_columnConverter_map.put(char.class.getCanonicalName(), charColumnConverter);
-        columnType_columnConverter_map.put(Character.class.getCanonicalName(), charColumnConverter);
+        columnType_columnConverter_map.put(char.class.getName(), charColumnConverter);
+        columnType_columnConverter_map.put(Character.class.getName(), charColumnConverter);
 
         DateColumnConverter dateColumnConverter = new DateColumnConverter();
-        columnType_columnConverter_map.put(Date.class.getCanonicalName(), dateColumnConverter);
+        columnType_columnConverter_map.put(Date.class.getName(), dateColumnConverter);
 
         DoubleColumnConverter doubleColumnConverter = new DoubleColumnConverter();
-        columnType_columnConverter_map.put(double.class.getCanonicalName(), doubleColumnConverter);
-        columnType_columnConverter_map.put(Double.class.getCanonicalName(), doubleColumnConverter);
+        columnType_columnConverter_map.put(double.class.getName(), doubleColumnConverter);
+        columnType_columnConverter_map.put(Double.class.getName(), doubleColumnConverter);
 
         FloatColumnConverter floatColumnConverter = new FloatColumnConverter();
-        columnType_columnConverter_map.put(float.class.getCanonicalName(), floatColumnConverter);
-        columnType_columnConverter_map.put(Float.class.getCanonicalName(), floatColumnConverter);
+        columnType_columnConverter_map.put(float.class.getName(), floatColumnConverter);
+        columnType_columnConverter_map.put(Float.class.getName(), floatColumnConverter);
 
         IntegerColumnConverter integerColumnConverter = new IntegerColumnConverter();
-        columnType_columnConverter_map.put(int.class.getCanonicalName(), integerColumnConverter);
-        columnType_columnConverter_map.put(Integer.class.getCanonicalName(), integerColumnConverter);
+        columnType_columnConverter_map.put(int.class.getName(), integerColumnConverter);
+        columnType_columnConverter_map.put(Integer.class.getName(), integerColumnConverter);
 
         LongColumnConverter longColumnConverter = new LongColumnConverter();
-        columnType_columnConverter_map.put(long.class.getCanonicalName(), longColumnConverter);
-        columnType_columnConverter_map.put(Long.class.getCanonicalName(), longColumnConverter);
+        columnType_columnConverter_map.put(long.class.getName(), longColumnConverter);
+        columnType_columnConverter_map.put(Long.class.getName(), longColumnConverter);
 
         ShortColumnConverter shortColumnConverter = new ShortColumnConverter();
-        columnType_columnConverter_map.put(short.class.getCanonicalName(), shortColumnConverter);
-        columnType_columnConverter_map.put(Short.class.getCanonicalName(), shortColumnConverter);
+        columnType_columnConverter_map.put(short.class.getName(), shortColumnConverter);
+        columnType_columnConverter_map.put(Short.class.getName(), shortColumnConverter);
 
         SqlDateColumnConverter sqlDateColumnConverter = new SqlDateColumnConverter();
-        columnType_columnConverter_map.put(java.sql.Date.class.getCanonicalName(), sqlDateColumnConverter);
+        columnType_columnConverter_map.put(java.sql.Date.class.getName(), sqlDateColumnConverter);
 
         StringColumnConverter stringColumnConverter = new StringColumnConverter();
-        columnType_columnConverter_map.put(String.class.getCanonicalName(), stringColumnConverter);
+        columnType_columnConverter_map.put(String.class.getName(), stringColumnConverter);
     }
 }

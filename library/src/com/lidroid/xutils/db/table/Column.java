@@ -26,6 +26,10 @@ import java.lang.reflect.Method;
 
 public class Column {
 
+    private Table table;
+
+    private int index = -1;
+
     protected final String columnName;
     private final Object defaultValue;
 
@@ -35,7 +39,7 @@ public class Column {
     protected final Field columnField;
     protected final ColumnConverter columnConverter;
 
-    protected Column(Class<?> entityType, Field field) {
+    /* package */ Column(Class<?> entityType, Field field) {
         this.columnField = field;
         this.columnConverter = ColumnConverterFactory.getColumnConverter(field.getType());
         this.columnName = ColumnUtils.getColumnNameByField(field);
@@ -50,7 +54,7 @@ public class Column {
 
     @SuppressWarnings("unchecked")
     public void setValue2Entity(Object entity, Cursor cursor, int index) {
-
+        this.index = index;
         Object value = columnConverter.getFieldValue(cursor, index);
         if (value == null && defaultValue == null) return;
 
@@ -97,6 +101,23 @@ public class Column {
         return fieldValue;
     }
 
+    public Table getTable() {
+        return table;
+    }
+
+    /* package */ void setTable(Table table) {
+        this.table = table;
+    }
+
+    /**
+     * The value set in setValue2Entity(...)
+     *
+     * @return -1 or the index of this column.
+     */
+    public int getIndex() {
+        return index;
+    }
+
     public String getColumnName() {
         return columnName;
     }
@@ -107,6 +128,10 @@ public class Column {
 
     public Field getColumnField() {
         return columnField;
+    }
+
+    public ColumnConverter getColumnConverter() {
+        return columnConverter;
     }
 
     public ColumnDbType getColumnDbType() {

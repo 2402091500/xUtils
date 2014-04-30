@@ -41,25 +41,25 @@ public class ColumnUtils {
     private static final HashSet<String> DB_PRIMITIVE_TYPES = new HashSet<String>(14);
 
     static {
-        DB_PRIMITIVE_TYPES.add(int.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(long.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(short.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(byte.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(float.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(double.class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(int.class.getName());
+        DB_PRIMITIVE_TYPES.add(long.class.getName());
+        DB_PRIMITIVE_TYPES.add(short.class.getName());
+        DB_PRIMITIVE_TYPES.add(byte.class.getName());
+        DB_PRIMITIVE_TYPES.add(float.class.getName());
+        DB_PRIMITIVE_TYPES.add(double.class.getName());
 
-        DB_PRIMITIVE_TYPES.add(Integer.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(Long.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(Short.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(Byte.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(Float.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(Double.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(String.class.getCanonicalName());
-        DB_PRIMITIVE_TYPES.add(byte[].class.getCanonicalName());
+        DB_PRIMITIVE_TYPES.add(Integer.class.getName());
+        DB_PRIMITIVE_TYPES.add(Long.class.getName());
+        DB_PRIMITIVE_TYPES.add(Short.class.getName());
+        DB_PRIMITIVE_TYPES.add(Byte.class.getName());
+        DB_PRIMITIVE_TYPES.add(Float.class.getName());
+        DB_PRIMITIVE_TYPES.add(Double.class.getName());
+        DB_PRIMITIVE_TYPES.add(String.class.getName());
+        DB_PRIMITIVE_TYPES.add(byte[].class.getName());
     }
 
     public static boolean isDbPrimitiveType(Class<?> fieldType) {
-        return DB_PRIMITIVE_TYPES.contains(fieldType.getCanonicalName());
+        return DB_PRIMITIVE_TYPES.contains(fieldType.getName());
     }
 
     public static Method getColumnGetMethod(Class<?> entityType, Field field) {

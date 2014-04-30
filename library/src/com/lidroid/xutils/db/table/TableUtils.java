@@ -48,24 +48,21 @@ public class TableUtils {
     }
 
     /**
-     * key: entityType.canonicalName
+     * key: entityType.name
      */
     private static ConcurrentHashMap<String, HashMap<String, Column>> entityColumnsMap = new ConcurrentHashMap<String, HashMap<String, Column>>();
 
-    /**
-     * @param entityType
-     * @return key: columnName
-     */
-    public static synchronized HashMap<String, Column> getColumnMap(Class<?> entityType) {
+    /* package */
+    static synchronized HashMap<String, Column> getColumnMap(Class<?> entityType) {
 
-        if (entityColumnsMap.containsKey(entityType.getCanonicalName())) {
-            return entityColumnsMap.get(entityType.getCanonicalName());
+        if (entityColumnsMap.containsKey(entityType.getName())) {
+            return entityColumnsMap.get(entityType.getName());
         }
 
         HashMap<String, Column> columnMap = new HashMap<String, Column>();
         String primaryKeyFieldName = getPrimaryKeyFieldName(entityType);
         addColumns2Map(entityType, primaryKeyFieldName, columnMap);
-        entityColumnsMap.put(entityType.getCanonicalName(), columnMap);
+        entityColumnsMap.put(entityType.getName(), columnMap);
 
         return columnMap;
     }
@@ -106,15 +103,8 @@ public class TableUtils {
         }
     }
 
-    public static Column getColumnOrId(Class<?> entityType, String columnName) {
-        if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
-            return getId(entityType);
-        }
-        return getColumnMap(entityType).get(columnName);
-    }
-
-    public static Column getColumnOrId(Class<?> entityType, Field columnField) {
-        String columnName = ColumnUtils.getColumnNameByField(columnField);
+    /* package */
+    static Column getColumnOrId(Class<?> entityType, String columnName) {
         if (getPrimaryKeyColumnName(entityType).equals(columnName)) {
             return getId(entityType);
         }
@@ -122,17 +112,18 @@ public class TableUtils {
     }
 
     /**
-     * key: entityType.canonicalName
+     * key: entityType.name
      */
     private static ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id> entityIdMap = new ConcurrentHashMap<String, com.lidroid.xutils.db.table.Id>();
 
-    public static synchronized com.lidroid.xutils.db.table.Id getId(Class<?> entityType) {
+    /* package */
+    static synchronized com.lidroid.xutils.db.table.Id getId(Class<?> entityType) {
         if (Object.class.equals(entityType)) {
             throw new RuntimeException("field 'id' not found");
         }
 
-        if (entityIdMap.containsKey(entityType.getCanonicalName())) {
-            return entityIdMap.get(entityType.getCanonicalName());
+        if (entityIdMap.containsKey(entityType.getName())) {
+            return entityIdMap.get(entityType.getName());
         }
 
         Field primaryKeyField = null;
@@ -161,7 +152,7 @@ public class TableUtils {
         }
 
         com.lidroid.xutils.db.table.Id id = new com.lidroid.xutils.db.table.Id(entityType, primaryKeyField);
-        entityIdMap.put(entityType.getCanonicalName(), id);
+        entityIdMap.put(entityType.getName(), id);
         return id;
     }
 

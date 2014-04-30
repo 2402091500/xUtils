@@ -19,7 +19,8 @@ import android.database.Cursor;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.table.*;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.core.DoubleKeyValueMap;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CursorUtils {
 
@@ -30,15 +31,18 @@ public class CursorUtils {
         EntityTempCache.setSeq(findCacheSequence);
         try {
             Table table = Table.get(db, entityType);
-            Id id = table.getId();
+            Id id = table.id;
             String idColumnName = id.getColumnName();
-            int idIndex = cursor.getColumnIndex(idColumnName);
-            String idStr = cursor.getString(idIndex);
-            T entity = EntityTempCache.get(entityType, idStr);
+            int idIndex = id.getIndex();
+            if (idIndex < 0) {
+                idIndex = cursor.getColumnIndex(idColumnName);
+            }
+            Object idValue = id.getColumnConverter().getFieldValue(cursor, idIndex);
+            T entity = EntityTempCache.get(entityType, idValue);
             if (entity == null) {
                 entity = entityType.newInstance();
                 id.setValue2Entity(entity, cursor, idIndex);
-                EntityTempCache.put(entity, idStr);
+                EntityTempCache.put(entityType, idValue, entity);
             } else {
                 return entity;
             }
@@ -47,22 +51,13 @@ public class CursorUtils {
                 String columnName = cursor.getColumnName(i);
                 Column column = table.columnMap.get(columnName);
                 if (column != null) {
-                    if (column instanceof Foreign) {
-                        Foreign foreign = (Foreign) column;
-                        foreign.db = db;
-                        foreign.setValue2Entity(entity, cursor, i);
-                    } else {
-                        column.setValue2Entity(entity, cursor, i);
-                    }
+                    column.setValue2Entity(entity, cursor, i);
                 }
             }
 
-            for (Column column : table.columnMap.values()) {
-                if (column instanceof Finder) {
-                    Finder finder = (Finder) column;
-                    finder.db = db;
-                    finder.setValue2Entity(entity, null, 0);
-                }
+            // init finder
+            for (Finder finder : table.finderMap.values()) {
+                finder.setValue2Entity(entity, null, 0);
             }
             return entity;
         } catch (Throwable e) {
@@ -85,6 +80,9 @@ public class CursorUtils {
     }
 
     public static class FindCacheSequence {
+        private FindCacheSequence() {
+        }
+
         private static long seq = 0;
         private static final String FOREIGN_LAZY_LOADER_CLASS_NAME = ForeignLazyLoader.class.getName();
         private static final String FINDER_LAZY_LOADER_CLASS_NAME = FinderLazyLoader.class.getName();
@@ -102,24 +100,17 @@ public class CursorUtils {
         private EntityTempCache() {
         }
 
-        /**
-         * k1: entityType;
-         * k2: idValue
-         * value: entity
-         */
-        private static final DoubleKeyValueMap<Class<?>, String, Object> cache = new DoubleKeyValueMap<Class<?>, String, Object>();
+        private static final ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<String, Object>();
 
         private static long seq = 0;
 
-        public static void put(Object entity, String idStr) {
-            if (entity != null && idStr != null) {
-                cache.put(entity.getClass(), idStr, entity);
-            }
+        public static <T> void put(Class<T> entityType, Object idValue, Object entity) {
+            cache.put(entityType.getName() + "#" + idValue, entity);
         }
 
         @SuppressWarnings("unchecked")
-        public static <T> T get(Class<T> entityType, String idStr) {
-            return (T) cache.get(entityType, idStr);
+        public static <T> T get(Class<T> entityType, Object idValue) {
+            return (T) cache.get(entityType.getName() + "#" + idValue);
         }
 
         public static void setSeq(long seq) {

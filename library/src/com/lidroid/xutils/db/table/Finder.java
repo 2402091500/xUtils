@@ -1,7 +1,6 @@
 package com.lidroid.xutils.db.table;
 
 import android.database.Cursor;
-import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.ColumnDbType;
 import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 import com.lidroid.xutils.exception.DbException;
@@ -17,12 +16,10 @@ import java.util.List;
  */
 public class Finder extends Column {
 
-    public DbUtils db;
-
     private final String valueColumnName;
     private final String targetColumnName;
 
-    protected Finder(Class<?> entityType, Field field) {
+    /* package */ Finder(Class<?> entityType, Field field) {
         super(entityType, field);
 
         com.lidroid.xutils.db.annotation.Finder finder =
