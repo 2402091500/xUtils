@@ -123,9 +123,9 @@ public class ResponseStream extends InputStream {
     public void readFile(String savePath) throws IOException {
         if (_directResult != null) return;
         if (baseStream == null) return;
-        FileOutputStream out = null;
+        BufferedOutputStream out = null;
         try {
-            out = new FileOutputStream(savePath);
+            out = new BufferedOutputStream(new FileOutputStream(savePath));
             BufferedInputStream ins = new BufferedInputStream(baseStream);
             byte[] buffer = new byte[4096];
             int len = 0;
