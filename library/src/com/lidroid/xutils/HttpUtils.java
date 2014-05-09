@@ -20,10 +20,10 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.*;
 import com.lidroid.xutils.http.callback.HttpRedirectHandler;
 import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.DefaultSSLSocketFactory;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
-import com.lidroid.xutils.http.client.DefaultSSLSocketFactory;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -190,8 +190,13 @@ public class HttpUtils {
     public HttpUtils configTimeout(int timeout) {
         final HttpParams httpParams = this.httpClient.getParams();
         ConnManagerParams.setTimeout(httpParams, timeout);
-        HttpConnectionParams.setSoTimeout(httpParams, timeout);
         HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+        return this;
+    }
+
+    public HttpUtils configSoTimeout(int timeout) {
+        final HttpParams httpParams = this.httpClient.getParams();
+        HttpConnectionParams.setSoTimeout(httpParams, timeout);
         return this;
     }
 
