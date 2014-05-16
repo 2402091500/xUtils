@@ -24,6 +24,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.DiskCacheFileNameGenerator;
 import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
 
@@ -123,7 +124,7 @@ public class BitmapCache {
         }
     }
 
-    public void setDiskCacheFileNameGenerator(LruDiskCache.DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
+    public void setDiskCacheFileNameGenerator(DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
         if (mDiskLruCache != null && diskCacheFileNameGenerator != null) {
             mDiskLruCache.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
         }
