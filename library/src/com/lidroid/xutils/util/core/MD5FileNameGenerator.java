@@ -8,8 +8,8 @@ import java.security.NoSuchAlgorithmException;
  * Date: 14-5-16
  * Time: 上午11:25
  */
-public class MD5DiskCacheFileNameGenerator implements DiskCacheFileNameGenerator {
-    public MD5DiskCacheFileNameGenerator() {
+public class MD5FileNameGenerator implements FileNameGenerator {
+    public MD5FileNameGenerator() {
     }
 
     public String generate(String key) {

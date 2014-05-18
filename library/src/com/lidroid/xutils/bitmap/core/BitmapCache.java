@@ -24,7 +24,7 @@ import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.core.DiskCacheFileNameGenerator;
+import com.lidroid.xutils.util.core.FileNameGenerator;
 import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
 
@@ -101,7 +101,7 @@ public class BitmapCache {
                 diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
                 try {
                     mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
-                    mDiskLruCache.setDiskCacheFileNameGenerator(globalConfig.getDiskCacheFileNameGenerator());
+                    mDiskLruCache.setFileNameGenerator(globalConfig.getFileNameGenerator());
                 } catch (Throwable e) {
                     mDiskLruCache = null;
                     LogUtils.e(e.getMessage(), e);
@@ -124,9 +124,9 @@ public class BitmapCache {
         }
     }
 
-    public void setDiskCacheFileNameGenerator(DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
-        if (mDiskLruCache != null && diskCacheFileNameGenerator != null) {
-            mDiskLruCache.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
+    public void setDiskCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
+        if (mDiskLruCache != null && fileNameGenerator != null) {
+            mDiskLruCache.setFileNameGenerator(fileNameGenerator);
         }
     }
 

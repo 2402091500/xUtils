@@ -21,8 +21,6 @@ import org.apache.http.protocol.HTTP;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -402,7 +400,7 @@ public final class LruDiskCache implements Closeable {
     }
 
     public synchronized long getExpiryTimestamp(String key) throws IOException {
-        String diskKey = diskCacheFileNameGenerator.generate(key);
+        String diskKey = fileNameGenerator.generate(key);
         checkNotClosed();
         Entry entry = lruEntries.get(diskKey);
         if (entry == null) {
@@ -413,12 +411,12 @@ public final class LruDiskCache implements Closeable {
     }
 
     public File getCacheFile(String key, int index) {
-        String diskKey = diskCacheFileNameGenerator.generate(key);
+        String diskKey = fileNameGenerator.generate(key);
         return new File(this.directory, diskKey + "." + index);
     }
 
     public Snapshot get(String key) throws IOException {
-        String diskKey = diskCacheFileNameGenerator.generate(key);
+        String diskKey = fileNameGenerator.generate(key);
         return getByDiskKey(diskKey);
     }
 
@@ -491,7 +489,7 @@ public final class LruDiskCache implements Closeable {
      * edit is in progress.
      */
     public Editor edit(String key) throws IOException {
-        String diskKey = diskCacheFileNameGenerator.generate(key);
+        String diskKey = fileNameGenerator.generate(key);
         return editByDiskKey(diskKey, ANY_SEQUENCE_NUMBER);
     }
 
@@ -617,7 +615,7 @@ public final class LruDiskCache implements Closeable {
     }
 
     public boolean remove(String key) throws IOException {
-        String diskKey = diskCacheFileNameGenerator.generate(key);
+        String diskKey = fileNameGenerator.generate(key);
         return removeByDiskKey(diskKey);
     }
 
@@ -1191,15 +1189,15 @@ public final class LruDiskCache implements Closeable {
         }
     }
 
-    private DiskCacheFileNameGenerator diskCacheFileNameGenerator = new MD5DiskCacheFileNameGenerator();
+    private FileNameGenerator fileNameGenerator = new MD5FileNameGenerator();
 
-    public DiskCacheFileNameGenerator getDiskCacheFileNameGenerator() {
-        return diskCacheFileNameGenerator;
+    public FileNameGenerator getFileNameGenerator() {
+        return fileNameGenerator;
     }
 
-    public void setDiskCacheFileNameGenerator(DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
-        if (diskCacheFileNameGenerator != null) {
-            this.diskCacheFileNameGenerator = diskCacheFileNameGenerator;
+    public void setFileNameGenerator(FileNameGenerator fileNameGenerator) {
+        if (fileNameGenerator != null) {
+            this.fileNameGenerator = fileNameGenerator;
         }
     }
 }

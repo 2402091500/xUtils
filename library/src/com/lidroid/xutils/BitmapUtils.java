@@ -33,8 +33,7 @@ import com.lidroid.xutils.bitmap.core.AsyncDrawable;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import com.lidroid.xutils.util.core.DiskCacheFileNameGenerator;
-import com.lidroid.xutils.util.core.LruDiskCache;
+import com.lidroid.xutils.util.core.FileNameGenerator;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -187,8 +186,8 @@ public class BitmapUtils {
         return this;
     }
 
-    public BitmapUtils configDiskCacheFileNameGenerator(DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
-        globalConfig.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
+    public BitmapUtils configDiskCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
+        globalConfig.setFileNameGenerator(fileNameGenerator);
         return this;
     }
 

@@ -23,7 +23,7 @@ import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import com.lidroid.xutils.util.core.DiskCacheFileNameGenerator;
+import com.lidroid.xutils.util.core.FileNameGenerator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,7 +57,7 @@ public class BitmapGlobalConfig {
     private int defaultConnectTimeout = 1000 * 15; // 15 sec
     private int defaultReadTimeout = 1000 * 15; // 15 sec
 
-    private DiskCacheFileNameGenerator diskCacheFileNameGenerator;
+    private FileNameGenerator fileNameGenerator;
 
     private BitmapCacheListener bitmapCacheListener;
 
@@ -219,14 +219,14 @@ public class BitmapGlobalConfig {
         this.diskCacheEnabled = diskCacheEnabled;
     }
 
-    public DiskCacheFileNameGenerator getDiskCacheFileNameGenerator() {
-        return diskCacheFileNameGenerator;
+    public FileNameGenerator getFileNameGenerator() {
+        return fileNameGenerator;
     }
 
-    public void setDiskCacheFileNameGenerator(DiskCacheFileNameGenerator diskCacheFileNameGenerator) {
-        this.diskCacheFileNameGenerator = diskCacheFileNameGenerator;
+    public void setFileNameGenerator(FileNameGenerator fileNameGenerator) {
+        this.fileNameGenerator = fileNameGenerator;
         if (bitmapCache != null) {
-            bitmapCache.setDiskCacheFileNameGenerator(diskCacheFileNameGenerator);
+            bitmapCache.setDiskCacheFileNameGenerator(fileNameGenerator);
         }
     }
 

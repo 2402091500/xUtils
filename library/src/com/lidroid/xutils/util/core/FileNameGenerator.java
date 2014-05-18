@@ -5,6 +5,6 @@ package com.lidroid.xutils.util.core;
  * Date: 14-5-16
  * Time: 上午11:25
  */
-public interface DiskCacheFileNameGenerator {
+public interface FileNameGenerator {
     public String generate(String key);
 }
