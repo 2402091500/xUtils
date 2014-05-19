@@ -16,6 +16,7 @@
 package com.lidroid.xutils.util.core;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import com.lidroid.xutils.util.LogUtils;
@@ -472,6 +473,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     private static class InternalHandler extends Handler {
+
+        private InternalHandler() {
+            super(Looper.getMainLooper());
+        }
+
         @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
         @Override
         public void handleMessage(Message msg) {
