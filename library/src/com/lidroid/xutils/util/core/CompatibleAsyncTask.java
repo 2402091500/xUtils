@@ -20,8 +20,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.core.compatible.ArrayDeque;
 
+import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,7 +73,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
 
     private static class SerialExecutor implements Executor {
-        final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+        final LinkedList<Runnable> mTasks = new LinkedList<Runnable>();
         Runnable mActive;
 
         public synchronized void execute(final Runnable r) {
