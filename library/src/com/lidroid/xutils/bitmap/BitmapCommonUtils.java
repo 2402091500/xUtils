@@ -33,10 +33,8 @@ public class BitmapCommonUtils {
 
     public static BitmapSize getScreenSize(Context context) {
         if (screenSize == null) {
-            screenSize = new BitmapSize();
             DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-            screenSize.setWidth(displayMetrics.widthPixels);
-            screenSize.setHeight(displayMetrics.heightPixels);
+            screenSize = new BitmapSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
         }
         return screenSize;
     }

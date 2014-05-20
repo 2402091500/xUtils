@@ -9,11 +9,8 @@ public class BitmapSize {
 
     public static final BitmapSize ZERO = new BitmapSize(0, 0);
 
-    private int width;
-    private int height;
-
-    public BitmapSize() {
-    }
+    private final int width;
+    private final int height;
 
     public BitmapSize(int width, int height) {
         this.width = width;
@@ -38,16 +35,8 @@ public class BitmapSize {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     @Override
