@@ -15,6 +15,9 @@
 
 package com.lidroid.xutils.util;
 
+import android.content.Context;
+import android.os.Environment;
+import android.os.StatFs;
 import android.text.TextUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -27,6 +30,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
@@ -36,6 +40,37 @@ import java.security.cert.X509Certificate;
  */
 public class OtherUtils {
     private OtherUtils() {
+    }
+
+    /**
+     * @param context
+     * @param dirName Only the folder name, not full path.
+     * @return app_cache_path/dirName
+     */
+    public static String getDiskCacheDir(Context context, String dirName) {
+        String cachePath = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            File externalCacheDir = context.getExternalCacheDir();
+            if (externalCacheDir != null) {
+                cachePath = externalCacheDir.getPath();
+            }
+        }
+        if (cachePath == null) {
+            cachePath = context.getCacheDir().getPath();
+        }
+
+        return cachePath + File.separator + dirName;
+    }
+
+    public static long getAvailableSpace(File dir) {
+        try {
+            final StatFs stats = new StatFs(dir.getPath());
+            return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
+        } catch (Throwable e) {
+            LogUtils.e(e.getMessage(), e);
+            return -1;
+        }
+
     }
 
     public static boolean isSupportRange(final HttpResponse response) {

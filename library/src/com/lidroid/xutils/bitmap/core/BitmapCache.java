@@ -19,11 +19,11 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import com.lidroid.xutils.BitmapUtils;
-import com.lidroid.xutils.bitmap.BitmapCommonUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.FileNameGenerator;
 import com.lidroid.xutils.util.core.LruDiskCache;
 import com.lidroid.xutils.util.core.LruMemoryCache;
@@ -96,7 +96,7 @@ public class BitmapCache {
                 if (!diskCacheDir.exists()) {
                     diskCacheDir.mkdirs();
                 }
-                long availableSpace = BitmapCommonUtils.getAvailableSpace(diskCacheDir);
+                long availableSpace = OtherUtils.getAvailableSpace(diskCacheDir);
                 long diskCacheSize = globalConfig.getDiskCacheSize();
                 diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
                 try {

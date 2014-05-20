@@ -22,6 +22,7 @@ import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.FileNameGenerator;
 
@@ -92,7 +93,7 @@ public class BitmapGlobalConfig {
 
     public String getDiskCachePath() {
         if (TextUtils.isEmpty(diskCachePath)) {
-            diskCachePath = BitmapCommonUtils.getDiskCacheDir(mContext, "xBitmapCache");
+            diskCachePath = OtherUtils.getDiskCacheDir(mContext, "xBitmapCache");
         }
         return diskCachePath;
     }
