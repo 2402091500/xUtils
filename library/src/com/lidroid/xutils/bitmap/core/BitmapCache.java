@@ -198,6 +198,9 @@ public class BitmapCache {
 
             if (bitmap != null) {
                 bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
+                if (config != null && config.getImageFactory() != null) {
+                    bitmap = config.getImageFactory().createBitmap(bitmap);
+                }
                 addBitmapToMemoryCache(uri, config, bitmap, bitmapMeta.expiryTimestamp);
             }
             return bitmap;
@@ -213,7 +216,7 @@ public class BitmapCache {
 
     private void addBitmapToMemoryCache(String uri, BitmapDisplayConfig config, Bitmap bitmap, long expiryTimestamp) throws IOException {
         if (uri != null && bitmap != null && globalConfig.isMemoryCacheEnabled() && mMemoryCache != null) {
-            MemoryCacheKey key = new MemoryCacheKey(uri, config == null ? null : config.toString());
+            MemoryCacheKey key = new MemoryCacheKey(uri, config);
             mMemoryCache.put(key, bitmap, expiryTimestamp);
         }
     }
@@ -227,7 +230,7 @@ public class BitmapCache {
      */
     public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config) {
         if (mMemoryCache != null && globalConfig.isMemoryCacheEnabled()) {
-            MemoryCacheKey key = new MemoryCacheKey(uri, config == null ? null : config.toString());
+            MemoryCacheKey key = new MemoryCacheKey(uri, config);
             return mMemoryCache.get(key);
         }
         return null;
@@ -458,9 +461,9 @@ public class BitmapCache {
         private String uri;
         private String subKey;
 
-        private MemoryCacheKey(String uri, String subKey) {
+        private MemoryCacheKey(String uri, BitmapDisplayConfig config) {
             this.uri = uri;
-            this.subKey = subKey;
+            this.subKey = config == null ? null : config.toString();
         }
 
         @Override

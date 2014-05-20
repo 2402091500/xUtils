@@ -379,6 +379,34 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * Executes the task with the specified parameters. The task returns
      * itself (this) so that the caller can keep a reference to it.
      * <p/>
+     * <p>Note: this function schedules the task on a queue for a single background
+     * thread or pool of threads depending on the platform version.  When first
+     * introduced, AsyncTasks were executed serially on a single background thread.
+     * Starting with {@link android.os.Build.VERSION_CODES#DONUT}, this was changed
+     * to a pool of threads allowing multiple tasks to operate in parallel.
+     * If you truly want parallel execution, you can use
+     * the {@link #executeOnExecutor} version of this method
+     * with {@link #THREAD_POOL_EXECUTOR}; however, see commentary there for warnings
+     * on its use.
+     * <p/>
+     * <p>This method must be invoked on the UI thread.
+     *
+     * @param priority
+     * @param params   The parameters of the task.
+     * @return This instance of AsyncTask.
+     * @throws IllegalStateException If {@link #getStatus()} returns either
+     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
+     * @see #execute(Runnable)
+     */
+    public final CompatibleAsyncTask<Params, Progress, Result> execute(Priority priority, Params... params) {
+        return executeOnExecutor(sDefaultExecutor, priority, params);
+    }
+
+    /**
+     * Executes the task with the specified parameters. The task returns
+     * itself (this) so that the caller can keep a reference to it.
+     * <p/>
      * <p>This method is typically used with {@link #THREAD_POOL_EXECUTOR} to
      * allow multiple tasks to run in parallel on a pool of threads managed by
      * AsyncTask, however you can also use your own {@link java.util.concurrent.Executor} for custom
@@ -407,6 +435,12 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      */
     public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
                                                                                  Params... params) {
+        return executeOnExecutor(exec, Priority.UI_NORMAL, params);
+    }
+
+    private final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                                  Priority priority,
+                                                                                  Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
@@ -440,6 +474,18 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      */
     public static void execute(Runnable runnable) {
+        execute(runnable, Priority.UI_NORMAL);
+    }
+
+    /**
+     * Convenience version of {@link #execute(Object...)} for use with
+     * a simple Runnable object. See {@link #execute(Object[])} for more
+     * information on the order of execution.
+     *
+     * @see #execute(Object[])
+     * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
+     */
+    public static void execute(Runnable runnable, Priority priority) {
         sDefaultExecutor.execute(runnable);
     }
 
@@ -506,6 +552,40 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         AsyncTaskResult(CompatibleAsyncTask task, Data... data) {
             mTask = task;
             mData = data;
+        }
+    }
+
+    public enum Priority {
+        PRIVILEGE(0), UI_TOP(1), UI_NORMAL(2), UI_LOW(3), BG_TOP(4), BG_NORMAL(5), BG_LOW(6);
+        private int value = 0;
+
+        Priority(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return this.value;
+        }
+
+        public static Priority valueOf(int value) {
+            switch (value) {
+                case 0:
+                    return PRIVILEGE;
+                case 1:
+                    return UI_TOP;
+                case 2:
+                    return UI_NORMAL;
+                case 3:
+                    return UI_LOW;
+                case 4:
+                    return BG_TOP;
+                case 5:
+                    return BG_NORMAL;
+                case 6:
+                    return BG_LOW;
+                default:
+                    return UI_NORMAL;
+            }
         }
     }
 }

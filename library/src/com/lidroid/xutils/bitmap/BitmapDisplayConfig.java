@@ -21,6 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
+import com.lidroid.xutils.bitmap.factory.ImageFactory;
 
 public class BitmapDisplayConfig {
 
@@ -31,6 +32,7 @@ public class BitmapDisplayConfig {
     private boolean autoRotation = false;
     private boolean showOriginal = false;
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
+    private ImageFactory imageFactory;
 
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
@@ -93,9 +95,18 @@ public class BitmapDisplayConfig {
         this.bitmapConfig = bitmapConfig;
     }
 
+    public ImageFactory getImageFactory() {
+        return imageFactory;
+    }
+
+    public void setImageFactory(ImageFactory imageFactory) {
+        this.imageFactory = imageFactory;
+    }
+
     @Override
     public String toString() {
-        return isShowOriginal() ? "" : bitmapMaxSize.toString();
+        return (isShowOriginal() ? "" : bitmapMaxSize.toString()) +
+                (imageFactory == null ? "" : imageFactory.getClass().getName());
     }
 
     public BitmapDisplayConfig cloneNew() {
