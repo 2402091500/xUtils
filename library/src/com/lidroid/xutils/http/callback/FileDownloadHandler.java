@@ -36,10 +36,9 @@ public class FileDownloadHandler {
 
         if (!targetFile.exists()) {
             File dir = targetFile.getParentFile();
-            if (!dir.exists()) {
-                dir.mkdirs();
+            if (dir.exists() || dir.mkdirs()) {
+                targetFile.createNewFile();
             }
-            targetFile.createNewFile();
         }
 
         long current = 0;

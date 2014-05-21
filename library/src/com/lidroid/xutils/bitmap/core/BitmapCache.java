@@ -93,18 +93,17 @@ public class BitmapCache {
         synchronized (mDiskCacheLock) {
             if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
                 File diskCacheDir = new File(globalConfig.getDiskCachePath());
-                if (!diskCacheDir.exists()) {
-                    diskCacheDir.mkdirs();
-                }
-                long availableSpace = OtherUtils.getAvailableSpace(diskCacheDir);
-                long diskCacheSize = globalConfig.getDiskCacheSize();
-                diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
-                try {
-                    mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
-                    mDiskLruCache.setFileNameGenerator(globalConfig.getFileNameGenerator());
-                } catch (Throwable e) {
-                    mDiskLruCache = null;
-                    LogUtils.e(e.getMessage(), e);
+                if (diskCacheDir.exists() || diskCacheDir.mkdirs()) {
+                    long availableSpace = OtherUtils.getAvailableSpace(diskCacheDir);
+                    long diskCacheSize = globalConfig.getDiskCacheSize();
+                    diskCacheSize = availableSpace > diskCacheSize ? diskCacheSize : availableSpace;
+                    try {
+                        mDiskLruCache = LruDiskCache.open(diskCacheDir, 1, 1, diskCacheSize);
+                        mDiskLruCache.setFileNameGenerator(globalConfig.getFileNameGenerator());
+                    } catch (Throwable e) {
+                        mDiskLruCache = null;
+                        LogUtils.e(e.getMessage(), e);
+                    }
                 }
             }
             isDiskCacheReadied = true;
