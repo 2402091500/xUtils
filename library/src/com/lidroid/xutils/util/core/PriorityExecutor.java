@@ -1,6 +1,5 @@
 package com.lidroid.xutils.util.core;
 
-import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,37 +54,8 @@ public class PriorityExecutor implements Executor {
         return threadPoolExecutor.getActiveCount() >= threadPoolExecutor.getCorePoolSize();
     }
 
-    private final LinkedList<Runnable> mTasks = new LinkedList<Runnable>();
-    private Runnable mActive;
-
     @Override
-    public synchronized void execute(final Runnable r) {
-        Priority priority;
-        if (r instanceof PriorityObject) {
-            priority = ((PriorityObject) r).priority;
-        } else {
-            priority = Priority.UI_LOW;
-        }
-        mTasks.offer(new PriorityRunnable(
-                priority,
-                new Runnable() {
-                    public void run() {
-                        try {
-                            r.run();
-                        } finally {
-                            scheduleNext();
-                        }
-                    }
-                }
-        ));
-        if (mActive == null) {
-            scheduleNext();
-        }
-    }
-
-    protected synchronized void scheduleNext() {
-        if ((mActive = mTasks.poll()) != null) {
-            threadPoolExecutor.execute(mActive);
-        }
+    public void execute(final Runnable r) {
+        threadPoolExecutor.execute(r);
     }
 }

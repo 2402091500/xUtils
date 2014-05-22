@@ -261,7 +261,8 @@ public class BitmapUtils {
             // load bitmap from uri or diskCache
             Drawable loadingDrawable = null;
             PriorityExecutor executor = globalConfig.getBitmapLoadExecutor();
-            boolean diskCacheExist = this.getBitmapFileFromDiskCache(uri).exists();
+            File diskCacheFile = this.getBitmapFileFromDiskCache(uri);
+            boolean diskCacheExist = diskCacheFile != null && diskCacheFile.exists();
             if (diskCacheExist) {
                 if (executor.isBusy()) {
                     executor = globalConfig.getDiskCacheExecutor();

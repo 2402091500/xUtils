@@ -34,13 +34,13 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
      * Head of linked list.
      * Invariant: head.item == null
      */
-    transient Node head;
+    transient Node<E> head;
 
     /**
      * Tail of linked list.
      * Invariant: last.next == null
      */
-    private transient Node last;
+    private transient Node<E> last;
 
     /**
      * Lock held by take, poll, etc
@@ -606,6 +606,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
  * Linked list node class
  */
 class Node<T> {
+    private boolean valueAsT = false;
     private PriorityObject<?> value;
     Node<T> next;
 
@@ -617,10 +618,11 @@ class Node<T> {
         return value.priority;
     }
 
+    @SuppressWarnings("unchecked")
     public T getValue() {
         if (value == null) {
             return null;
-        } else if (value instanceof PriorityObject) {
+        } else if (valueAsT) {
             return (T) value;
         } else {
             return (T) value.obj;
@@ -632,6 +634,7 @@ class Node<T> {
             this.value = null;
         } else if (value instanceof PriorityObject) {
             this.value = (PriorityObject<?>) value;
+            this.valueAsT = true;
         } else {
             this.value = new PriorityObject<T>(Priority.UI_LOW, value);
         }
