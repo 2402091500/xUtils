@@ -269,7 +269,10 @@ public final class LruDiskCache implements Closeable {
 
     private void readJournalLine(String line) throws IOException {
         int firstSpace = line.indexOf(' ');
-        if (firstSpace == -1) {
+        char lineTag = 0;
+        if (firstSpace == 1) {
+            lineTag = line.charAt(0);
+        } else {
             throw new IOException("unexpected journal line: " + line);
         }
 
@@ -278,7 +281,7 @@ public final class LruDiskCache implements Closeable {
         final String diskKey;
         if (secondSpace == -1) {
             diskKey = line.substring(keyBegin);
-            if (firstSpace == 1 && line.charAt(0) == DELETE) {
+            if (lineTag == DELETE) {
                 lruEntries.remove(diskKey);
                 return;
             }
@@ -290,11 +293,6 @@ public final class LruDiskCache implements Closeable {
         if (entry == null) {
             entry = new Entry(diskKey);
             lruEntries.put(diskKey, entry);
-        }
-
-        char lineTag = 0;
-        if (secondSpace != -1 && firstSpace == 1) {
-            lineTag = line.charAt(0);
         }
 
         switch (lineTag) {
@@ -379,9 +377,9 @@ public final class LruDiskCache implements Closeable {
 
             for (Entry entry : lruEntries.values()) {
                 if (entry.currentEditor != null) {
-                    writer.write(UPDATE + ' ' + entry.diskKey + '\n');
+                    writer.write(UPDATE + " " + entry.diskKey + '\n');
                 } else {
-                    writer.write(CLEAN + ' ' + entry.diskKey + " " + EXPIRY_PREFIX + entry.expiryTimestamp + entry.getLengths() + '\n');
+                    writer.write(CLEAN + " " + entry.diskKey + " " + EXPIRY_PREFIX + entry.expiryTimestamp + entry.getLengths() + '\n');
                 }
             }
         } finally {
@@ -461,7 +459,7 @@ public final class LruDiskCache implements Closeable {
                 entry.lengths[i] = 0;
             }
             redundantOpCount++;
-            journalWriter.append(DELETE + ' ' + diskKey + '\n');
+            journalWriter.append(DELETE + " " + diskKey + '\n');
             lruEntries.remove(diskKey);
             if (journalRebuildRequired()) {
                 executorService.submit(cleanupCallable);
@@ -490,7 +488,7 @@ public final class LruDiskCache implements Closeable {
         }
 
         redundantOpCount++;
-        journalWriter.append(READ + ' ' + diskKey + '\n');
+        journalWriter.append(READ + " " + diskKey + '\n');
         if (journalRebuildRequired()) {
             executorService.submit(cleanupCallable);
         }
@@ -525,7 +523,7 @@ public final class LruDiskCache implements Closeable {
         entry.currentEditor = editor;
 
         // Flush the journal before creating files to prevent file leaks.
-        journalWriter.write(UPDATE + ' ' + diskKey + '\n');
+        journalWriter.write(UPDATE + " " + diskKey + '\n');
         journalWriter.flush();
         return editor;
     }
@@ -603,13 +601,13 @@ public final class LruDiskCache implements Closeable {
         entry.currentEditor = null;
         if (entry.readable | success) {
             entry.readable = true;
-            journalWriter.write(CLEAN + ' ' + entry.diskKey + " " + EXPIRY_PREFIX + entry.expiryTimestamp + entry.getLengths() + '\n');
+            journalWriter.write(CLEAN + " " + entry.diskKey + " " + EXPIRY_PREFIX + entry.expiryTimestamp + entry.getLengths() + '\n');
             if (success) {
                 entry.sequenceNumber = nextSequenceNumber++;
             }
         } else {
             lruEntries.remove(entry.diskKey);
-            journalWriter.write(DELETE + ' ' + entry.diskKey + '\n');
+            journalWriter.write(DELETE + " " + entry.diskKey + '\n');
         }
         journalWriter.flush();
 
@@ -656,7 +654,7 @@ public final class LruDiskCache implements Closeable {
         }
 
         redundantOpCount++;
-        journalWriter.append(DELETE + ' ' + diskKey + '\n');
+        journalWriter.append(DELETE + " " + diskKey + '\n');
         lruEntries.remove(diskKey);
 
         if (journalRebuildRequired()) {
@@ -989,7 +987,7 @@ public final class LruDiskCache implements Closeable {
         public String getLengths() throws IOException {
             StringBuilder result = new StringBuilder();
             for (long size : lengths) {
-                result.append(' ').append(size);
+                result.append(" ").append(size);
             }
             return result.toString();
         }
