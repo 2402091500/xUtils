@@ -19,9 +19,6 @@ public class AsyncDrawable<T extends View> extends Drawable {
     private final Drawable baseDrawable;
 
     public AsyncDrawable(Drawable drawable, BitmapUtils.BitmapLoadTask<T> bitmapWorkerTask) {
-        if (drawable == null) {
-            throw new IllegalArgumentException("drawable may not be null");
-        }
         if (bitmapWorkerTask == null) {
             throw new IllegalArgumentException("bitmapWorkerTask may not be null");
         }
@@ -35,141 +32,167 @@ public class AsyncDrawable<T extends View> extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        baseDrawable.draw(canvas);
+        if (baseDrawable != null) {
+            baseDrawable.draw(canvas);
+        }
     }
 
     @Override
     public void setAlpha(int i) {
-        baseDrawable.setAlpha(i);
+        if (baseDrawable != null) {
+            baseDrawable.setAlpha(i);
+        }
     }
 
     @Override
     public void setColorFilter(ColorFilter colorFilter) {
-        baseDrawable.setColorFilter(colorFilter);
+        if (baseDrawable != null) {
+            baseDrawable.setColorFilter(colorFilter);
+        }
     }
 
     @Override
     public int getOpacity() {
-        return baseDrawable.getOpacity();
+        return baseDrawable == null ? Byte.MAX_VALUE : baseDrawable.getOpacity();
     }
 
     @Override
     public void setBounds(int left, int top, int right, int bottom) {
-        baseDrawable.setBounds(left, top, right, bottom);
+        if (baseDrawable != null) {
+            baseDrawable.setBounds(left, top, right, bottom);
+        }
     }
 
     @Override
     public void setBounds(Rect bounds) {
-        baseDrawable.setBounds(bounds);
+        if (baseDrawable != null) {
+            baseDrawable.setBounds(bounds);
+        }
     }
 
     @Override
     public void setChangingConfigurations(int configs) {
-        baseDrawable.setChangingConfigurations(configs);
+        if (baseDrawable != null) {
+            baseDrawable.setChangingConfigurations(configs);
+        }
     }
 
     @Override
     public int getChangingConfigurations() {
-        return baseDrawable.getChangingConfigurations();
+        return baseDrawable == null ? 0 : baseDrawable.getChangingConfigurations();
     }
 
     @Override
     public void setDither(boolean dither) {
-        baseDrawable.setDither(dither);
+        if (baseDrawable != null) {
+            baseDrawable.setDither(dither);
+        }
     }
 
     @Override
     public void setFilterBitmap(boolean filter) {
-        baseDrawable.setFilterBitmap(filter);
+        if (baseDrawable != null) {
+            baseDrawable.setFilterBitmap(filter);
+        }
     }
 
     @Override
     public void invalidateSelf() {
-        baseDrawable.invalidateSelf();
+        if (baseDrawable != null) {
+            baseDrawable.invalidateSelf();
+        }
     }
 
     @Override
     public void scheduleSelf(Runnable what, long when) {
-        baseDrawable.scheduleSelf(what, when);
+        if (baseDrawable != null) {
+            baseDrawable.scheduleSelf(what, when);
+        }
     }
 
     @Override
     public void unscheduleSelf(Runnable what) {
-        baseDrawable.unscheduleSelf(what);
+        if (baseDrawable != null) {
+            baseDrawable.unscheduleSelf(what);
+        }
     }
 
     @Override
     public void setColorFilter(int color, PorterDuff.Mode mode) {
-        baseDrawable.setColorFilter(color, mode);
+        if (baseDrawable != null) {
+            baseDrawable.setColorFilter(color, mode);
+        }
     }
 
     @Override
     public void clearColorFilter() {
-        baseDrawable.clearColorFilter();
+        if (baseDrawable != null) {
+            baseDrawable.clearColorFilter();
+        }
     }
 
     @Override
     public boolean isStateful() {
-        return baseDrawable.isStateful();
+        return baseDrawable != null && baseDrawable.isStateful();
     }
 
     @Override
     public boolean setState(int[] stateSet) {
-        return baseDrawable.setState(stateSet);
+        return baseDrawable != null && baseDrawable.setState(stateSet);
     }
 
     @Override
     public int[] getState() {
-        return baseDrawable.getState();
+        return baseDrawable == null ? null : baseDrawable.getState();
     }
 
     @Override
     public Drawable getCurrent() {
-        return baseDrawable.getCurrent();
+        return baseDrawable == null ? null : baseDrawable.getCurrent();
     }
 
     @Override
     public boolean setVisible(boolean visible, boolean restart) {
-        return baseDrawable.setVisible(visible, restart);
+        return baseDrawable != null && baseDrawable.setVisible(visible, restart);
     }
 
     @Override
     public Region getTransparentRegion() {
-        return baseDrawable.getTransparentRegion();
+        return baseDrawable == null ? null : baseDrawable.getTransparentRegion();
     }
 
     @Override
     public int getIntrinsicWidth() {
-        return baseDrawable.getIntrinsicWidth();
+        return baseDrawable == null ? 0 : baseDrawable.getIntrinsicWidth();
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return baseDrawable.getIntrinsicHeight();
+        return baseDrawable == null ? 0 : baseDrawable.getIntrinsicHeight();
     }
 
     @Override
     public int getMinimumWidth() {
-        return baseDrawable.getMinimumWidth();
+        return baseDrawable == null ? 0 : baseDrawable.getMinimumWidth();
     }
 
     @Override
     public int getMinimumHeight() {
-        return baseDrawable.getMinimumHeight();
+        return baseDrawable == null ? 0 : baseDrawable.getMinimumHeight();
     }
 
     @Override
     public boolean getPadding(Rect padding) {
-        return baseDrawable.getPadding(padding);
+        return baseDrawable != null && baseDrawable.getPadding(padding);
     }
 
     @Override
     public Drawable mutate() {
-        return baseDrawable.mutate();
+        return baseDrawable == null ? null : baseDrawable.mutate();
     }
 
     @Override
     public ConstantState getConstantState() {
-        return baseDrawable.getConstantState();
+        return baseDrawable == null ? null : baseDrawable.getConstantState();
     }
 }

@@ -243,6 +243,7 @@ public class BitmapUtils {
             return;
         }
 
+        // find bitmap from mem cache.
         Bitmap bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
 
         if (bitmap != null) {
@@ -256,20 +257,24 @@ public class BitmapUtils {
         } else if (!bitmapLoadTaskExist(container, uri, callBack)) {
 
             final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, uri, displayConfig, callBack);
-            // set loading image
-            final AsyncDrawable<T> asyncDrawable = new AsyncDrawable<T>(
-                    displayConfig.getLoadingDrawable(),
-                    loadTask);
-            callBack.setDrawable(container, asyncDrawable);
 
             // load bitmap from uri or diskCache
+            Drawable loadingDrawable = null;
             PriorityExecutor executor = globalConfig.getBitmapLoadExecutor();
             boolean diskCacheExist = this.getBitmapFileFromDiskCache(uri).exists();
             if (diskCacheExist) {
                 if (executor.isBusy()) {
                     executor = globalConfig.getDiskCacheExecutor();
                 }
+            } else {
+                loadingDrawable = displayConfig.getLoadingDrawable();
             }
+            // set loading image
+            final AsyncDrawable<T> asyncDrawable = new AsyncDrawable<T>(
+                    loadingDrawable,
+                    loadTask);
+            callBack.setDrawable(container, asyncDrawable);
+
             Priority priority = displayConfig.getPriority();
             if (priority == null) {
                 priority = Priority.UI_LOW;
