@@ -297,7 +297,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      */
     public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
                                                                                  Params... params) {
-        return executeOnExecutor(exec, Priority.UI_NORMAL, params);
+        return executeOnExecutor(exec, Priority.UI_LOW, params);
     }
 
     /**
@@ -345,7 +345,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      */
     public static void execute(Runnable runnable) {
-        execute(runnable, Priority.UI_NORMAL);
+        execute(runnable, Priority.UI_LOW);
     }
 
     /**

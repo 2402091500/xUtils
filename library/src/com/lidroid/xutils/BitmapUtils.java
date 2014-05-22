@@ -34,6 +34,8 @@ import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.FileNameGenerator;
+import com.lidroid.xutils.util.core.Priority;
+import com.lidroid.xutils.util.core.PriorityExecutor;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -261,7 +263,18 @@ public class BitmapUtils {
             callBack.setDrawable(container, asyncDrawable);
 
             // load bitmap from uri or diskCache
-            loadTask.executeOnExecutor(globalConfig.getBitmapLoadExecutor());
+            PriorityExecutor executor = globalConfig.getBitmapLoadExecutor();
+            boolean diskCacheExist = this.getBitmapFileFromDiskCache(uri).exists();
+            if (diskCacheExist) {
+                if (executor.isBusy()) {
+                    executor = globalConfig.getDiskCacheExecutor();
+                }
+            }
+            Priority priority = displayConfig.getPriority();
+            if (priority == null) {
+                priority = Priority.UI_LOW;
+            }
+            loadTask.executeOnExecutor(executor, priority);
         }
     }
 

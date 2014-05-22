@@ -25,11 +25,7 @@ import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import com.lidroid.xutils.util.core.FileNameGenerator;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.lidroid.xutils.util.core.PriorityExecutor;
 
 /**
  * Author: wyouflf
@@ -50,9 +46,9 @@ public class BitmapGlobalConfig {
     private Downloader downloader;
     private BitmapCache bitmapCache;
 
-    private int threadPoolSize = 5;
-    private boolean _dirty_params_bitmapLoadExecutor = true;
-    private ExecutorService bitmapLoadExecutor;
+    private final static int DEFAULT_POOL_SIZE = 5;
+    private final static PriorityExecutor BITMAP_LOAD_EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
+    private final static PriorityExecutor DISK_CACHE_EXECUTOR = new PriorityExecutor(1);
 
     private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
     private int defaultConnectTimeout = 1000 * 15; // 15 sec
@@ -61,17 +57,6 @@ public class BitmapGlobalConfig {
     private FileNameGenerator fileNameGenerator;
 
     private BitmapCacheListener bitmapCacheListener;
-
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, "BitmapUtils #" + mCount.getAndIncrement());
-            thread.setPriority(Thread.NORM_PRIORITY - 1);
-            return thread;
-        }
-    };
 
     private Context mContext;
 
@@ -186,22 +171,19 @@ public class BitmapGlobalConfig {
     }
 
     public int getThreadPoolSize() {
-        return threadPoolSize;
+        return BitmapGlobalConfig.BITMAP_LOAD_EXECUTOR.getPoolSize();
     }
 
     public void setThreadPoolSize(int threadPoolSize) {
-        if (threadPoolSize > 0 && threadPoolSize != this.threadPoolSize) {
-            _dirty_params_bitmapLoadExecutor = true;
-            this.threadPoolSize = threadPoolSize;
-        }
+        BitmapGlobalConfig.BITMAP_LOAD_EXECUTOR.setPoolSize(threadPoolSize);
     }
 
-    public ExecutorService getBitmapLoadExecutor() {
-        if (_dirty_params_bitmapLoadExecutor || bitmapLoadExecutor == null) {
-            bitmapLoadExecutor = Executors.newFixedThreadPool(getThreadPoolSize(), sThreadFactory);
-            _dirty_params_bitmapLoadExecutor = false;
-        }
-        return bitmapLoadExecutor;
+    public PriorityExecutor getBitmapLoadExecutor() {
+        return BitmapGlobalConfig.BITMAP_LOAD_EXECUTOR;
+    }
+
+    public PriorityExecutor getDiskCacheExecutor() {
+        return BitmapGlobalConfig.DISK_CACHE_EXECUTOR;
     }
 
     public boolean isMemoryCacheEnabled() {

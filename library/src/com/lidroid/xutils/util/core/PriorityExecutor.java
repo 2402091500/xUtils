@@ -24,8 +24,7 @@ public class PriorityExecutor implements Executor {
         }
     };
 
-    private int poolSize;
-    private static final BlockingQueue<Runnable> sPoolWorkQueue = new PriorityBlockingQueue<Runnable>();
+    private static final BlockingQueue<Runnable> sPoolWorkQueue = new PriorityObjectBlockingQueue<Runnable>();
     private static ThreadPoolExecutor threadPoolExecutor;
 
     public PriorityExecutor() {
@@ -33,7 +32,6 @@ public class PriorityExecutor implements Executor {
     }
 
     public PriorityExecutor(int poolSize) {
-        this.poolSize = poolSize;
         threadPoolExecutor = new ThreadPoolExecutor(
                 poolSize,
                 MAXIMUM_POOL_SIZE,
@@ -44,12 +42,17 @@ public class PriorityExecutor implements Executor {
     }
 
     public int getPoolSize() {
-        return poolSize;
+        return threadPoolExecutor.getCorePoolSize();
     }
 
     public void setPoolSize(int poolSize) {
-        this.poolSize = poolSize;
-        threadPoolExecutor.setCorePoolSize(poolSize);
+        if (poolSize > 0) {
+            threadPoolExecutor.setCorePoolSize(poolSize);
+        }
+    }
+
+    public boolean isBusy() {
+        return threadPoolExecutor.getActiveCount() >= threadPoolExecutor.getCorePoolSize();
     }
 
     private final LinkedList<Runnable> mTasks = new LinkedList<Runnable>();

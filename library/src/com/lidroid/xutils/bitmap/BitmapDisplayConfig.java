@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.factory.ImageFactory;
+import com.lidroid.xutils.util.core.Priority;
 
 public class BitmapDisplayConfig {
 
@@ -33,6 +34,8 @@ public class BitmapDisplayConfig {
     private boolean showOriginal = false;
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
     private ImageFactory imageFactory;
+
+    private Priority priority;
 
     private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
@@ -103,6 +106,14 @@ public class BitmapDisplayConfig {
         this.imageFactory = imageFactory;
     }
 
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     @Override
     public String toString() {
         return (isShowOriginal() ? "" : bitmapMaxSize.toString()) +
@@ -118,6 +129,8 @@ public class BitmapDisplayConfig {
         config.autoRotation = this.autoRotation;
         config.showOriginal = this.showOriginal;
         config.bitmapConfig = this.bitmapConfig;
+        config.imageFactory = this.imageFactory;
+        config.priority = this.priority;
         return config;
     }
 }
