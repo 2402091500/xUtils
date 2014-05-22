@@ -16,8 +16,6 @@
 package com.lidroid.xutils.bitmap;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
@@ -36,8 +34,6 @@ public class BitmapDisplayConfig {
     private ImageFactory imageFactory;
 
     private Priority priority;
-
-    private static final Drawable TRANSPARENT_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
     public BitmapDisplayConfig() {
     }
@@ -59,7 +55,7 @@ public class BitmapDisplayConfig {
     }
 
     public Drawable getLoadingDrawable() {
-        return loadingDrawable == null ? TRANSPARENT_DRAWABLE : loadingDrawable;
+        return loadingDrawable;
     }
 
     public void setLoadingDrawable(Drawable loadingDrawable) {
@@ -67,7 +63,7 @@ public class BitmapDisplayConfig {
     }
 
     public Drawable getLoadFailedDrawable() {
-        return loadFailedDrawable == null ? TRANSPARENT_DRAWABLE : loadFailedDrawable;
+        return loadFailedDrawable;
     }
 
     public void setLoadFailedDrawable(Drawable loadFailedDrawable) {
