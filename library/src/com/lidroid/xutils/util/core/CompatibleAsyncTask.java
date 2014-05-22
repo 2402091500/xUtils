@@ -21,63 +21,20 @@ import android.os.Message;
 import android.os.Process;
 import com.lidroid.xutils.util.LogUtils;
 
-import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A compatible AsyncTask for android2.2.
  */
 public abstract class CompatibleAsyncTask<Params, Progress, Result> {
 
-    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-    private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-    private static final int KEEP_ALIVE = 1;
-
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
-
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "CompatibleAsyncTask #" + mCount.getAndIncrement());
-        }
-    };
-
-    static class PriorityRunnable extends PriorityObject<Runnable> implements Runnable {
-
-        public PriorityRunnable(Priority priority, Runnable obj) {
-            super(priority, obj);
-        }
-
-        @Override
-        public void run() {
-            this.obj.run();
-        }
-    }
-
-    private static final BlockingQueue<Runnable> sPoolWorkQueue =
-            new PriorityBlockingQueue<Runnable>(16);
-
-    /**
-     * An {@link java.util.concurrent.Executor} that can be used to execute tasks in parallel.
-     */
-    public static final Executor THREAD_POOL_EXECUTOR
-            = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-            TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
-
-    /**
-     * An {@link java.util.concurrent.Executor} that executes tasks one at a time in serial
-     * order.  This serialization is global to a particular process.
-     */
-    public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
-
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_PROGRESS = 0x2;
 
     private static final InternalHandler sHandler = new InternalHandler();
 
-    private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
+    public static final Executor sDefaultExecutor = new PriorityExecutor();
     private final WorkerRunnable<Params, Result> mWorker;
     private final FutureTask<Result> mFuture;
 
@@ -85,39 +42,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
 
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
-
-    private static class SerialExecutor implements Executor {
-        final LinkedList<Runnable> mTasks = new LinkedList<Runnable>();
-        Runnable mActive;
-
-        public synchronized void execute(final Runnable r) {
-            Priority priority = Priority.UI_LOW;
-            if (r instanceof PriorityObject) {
-                priority = ((PriorityObject) r).priority;
-            }
-            mTasks.offer(new PriorityRunnable(
-                    priority,
-                    new Runnable() {
-                        public void run() {
-                            try {
-                                r.run();
-                            } finally {
-                                scheduleNext();
-                            }
-                        }
-                    }
-            ));
-            if (mActive == null) {
-                scheduleNext();
-            }
-        }
-
-        protected synchronized void scheduleNext() {
-            if ((mActive = mTasks.poll()) != null) {
-                THREAD_POOL_EXECUTOR.execute(mActive);
-            }
-        }
-    }
 
     /**
      * Indicates the current status of the task. Each status will be set only once
@@ -364,8 +288,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * @param exec   The executor to use.  {@link #THREAD_POOL_EXECUTOR} is available as a
-     *               convenient process-wide thread pool for tasks that are loosely coupled.
+     * @param exec   The executor to use.
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
@@ -377,9 +300,18 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         return executeOnExecutor(exec, Priority.UI_NORMAL, params);
     }
 
-    private final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                                  Priority priority,
-                                                                                  Params... params) {
+    /**
+     * @param exec     The executor to use.
+     * @param priority
+     * @param params   The parameters of the task.
+     * @return This instance of AsyncTask.
+     * @throws IllegalStateException If {@link #getStatus()} returns either
+     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     * @see #execute(Object[])
+     */
+    public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                                 Priority priority,
+                                                                                 Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
