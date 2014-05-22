@@ -227,9 +227,10 @@ public final class LruDiskCache implements Closeable {
         }
 
         // Create a new empty cache.
-        directory.mkdirs();
-        cache = new LruDiskCache(directory, appVersion, valueCount, maxSize);
-        cache.rebuildJournal();
+        if (directory.exists() || directory.mkdirs()) {
+            cache = new LruDiskCache(directory, appVersion, valueCount, maxSize);
+            cache.rebuildJournal();
+        }
         return cache;
     }
 

@@ -27,7 +27,7 @@ public class BitmapDecoder {
     private BitmapDecoder() {
     }
 
-    public synchronized static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, BitmapSize maxSize, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
@@ -46,7 +46,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeSampledBitmapFromFile(String filename, BitmapSize maxSize, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromFile(String filename, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
@@ -65,7 +65,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, BitmapSize maxSize, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
@@ -84,7 +84,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeSampledBitmapFromByteArray(byte[] data, BitmapSize maxSize, Bitmap.Config config) {
+    public static Bitmap decodeSampledBitmapFromByteArray(byte[] data, BitmapSize maxSize, Bitmap.Config config) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inPurgeable = true;
@@ -103,7 +103,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeResource(Resources res, int resId) {
+    public static Bitmap decodeResource(Resources res, int resId) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         options.inInputShareable = true;
@@ -115,7 +115,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeFile(String filename) {
+    public static Bitmap decodeFile(String filename) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         options.inInputShareable = true;
@@ -127,7 +127,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeFileDescriptor(FileDescriptor fileDescriptor) {
+    public static Bitmap decodeFileDescriptor(FileDescriptor fileDescriptor) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         options.inInputShareable = true;
@@ -139,7 +139,7 @@ public class BitmapDecoder {
         }
     }
 
-    public synchronized static Bitmap decodeByteArray(byte[] data) {
+    public static Bitmap decodeByteArray(byte[] data) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         options.inInputShareable = true;
