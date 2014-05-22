@@ -30,8 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A compatible AsyncTask for android2.2.
  */
 public abstract class CompatibleAsyncTask<Params, Progress, Result> {
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXIMUM_POOL_SIZE = 512;
+
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
+    private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
@@ -42,8 +44,20 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         }
     };
 
+    static class PriorityRunnable extends PriorityObject<Runnable> implements Runnable {
+
+        public PriorityRunnable(Priority priority, Runnable obj) {
+            super(priority, obj);
+        }
+
+        @Override
+        public void run() {
+            this.obj.run();
+        }
+    }
+
     private static final BlockingQueue<Runnable> sPoolWorkQueue =
-            new LinkedBlockingQueue<Runnable>(10);
+            new PriorityBlockingQueue<Runnable>(16);
 
     /**
      * An {@link java.util.concurrent.Executor} that can be used to execute tasks in parallel.
@@ -77,15 +91,22 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         Runnable mActive;
 
         public synchronized void execute(final Runnable r) {
-            mTasks.offer(new Runnable() {
-                public void run() {
-                    try {
-                        r.run();
-                    } finally {
-                        scheduleNext();
+            Priority priority = Priority.UI_LOW;
+            if (r instanceof PriorityObject) {
+                priority = ((PriorityObject) r).priority;
+            }
+            mTasks.offer(new PriorityRunnable(
+                    priority,
+                    new Runnable() {
+                        public void run() {
+                            try {
+                                r.run();
+                            } finally {
+                                scheduleNext();
+                            }
+                        }
                     }
-                }
-            });
+            ));
             if (mActive == null) {
                 scheduleNext();
             }
@@ -115,20 +136,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
          * Indicates that {@link CompatibleAsyncTask#onPostExecute} has finished.
          */
         FINISHED,
-    }
-
-    /**
-     * @hide Used to force static handler to be created.
-     */
-    public static void init() {
-        sHandler.getLooper();
-    }
-
-    /**
-     * @hide
-     */
-    public static void setDefaultExecutor(Executor exec) {
-        sDefaultExecutor = exec;
     }
 
     /**
@@ -285,23 +292,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * <p>Attempts to cancel execution of this task.  This attempt will
-     * fail if the task has already completed, already been cancelled,
-     * or could not be cancelled for some other reason. If successful,
-     * and this task has not started when <tt>cancel</tt> is called,
-     * this task should never run. If the task has already started,
-     * then the <tt>mayInterruptIfRunning</tt> parameter determines
-     * whether the thread executing this task should be interrupted in
-     * an attempt to stop the task.</p>
-     * <p/>
-     * <p>Calling this method will result in {@link #onCancelled(Object)} being
-     * invoked on the UI thread after {@link #doInBackground(Object[])}
-     * returns. Calling this method guarantees that {@link #onPostExecute(Object)}
-     * is never invoked. After invoking this method, you should check the
-     * value returned by {@link #isCancelled()} periodically from
-     * {@link #doInBackground(Object[])} to finish the task as early as
-     * possible.</p>
-     *
      * @param mayInterruptIfRunning <tt>true</tt> if the thread executing this
      *                              task should be interrupted; otherwise, in-progress tasks are allowed
      *                              to complete.
@@ -349,21 +339,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * Executes the task with the specified parameters. The task returns
-     * itself (this) so that the caller can keep a reference to it.
-     * <p/>
-     * <p>Note: this function schedules the task on a queue for a single background
-     * thread or pool of threads depending on the platform version.  When first
-     * introduced, AsyncTasks were executed serially on a single background thread.
-     * Starting with {@link android.os.Build.VERSION_CODES#DONUT}, this was changed
-     * to a pool of threads allowing multiple tasks to operate in parallel.
-     * If you truly want parallel execution, you can use
-     * the {@link #executeOnExecutor} version of this method
-     * with {@link #THREAD_POOL_EXECUTOR}; however, see commentary there for warnings
-     * on its use.
-     * <p/>
-     * <p>This method must be invoked on the UI thread.
-     *
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
@@ -376,21 +351,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * Executes the task with the specified parameters. The task returns
-     * itself (this) so that the caller can keep a reference to it.
-     * <p/>
-     * <p>Note: this function schedules the task on a queue for a single background
-     * thread or pool of threads depending on the platform version.  When first
-     * introduced, AsyncTasks were executed serially on a single background thread.
-     * Starting with {@link android.os.Build.VERSION_CODES#DONUT}, this was changed
-     * to a pool of threads allowing multiple tasks to operate in parallel.
-     * If you truly want parallel execution, you can use
-     * the {@link #executeOnExecutor} version of this method
-     * with {@link #THREAD_POOL_EXECUTOR}; however, see commentary there for warnings
-     * on its use.
-     * <p/>
-     * <p>This method must be invoked on the UI thread.
-     *
      * @param priority
      * @param params   The parameters of the task.
      * @return This instance of AsyncTask.
@@ -404,27 +364,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * Executes the task with the specified parameters. The task returns
-     * itself (this) so that the caller can keep a reference to it.
-     * <p/>
-     * <p>This method is typically used with {@link #THREAD_POOL_EXECUTOR} to
-     * allow multiple tasks to run in parallel on a pool of threads managed by
-     * AsyncTask, however you can also use your own {@link java.util.concurrent.Executor} for custom
-     * behavior.
-     * <p/>
-     * <p><em>Warning:</em> Allowing multiple tasks to run in parallel from
-     * a thread pool is generally <em>not</em> what one wants, because the order
-     * of their operation is not defined.  For example, if these tasks are used
-     * to modify any state in common (such as writing a file due to a button click),
-     * there are no guarantees on the order of the modifications.
-     * Without careful work it is possible in rare cases for the newer version
-     * of the data to be over-written by an older one, leading to obscure data
-     * loss and stability issues.  Such changes are best
-     * executed in serial; to guarantee such work is serialized regardless of
-     * platform version you can use this function with {@link #SERIAL_EXECUTOR}.
-     * <p/>
-     * <p>This method must be invoked on the UI thread.
-     *
      * @param exec   The executor to use.  {@link #THREAD_POOL_EXECUTOR} is available as a
      *               convenient process-wide thread pool for tasks that are loosely coupled.
      * @param params The parameters of the task.
@@ -460,7 +399,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         onPreExecute();
 
         mWorker.mParams = params;
-        exec.execute(mFuture);
+        exec.execute(new PriorityRunnable(priority, mFuture));
 
         return this;
     }
@@ -486,7 +425,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      */
     public static void execute(Runnable runnable, Priority priority) {
-        sDefaultExecutor.execute(runnable);
+        sDefaultExecutor.execute(new PriorityRunnable(priority, runnable));
     }
 
     /**
@@ -552,40 +491,6 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         AsyncTaskResult(CompatibleAsyncTask task, Data... data) {
             mTask = task;
             mData = data;
-        }
-    }
-
-    public enum Priority {
-        PRIVILEGE(0), UI_TOP(1), UI_NORMAL(2), UI_LOW(3), BG_TOP(4), BG_NORMAL(5), BG_LOW(6);
-        private int value = 0;
-
-        Priority(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return this.value;
-        }
-
-        public static Priority valueOf(int value) {
-            switch (value) {
-                case 0:
-                    return PRIVILEGE;
-                case 1:
-                    return UI_TOP;
-                case 2:
-                    return UI_NORMAL;
-                case 3:
-                    return UI_LOW;
-                case 4:
-                    return BG_TOP;
-                case 5:
-                    return BG_NORMAL;
-                case 6:
-                    return BG_LOW;
-                default:
-                    return UI_NORMAL;
-            }
         }
     }
 }
