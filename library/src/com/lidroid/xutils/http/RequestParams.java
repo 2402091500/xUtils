@@ -24,6 +24,7 @@ import com.lidroid.xutils.http.client.multipart.content.FileBody;
 import com.lidroid.xutils.http.client.multipart.content.InputStreamBody;
 import com.lidroid.xutils.http.client.multipart.content.StringBody;
 import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.core.Priority;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -51,6 +52,8 @@ public class RequestParams {
     private List<NameValuePair> bodyParams;
     private HashMap<String, ContentBody> fileParams;
 
+    private Priority priority;
+
     public RequestParams() {
     }
 
@@ -58,6 +61,14 @@ public class RequestParams {
         if (!TextUtils.isEmpty(charset)) {
             this.charset = charset;
         }
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     public String getCharset() {

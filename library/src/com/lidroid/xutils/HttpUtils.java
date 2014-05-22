@@ -24,6 +24,8 @@ import com.lidroid.xutils.http.client.DefaultSSLSocketFactory;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
+import com.lidroid.xutils.util.core.Priority;
+import com.lidroid.xutils.util.core.PriorityExecutor;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -46,10 +48,6 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HttpUtils {
 
@@ -128,20 +126,8 @@ public class HttpUtils {
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, "HttpUtils #" + mCount.getAndIncrement());
-            thread.setPriority(Thread.NORM_PRIORITY - 1);
-            return thread;
-        }
-    };
-
-    private static int threadPoolSize = 3;
-
-    private static Executor executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
+    private final static int DEFAULT_POOL_SIZE = 3;
+    private final static PriorityExecutor EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
 
     public HttpClient getHttpClient() {
         return this.httpClient;
@@ -217,10 +203,7 @@ public class HttpUtils {
     }
 
     public HttpUtils configRequestThreadPoolSize(int threadPoolSize) {
-        if (threadPoolSize > 0 && threadPoolSize != HttpUtils.threadPoolSize) {
-            HttpUtils.threadPoolSize = threadPoolSize;
-            HttpUtils.executor = Executors.newFixedThreadPool(threadPoolSize, sThreadFactory);
-        }
+        HttpUtils.EXECUTOR.setPoolSize(threadPoolSize);
         return this;
     }
 
@@ -306,7 +289,7 @@ public class HttpUtils {
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
-        handler.executeOnExecutor(executor, request, target, autoResume, autoRename);
+        handler.executeOnExecutor(EXECUTOR, request, target, autoResume, autoRename);
         return handler;
     }
 
@@ -319,7 +302,14 @@ public class HttpUtils {
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
-        handler.executeOnExecutor(executor, request);
+        Priority priority = null;
+        if (params != null) {
+            priority = params.getPriority();
+        }
+        if (priority == null) {
+            priority = Priority.UI_LOW;
+        }
+        handler.executeOnExecutor(EXECUTOR, priority, request);
         return handler;
     }
 
