@@ -291,29 +291,42 @@ public final class LruDiskCache implements Closeable {
             lruEntries.put(diskKey, entry);
         }
 
-        if (secondSpace != -1 && firstSpace == 1 && line.charAt(0) == CLEAN) {
-            entry.readable = true;
-            entry.currentEditor = null;
-            String[] parts = line.substring(secondSpace + 1).split(" ");
-            if (parts.length > 0) {
-                try {
-                    if (parts[0].charAt(0) == EXPIRY_PREFIX) {
-                        entry.expiryTimestamp = Long.valueOf(parts[0].substring(1));
-                        entry.setLengths(parts, 1);
-                    } else {
-                        entry.expiryTimestamp = Long.MAX_VALUE;
-                        entry.setLengths(parts, 0);
+        char lineTag = 0;
+        if (secondSpace != -1 && firstSpace == 1) {
+            lineTag = line.charAt(0);
+        }
+
+        switch (lineTag) {
+            case CLEAN: {
+                entry.readable = true;
+                entry.currentEditor = null;
+                String[] parts = line.substring(secondSpace + 1).split(" ");
+                if (parts.length > 0) {
+                    try {
+                        if (parts[0].charAt(0) == EXPIRY_PREFIX) {
+                            entry.expiryTimestamp = Long.valueOf(parts[0].substring(1));
+                            entry.setLengths(parts, 1);
+                        } else {
+                            entry.expiryTimestamp = Long.MAX_VALUE;
+                            entry.setLengths(parts, 0);
+                        }
+                    } catch (Throwable e) {
+                        throw new IOException("unexpected journal line: " + line);
                     }
-                } catch (Throwable e) {
-                    throw new IOException("unexpected journal line: " + line);
                 }
+                break;
             }
-        } else if (secondSpace == -1 && firstSpace == 1 && line.charAt(0) == UPDATE) {
-            entry.currentEditor = new Editor(entry);
-        } else if (secondSpace == -1 && firstSpace == 1 && line.charAt(0) == READ) {
-            // This work was already done by calling lruEntries.get().
-        } else {
-            throw new IOException("unexpected journal line: " + line);
+            case UPDATE: {
+                entry.currentEditor = new Editor(entry);
+                break;
+            }
+            case READ: {
+                // This work was already done by calling lruEntries.get().
+                break;
+            }
+            default: {
+                throw new IOException("unexpected journal line: " + line);
+            }
         }
     }
 
