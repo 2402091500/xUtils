@@ -89,12 +89,17 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
         }
     }
 
-    /**
-     * Links node at end of queue.
-     *
-     * @param node the node
-     */
-    private void enqueue(Node<E> node) {
+    private synchronized E opQueue(Node<E> node) {
+        if (node == null) {
+            return _dequeue();
+        } else {
+            _enqueue(node);
+            return null;
+        }
+    }
+
+    // only invoke in opQueue
+    private void _enqueue(Node<E> node) {
         boolean added = false;
 
         Node<E> curr = head;
@@ -116,12 +121,8 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
         }
     }
 
-    /**
-     * Removes a node from head of queue.
-     *
-     * @return the node
-     */
-    private E dequeue() {
+    // only invoke in opQueue
+    private E _dequeue() {
         // assert takeLock.isHeldByCurrentThread();
         // assert head.item == null;
         Node<E> h = head;
@@ -170,7 +171,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
                     throw new NullPointerException();
                 if (n == capacity)
                     throw new IllegalStateException("Queue full");
-                enqueue(new Node<E>(e));
+                opQueue(new Node<E>(e));
                 ++n;
             }
             count.set(n);
@@ -200,7 +201,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
             while (count.get() == capacity) {
                 notFull.await();
             }
-            enqueue(node);
+            opQueue(node);
             c = count.getAndIncrement();
             if (c + 1 < capacity)
                 notFull.signal();
@@ -226,7 +227,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
                     return false;
                 nanos = notFull.awaitNanos(nanos);
             }
-            enqueue(new Node<E>(e));
+            opQueue(new Node<E>(e));
             c = count.getAndIncrement();
             if (c + 1 < capacity)
                 notFull.signal();
@@ -249,7 +250,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
         putLock.lock();
         try {
             if (count.get() < capacity) {
-                enqueue(node);
+                opQueue(node);
                 c = count.getAndIncrement();
                 if (c + 1 < capacity)
                     notFull.signal();
@@ -272,7 +273,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
             while (count.get() == 0) {
                 notEmpty.await();
             }
-            x = dequeue();
+            x = opQueue(null);
             c = count.getAndDecrement();
             if (c > 1)
                 notEmpty.signal();
@@ -297,7 +298,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
                     return null;
                 nanos = notEmpty.awaitNanos(nanos);
             }
-            x = dequeue();
+            x = opQueue(null);
             c = count.getAndDecrement();
             if (c > 1)
                 notEmpty.signal();
@@ -319,7 +320,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
         takeLock.lock();
         try {
             if (count.get() > 0) {
-                x = dequeue();
+                x = opQueue(null);
                 c = count.getAndDecrement();
                 if (c > 1)
                     notEmpty.signal();
