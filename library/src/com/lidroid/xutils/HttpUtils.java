@@ -59,15 +59,27 @@ public class HttpUtils {
     private HttpRedirectHandler httpRedirectHandler;
 
     public HttpUtils() {
-        this(HttpUtils.DEFAULT_CONN_TIMEOUT);
+        this(HttpUtils.DEFAULT_CONN_TIMEOUT, null);
     }
 
     public HttpUtils(int connTimeout) {
+        this(connTimeout, null);
+    }
+
+    public HttpUtils(String userAgent) {
+        this(HttpUtils.DEFAULT_CONN_TIMEOUT, userAgent);
+    }
+
+    public HttpUtils(int connTimeout, String userAgent) {
         HttpParams params = new BasicHttpParams();
 
         ConnManagerParams.setTimeout(params, connTimeout);
         HttpConnectionParams.setSoTimeout(params, connTimeout);
         HttpConnectionParams.setConnectionTimeout(params, connTimeout);
+
+        if (!TextUtils.isEmpty(userAgent)) {
+            HttpProtocolParams.setUserAgent(params, userAgent);
+        }
 
         ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(10));
         ConnManagerParams.setMaxTotalConnections(params, 10);
