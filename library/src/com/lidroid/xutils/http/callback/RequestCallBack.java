@@ -79,7 +79,7 @@ public abstract class RequestCallBack<T> {
     public void onStart() {
     }
 
-    public void onStopped() {
+    public void onCancelled() {
     }
 
     public void onLoading(long total, long current, boolean isUploading) {

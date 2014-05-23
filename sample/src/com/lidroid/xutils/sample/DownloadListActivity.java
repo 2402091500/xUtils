@@ -159,7 +159,7 @@ public class DownloadListActivity extends Activity {
                         LogUtils.e(e.getMessage(), e);
                     }
                     break;
-                case STOPPED:
+                case CANCELLED:
                 case FAILURE:
                     try {
                         downloadManager.resumeDownload(downloadInfo, new DownloadRequestCallBack());
@@ -210,7 +210,7 @@ public class DownloadListActivity extends Activity {
                 case LOADING:
                     stopBtn.setText(mAppContext.getString(R.string.stop));
                     break;
-                case STOPPED:
+                case CANCELLED:
                     stopBtn.setText(mAppContext.getString(R.string.resume));
                     break;
                 case SUCCESS:
@@ -258,7 +258,7 @@ public class DownloadListActivity extends Activity {
         }
 
         @Override
-        public void onStopped() {
+        public void onCancelled() {
             refreshListItem();
         }
     }

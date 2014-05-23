@@ -116,7 +116,7 @@ public class DownloadManager {
         if (handler != null && !handler.isCancelled()) {
             handler.cancel();
         } else {
-            downloadInfo.setState(HttpHandler.State.STOPPED);
+            downloadInfo.setState(HttpHandler.State.CANCELLED);
         }
         db.saveOrUpdate(downloadInfo);
     }
@@ -127,7 +127,7 @@ public class DownloadManager {
             if (handler != null && !handler.isCancelled()) {
                 handler.cancel();
             } else {
-                downloadInfo.setState(HttpHandler.State.STOPPED);
+                downloadInfo.setState(HttpHandler.State.CANCELLED);
             }
         }
         db.saveOrUpdateAll(downloadInfoList);
@@ -197,7 +197,7 @@ public class DownloadManager {
         }
 
         @Override
-        public void onStopped() {
+        public void onCancelled() {
             HttpHandler<File> handler = downloadInfo.getHandler();
             if (handler != null) {
                 downloadInfo.setState(handler.getState());
@@ -208,7 +208,7 @@ public class DownloadManager {
                 LogUtils.e(e.getMessage(), e);
             }
             if (baseCallBack != null) {
-                baseCallBack.onStopped();
+                baseCallBack.onCancelled();
             }
         }
 

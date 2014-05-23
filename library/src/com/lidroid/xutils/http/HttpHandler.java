@@ -154,7 +154,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
 
     @Override
     protected Void doInBackground(Object... params) {
-        if (this.state == State.STOPPED || params == null || params.length == 0) return null;
+        if (this.state == State.CANCELLED || params == null || params.length == 0) return null;
 
         if (params.length > 3) {
             fileSavePath = String.valueOf(params[1]);
@@ -164,7 +164,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
         }
 
         try {
-            if (this.state == State.STOPPED) return null;
+            if (this.state == State.CANCELLED) return null;
             // init request & requestUrl
             request = (HttpRequestBase) params[0];
             requestUrl = request.getURI().toString();
@@ -196,7 +196,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
     @Override
     @SuppressWarnings("unchecked")
     protected void onProgressUpdate(Object... values) {
-        if (this.state == State.STOPPED || values == null || values.length == 0 || callback == null) return;
+        if (this.state == State.CANCELLED || values == null || values.length == 0 || callback == null) return;
         switch ((Integer) values[0]) {
             case UPDATE_START:
                 this.state = State.STARTED;
@@ -272,7 +272,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
      */
     @Override
     public void cancel() {
-        this.state = State.STOPPED;
+        this.state = State.CANCELLED;
 
         if (request != null && !request.isAborted()) {
             try {
@@ -288,7 +288,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
         }
 
         if (callback != null) {
-            callback.onStopped();
+            callback.onCancelled();
         }
     }
 
@@ -296,7 +296,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
 
     @Override
     public boolean updateProgress(long total, long current, boolean forceUpdateUI) {
-        if (callback != null && this.state != State.STOPPED) {
+        if (callback != null && this.state != State.CANCELLED) {
             if (forceUpdateUI) {
                 this.publishProgress(UPDATE_LOADING, total, current);
             } else {
@@ -307,11 +307,11 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
                 }
             }
         }
-        return this.state != State.STOPPED;
+        return this.state != State.CANCELLED;
     }
 
     public enum State {
-        WAITING(0), STARTED(1), LOADING(2), FAILURE(3), STOPPED(4), SUCCESS(5);
+        WAITING(0), STARTED(1), LOADING(2), FAILURE(3), CANCELLED(4), SUCCESS(5);
         private int value = 0;
 
         State(int value) {
@@ -329,7 +329,7 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
                 case 3:
                     return FAILURE;
                 case 4:
-                    return STOPPED;
+                    return CANCELLED;
                 case 5:
                     return SUCCESS;
                 default:
