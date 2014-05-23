@@ -99,8 +99,8 @@ public class DownloadManager {
 
     public void removeDownload(DownloadInfo downloadInfo) throws DbException {
         HttpHandler<File> handler = downloadInfo.getHandler();
-        if (handler != null && !handler.isStopped()) {
-            handler.stop();
+        if (handler != null && !handler.isCancelled()) {
+            handler.cancel();
         }
         downloadInfoList.remove(downloadInfo);
         db.delete(downloadInfo);
@@ -113,8 +113,8 @@ public class DownloadManager {
 
     public void stopDownload(DownloadInfo downloadInfo) throws DbException {
         HttpHandler<File> handler = downloadInfo.getHandler();
-        if (handler != null && !handler.isStopped()) {
-            handler.stop();
+        if (handler != null && !handler.isCancelled()) {
+            handler.cancel();
         } else {
             downloadInfo.setState(HttpHandler.State.STOPPED);
         }
@@ -124,8 +124,8 @@ public class DownloadManager {
     public void stopAllDownload() throws DbException {
         for (DownloadInfo downloadInfo : downloadInfoList) {
             HttpHandler<File> handler = downloadInfo.getHandler();
-            if (handler != null && !handler.isStopped()) {
-                handler.stop();
+            if (handler != null && !handler.isCancelled()) {
+                handler.cancel();
             } else {
                 downloadInfo.setState(HttpHandler.State.STOPPED);
             }
