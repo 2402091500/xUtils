@@ -17,7 +17,7 @@ package com.lidroid.xutils.view;
 
 import android.view.View;
 import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.core.DoubleKeyValueMap;
+import com.lidroid.xutils.util.DoubleKeyValueMap;
 import com.lidroid.xutils.view.annotation.event.EventBase;
 
 import java.lang.annotation.Annotation;

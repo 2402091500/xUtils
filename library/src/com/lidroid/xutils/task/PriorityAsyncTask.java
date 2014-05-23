@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.task;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -25,9 +25,11 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A compatible AsyncTask for android2.2.
+ * Author: wyouflf
+ * Date: 14-5-23
+ * Time: 上午11:25
  */
-public abstract class CompatibleAsyncTask<Params, Progress, Result> {
+public abstract class PriorityAsyncTask<Params, Progress, Result> implements TaskHandler {
 
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_PROGRESS = 0x2;
@@ -57,7 +59,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
          */
         RUNNING,
         /**
-         * Indicates that {@link CompatibleAsyncTask#onPostExecute} has finished.
+         * Indicates that {@link PriorityAsyncTask#onPostExecute} has finished.
          */
         FINISHED,
     }
@@ -65,7 +67,7 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
     /**
      * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
      */
-    public CompatibleAsyncTask() {
+    public PriorityAsyncTask() {
         mWorker = new WorkerRunnable<Params, Result>() {
             public Result call() throws Exception {
                 mTaskInvoked.set(true);
@@ -230,6 +232,39 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
         return mFuture.cancel(mayInterruptIfRunning);
     }
 
+    @Override
+    public boolean supportPause() {
+        return false;
+    }
+
+    @Override
+    public boolean supportResume() {
+        return false;
+    }
+
+    @Override
+    public boolean supportCancel() {
+        return true;
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void cancel() {
+        this.cancel(true);
+    }
+
+    @Override
+    public boolean isPaused() {
+        return false;
+    }
+
     /**
      * Waits if necessary for the computation to complete, and then
      * retrieves its result.
@@ -266,11 +301,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
-    public final CompatibleAsyncTask<Params, Progress, Result> execute(Params... params) {
+    public final PriorityAsyncTask<Params, Progress, Result> execute(Params... params) {
         return executeOnExecutor(sDefaultExecutor, params);
     }
 
@@ -279,11 +314,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params   The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
-    public final CompatibleAsyncTask<Params, Progress, Result> execute(Priority priority, Params... params) {
+    public final PriorityAsyncTask<Params, Progress, Result> execute(Priority priority, Params... params) {
         return executeOnExecutor(sDefaultExecutor, priority, params);
     }
 
@@ -292,11 +327,11 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
      * @see #execute(Object[])
      */
-    public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                                 Params... params) {
+    public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                               Params... params) {
         return executeOnExecutor(exec, Priority.UI_LOW, params);
     }
 
@@ -306,12 +341,12 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
      * @param params   The parameters of the task.
      * @return This instance of AsyncTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link CompatibleAsyncTask.Status#RUNNING} or {@link CompatibleAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
      * @see #execute(Object[])
      */
-    public final CompatibleAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                                 Priority priority,
-                                                                                 Params... params) {
+    public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                               Priority priority,
+                                                                               Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
@@ -417,10 +452,10 @@ public abstract class CompatibleAsyncTask<Params, Progress, Result> {
 
     @SuppressWarnings({"RawUseOfParameterizedType"})
     private static class AsyncTaskResult<Data> {
-        final CompatibleAsyncTask mTask;
+        final PriorityAsyncTask mTask;
         final Data[] mData;
 
-        AsyncTaskResult(CompatibleAsyncTask task, Data... data) {
+        AsyncTaskResult(PriorityAsyncTask task, Data... data) {
             mTask = task;
             mData = data;
         }

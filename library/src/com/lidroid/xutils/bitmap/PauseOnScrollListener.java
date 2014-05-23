@@ -18,10 +18,11 @@ package com.lidroid.xutils.bitmap;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.task.TaskHandler;
 
 public class PauseOnScrollListener implements OnScrollListener {
 
-    private BitmapUtils bitmapUtils;
+    private TaskHandler taskHandler;
 
     private final boolean pauseOnScroll;
     private final boolean pauseOnFling;
@@ -30,25 +31,25 @@ public class PauseOnScrollListener implements OnScrollListener {
     /**
      * Constructor
      *
-     * @param bitmapUtils   {@linkplain BitmapUtils} instance for controlling
-     * @param pauseOnScroll Whether {@linkplain BitmapUtils#pauseTasks() pause loading} during touch scrolling
-     * @param pauseOnFling  Whether {@linkplain BitmapUtils#pauseTasks() pause loading} during fling
+     * @param taskHandler   {@linkplain BitmapUtils} instance for controlling
+     * @param pauseOnScroll Whether {@linkplain BitmapUtils#pause() pause loading} during touch scrolling
+     * @param pauseOnFling  Whether {@linkplain BitmapUtils#pause() pause loading} during fling
      */
-    public PauseOnScrollListener(BitmapUtils bitmapUtils, boolean pauseOnScroll, boolean pauseOnFling) {
-        this(bitmapUtils, pauseOnScroll, pauseOnFling, null);
+    public PauseOnScrollListener(TaskHandler taskHandler, boolean pauseOnScroll, boolean pauseOnFling) {
+        this(taskHandler, pauseOnScroll, pauseOnFling, null);
     }
 
     /**
      * Constructor
      *
-     * @param bitmapUtils    {@linkplain BitmapUtils} instance for controlling
-     * @param pauseOnScroll  Whether {@linkplain BitmapUtils#pauseTasks() pause loading} during touch scrolling
-     * @param pauseOnFling   Whether {@linkplain BitmapUtils#pauseTasks() pause loading} during fling
+     * @param taskHandler    {@linkplain BitmapUtils} instance for controlling
+     * @param pauseOnScroll  Whether {@linkplain BitmapUtils#pause() pause loading} during touch scrolling
+     * @param pauseOnFling   Whether {@linkplain BitmapUtils#pause() pause loading} during fling
      * @param customListener Your custom {@link android.widget.AbsListView.OnScrollListener} for {@linkplain android.widget.AbsListView list view} which also will
      *                       be get scroll events
      */
-    public PauseOnScrollListener(BitmapUtils bitmapUtils, boolean pauseOnScroll, boolean pauseOnFling, OnScrollListener customListener) {
-        this.bitmapUtils = bitmapUtils;
+    public PauseOnScrollListener(TaskHandler taskHandler, boolean pauseOnScroll, boolean pauseOnFling, OnScrollListener customListener) {
+        this.taskHandler = taskHandler;
         this.pauseOnScroll = pauseOnScroll;
         this.pauseOnFling = pauseOnFling;
         externalListener = customListener;
@@ -58,16 +59,16 @@ public class PauseOnScrollListener implements OnScrollListener {
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         switch (scrollState) {
             case OnScrollListener.SCROLL_STATE_IDLE:
-                bitmapUtils.resumeTasks();
+                taskHandler.resume();
                 break;
             case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                 if (pauseOnScroll) {
-                    bitmapUtils.pauseTasks();
+                    taskHandler.pause();
                 }
                 break;
             case OnScrollListener.SCROLL_STATE_FLING:
                 if (pauseOnFling) {
-                    bitmapUtils.pauseTasks();
+                    taskHandler.pause();
                 }
                 break;
         }

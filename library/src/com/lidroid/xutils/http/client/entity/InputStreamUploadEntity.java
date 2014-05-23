@@ -75,7 +75,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                     uploadedSize += l;
                     if (callBackHandler != null) {
                         if (!callBackHandler.updateProgress(uploadedSize + 1, uploadedSize, false)) {
-                            throw new InterruptedIOException("stop");
+                            throw new InterruptedIOException("cancel");
                         }
                     }
                 }
@@ -92,7 +92,7 @@ public class InputStreamUploadEntity extends AbstractHttpEntity implements Uploa
                     uploadedSize += l;
                     if (callBackHandler != null) {
                         if (!callBackHandler.updateProgress(length, uploadedSize, false)) {
-                            throw new InterruptedIOException("stop");
+                            throw new InterruptedIOException("cancel");
                         }
                     }
                 }

@@ -65,7 +65,7 @@ public class InputStreamBody extends AbstractContentBody {
                 out.write(tmp, 0, l);
                 callBackInfo.pos += l;
                 if (!callBackInfo.doCallBack(false)) {
-                    throw new InterruptedIOException("stop");
+                    throw new InterruptedIOException("cancel");
                 }
             }
             out.flush();

@@ -1,4 +1,4 @@
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.task;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;

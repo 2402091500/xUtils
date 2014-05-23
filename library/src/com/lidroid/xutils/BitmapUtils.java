@@ -32,17 +32,19 @@ import com.lidroid.xutils.bitmap.callback.DefaultBitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.core.AsyncDrawable;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
-import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import com.lidroid.xutils.util.core.FileNameGenerator;
-import com.lidroid.xutils.util.core.Priority;
-import com.lidroid.xutils.util.core.PriorityExecutor;
+import com.lidroid.xutils.cache.FileNameGenerator;
+import com.lidroid.xutils.task.Priority;
+import com.lidroid.xutils.task.PriorityAsyncTask;
+import com.lidroid.xutils.task.PriorityExecutor;
+import com.lidroid.xutils.task.TaskHandler;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-public class BitmapUtils {
+public class BitmapUtils implements TaskHandler {
 
     private boolean pauseTask = false;
+    private boolean cancelAllTask = false;
     private final Object pauseTaskLock = new Object();
 
     private Context context;
@@ -331,23 +333,52 @@ public class BitmapUtils {
 
     ////////////////////////////////////////// tasks //////////////////////////////////////////////////////////////////////
 
-    public void resumeTasks() {
+    @Override
+    public boolean supportPause() {
+        return true;
+    }
+
+    @Override
+    public boolean supportResume() {
+        return true;
+    }
+
+    @Override
+    public boolean supportCancel() {
+        return true;
+    }
+
+    @Override
+    public void pause() {
+        pauseTask = true;
+        flushCache();
+    }
+
+    @Override
+    public void resume() {
         pauseTask = false;
         synchronized (pauseTaskLock) {
             pauseTaskLock.notifyAll();
         }
     }
 
-    public void pauseTasks() {
+    @Override
+    public void cancel() {
         pauseTask = true;
-        flushCache();
-    }
-
-    public void stopTasks() {
-        pauseTask = true;
+        cancelAllTask = true;
         synchronized (pauseTaskLock) {
             pauseTaskLock.notifyAll();
         }
+    }
+
+    @Override
+    public boolean isPaused() {
+        return pauseTask;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelAllTask;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +409,7 @@ public class BitmapUtils {
         return false;
     }
 
-    public class BitmapLoadTask<T extends View> extends CompatibleAsyncTask<Object, Object, Bitmap> {
+    public class BitmapLoadTask<T extends View> extends PriorityAsyncTask<Object, Object, Bitmap> {
         private final String uri;
         private final WeakReference<T> containerReference;
         private final BitmapLoadCallBack<T> callBack;
@@ -404,6 +435,9 @@ public class BitmapUtils {
                 while (pauseTask && !this.isCancelled()) {
                     try {
                         pauseTaskLock.wait();
+                        if (cancelAllTask) {
+                            return null;
+                        }
                     } catch (Throwable e) {
                     }
                 }

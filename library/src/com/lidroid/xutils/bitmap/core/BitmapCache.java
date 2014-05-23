@@ -24,9 +24,9 @@ import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
-import com.lidroid.xutils.util.core.FileNameGenerator;
-import com.lidroid.xutils.util.core.LruDiskCache;
-import com.lidroid.xutils.util.core.LruMemoryCache;
+import com.lidroid.xutils.cache.FileNameGenerator;
+import com.lidroid.xutils.cache.LruDiskCache;
+import com.lidroid.xutils.cache.LruMemoryCache;
 
 import java.io.*;
 

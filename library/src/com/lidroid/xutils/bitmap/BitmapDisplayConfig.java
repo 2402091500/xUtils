@@ -20,7 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.factory.ImageFactory;
-import com.lidroid.xutils.util.core.Priority;
+import com.lidroid.xutils.task.Priority;
 
 public class BitmapDisplayConfig {
 

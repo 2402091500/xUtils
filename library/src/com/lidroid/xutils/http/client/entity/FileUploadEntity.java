@@ -52,7 +52,7 @@ public class FileUploadEntity extends FileEntity implements UploadEntity {
                 uploadedSize += len;
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(fileSize, uploadedSize, false)) {
-                        throw new InterruptedIOException("stop");
+                        throw new InterruptedIOException("cancel");
                     }
                 }
             }

@@ -23,9 +23,9 @@ import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
-import com.lidroid.xutils.util.core.CompatibleAsyncTask;
-import com.lidroid.xutils.util.core.FileNameGenerator;
-import com.lidroid.xutils.util.core.PriorityExecutor;
+import com.lidroid.xutils.task.PriorityAsyncTask;
+import com.lidroid.xutils.cache.FileNameGenerator;
+import com.lidroid.xutils.task.PriorityExecutor;
 
 /**
  * Author: wyouflf
@@ -226,7 +226,7 @@ public class BitmapGlobalConfig {
     }
 
     ////////////////////////////////// bitmap cache management task ///////////////////////////////////////
-    private class BitmapCacheManagementTask extends CompatibleAsyncTask<Object, Void, Object[]> {
+    private class BitmapCacheManagementTask extends PriorityAsyncTask<Object, Void, Object[]> {
         public static final int MESSAGE_INIT_MEMORY_CACHE = 0;
         public static final int MESSAGE_INIT_DISK_CACHE = 1;
         public static final int MESSAGE_FLUSH = 2;

@@ -4,7 +4,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.task;
 
 import java.util.AbstractQueue;
 import java.util.Collection;

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

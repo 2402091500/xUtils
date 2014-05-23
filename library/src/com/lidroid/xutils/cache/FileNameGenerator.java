@@ -1,4 +1,4 @@
-package com.lidroid.xutils.util.core;
+package com.lidroid.xutils.cache;
 
 /**
  * Author: wyouflf

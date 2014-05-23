@@ -19,8 +19,8 @@ import android.os.SystemClock;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.callback.*;
+import com.lidroid.xutils.task.PriorityAsyncTask;
 import com.lidroid.xutils.util.OtherUtils;
-import com.lidroid.xutils.util.core.CompatibleAsyncTask;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
@@ -37,7 +37,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 
 
-public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> implements RequestCallBackHandler {
+public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> implements RequestCallBackHandler {
 
     private final AbstractHttpClient client;
     private final HttpContext context;
@@ -268,9 +268,10 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
     }
 
     /**
-     * stop request task.
+     * cancel request task.
      */
-    public void stop() {
+    @Override
+    public void cancel() {
         this.state = State.STOPPED;
 
         if (request != null && !request.isAborted()) {
@@ -289,10 +290,6 @@ public class HttpHandler<T> extends CompatibleAsyncTask<Object, Object, Void> im
         if (callback != null) {
             callback.onStopped();
         }
-    }
-
-    public boolean isStopped() {
-        return this.state == State.STOPPED;
     }
 
     private long lastUpdateTime;

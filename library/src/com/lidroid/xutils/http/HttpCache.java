@@ -17,7 +17,7 @@ package com.lidroid.xutils.http;
 
 import android.text.TextUtils;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.lidroid.xutils.util.core.LruMemoryCache;
+import com.lidroid.xutils.cache.LruMemoryCache;
 
 import java.util.concurrent.ConcurrentHashMap;
 
