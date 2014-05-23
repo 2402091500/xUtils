@@ -268,8 +268,8 @@ HttpHandler handler = http.download("http://apache.dataguru.cn/httpcomponents/ht
 });
 
 ...
-//调用stop()方法停止下载
-handler.stop();
+//调用cancel()方法停止下载
+handler.cancel();
 ...
 ```
 

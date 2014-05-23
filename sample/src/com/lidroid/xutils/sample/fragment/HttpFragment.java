@@ -23,7 +23,7 @@ import com.lidroid.xutils.sample.DownloadListActivity;
 import com.lidroid.xutils.sample.R;
 import com.lidroid.xutils.sample.download.DownloadManager;
 import com.lidroid.xutils.sample.download.DownloadService;
-import com.lidroid.xutils.util.CookieUtils;
+import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.ResType;
 import com.lidroid.xutils.view.annotation.ResInject;
@@ -45,7 +45,7 @@ public class HttpFragment extends Fragment {
     private Context mAppContext;
     private DownloadManager downloadManager;
 
-    private CookieUtils cookieUtils;
+    private PreferencesCookieStore preferencesCookieStore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,11 +56,11 @@ public class HttpFragment extends Fragment {
 
         downloadManager = DownloadService.getDownloadManager(mAppContext);
 
-        cookieUtils = new CookieUtils(mAppContext);
+        preferencesCookieStore = new PreferencesCookieStore(mAppContext);
         BasicClientCookie cookie = new BasicClientCookie("test", "hello");
         cookie.setDomain("192.168.1.5");
         cookie.setPath("/");
-        cookieUtils.addCookie(cookie);
+        preferencesCookieStore.addCookie(cookie);
 
         return view;
     }
@@ -129,7 +129,7 @@ public class HttpFragment extends Fragment {
         //http.configResponseTextCharset("GBK");
 
         // 自动管理 cookie
-        http.configCookieStore(cookieUtils);
+        http.configCookieStore(preferencesCookieStore);
 
         http.send(HttpRequest.HttpMethod.POST,
                 "http://192.168.1.5:8080/UploadServlet",

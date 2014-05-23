@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author michael yang
  */
-public class CookieUtils implements CookieStore {
+public class PreferencesCookieStore implements CookieStore {
 
     private static final String COOKIE_PREFS = "CookiePrefsFile";
     private static final String COOKIE_NAME_STORE = "names";
@@ -45,7 +45,7 @@ public class CookieUtils implements CookieStore {
     /**
      * Construct a persistent cookie store.
      */
-    public CookieUtils(Context context) {
+    public PreferencesCookieStore(Context context) {
         cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, Context.MODE_PRIVATE);
         cookies = new ConcurrentHashMap<String, Cookie>();
 

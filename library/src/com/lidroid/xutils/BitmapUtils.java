@@ -261,22 +261,15 @@ public class BitmapUtils implements TaskHandler {
             final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, uri, displayConfig, callBack);
 
             // load bitmap from uri or diskCache
-            Drawable loadingDrawable = null;
             PriorityExecutor executor = globalConfig.getBitmapLoadExecutor();
             File diskCacheFile = this.getBitmapFileFromDiskCache(uri);
             boolean diskCacheExist = diskCacheFile != null && diskCacheFile.exists();
-            if (diskCacheExist) {
-                if (executor.isBusy()) {
-                    executor = globalConfig.getDiskCacheExecutor();
-                }
-            } else {
-                loadingDrawable = displayConfig.getLoadingDrawable();
+            if (diskCacheExist && executor.isBusy()) {
+                executor = globalConfig.getDiskCacheExecutor();
             }
             // set loading image
-            final AsyncDrawable<T> asyncDrawable = new AsyncDrawable<T>(
-                    loadingDrawable,
-                    loadTask);
-            callBack.setDrawable(container, asyncDrawable);
+            Drawable loadingDrawable = displayConfig.getLoadingDrawable();
+            callBack.setDrawable(container, new AsyncDrawable<T>(loadingDrawable, loadTask));
 
             Priority priority = displayConfig.getPriority();
             if (priority == null) {
