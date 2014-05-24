@@ -51,9 +51,6 @@ public class DbUtils {
         if (config == null) {
             throw new IllegalArgumentException("daoConfig may not be null");
         }
-        if (config.getContext() == null) {
-            throw new IllegalArgumentException("context mey not be null");
-        }
         this.database = createDatabase(config);
         this.daoConfig = config;
     }
