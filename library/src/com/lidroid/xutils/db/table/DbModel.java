@@ -15,6 +15,8 @@
 
 package com.lidroid.xutils.db.table;
 
+import android.text.TextUtils;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -31,11 +33,11 @@ public class DbModel {
     }
 
     public int getInt(String columnName) {
-        return Integer.valueOf(getString(columnName));
+        return Integer.valueOf(dataMap.get(columnName));
     }
 
     public boolean getBoolean(String columnName) {
-        String value = getString(columnName);
+        String value = dataMap.get(columnName);
         if (value != null) {
             return value.length() == 1 ? "1".equals(value) : Boolean.valueOf(value);
         }
@@ -43,24 +45,24 @@ public class DbModel {
     }
 
     public double getDouble(String columnName) {
-        return Double.valueOf(getString(columnName));
+        return Double.valueOf(dataMap.get(columnName));
     }
 
     public float getFloat(String columnName) {
-        return Float.valueOf(getString(columnName));
+        return Float.valueOf(dataMap.get(columnName));
     }
 
     public long getLong(String columnName) {
-        return Long.valueOf(getString(columnName));
+        return Long.valueOf(dataMap.get(columnName));
     }
 
     public Date getDate(String columnName) {
-        long date = Long.valueOf(getString(columnName));
+        long date = Long.valueOf(dataMap.get(columnName));
         return new Date(date);
     }
 
     public java.sql.Date getSqlDate(String columnName) {
-        long date = Long.valueOf(getString(columnName));
+        long date = Long.valueOf(dataMap.get(columnName));
         return new java.sql.Date(date);
     }
 
@@ -73,5 +75,13 @@ public class DbModel {
      */
     public HashMap<String, String> getDataMap() {
         return dataMap;
+    }
+
+    /**
+     * @param columnName
+     * @return
+     */
+    public boolean isEmpty(String columnName) {
+        return TextUtils.isEmpty(dataMap.get(columnName));
     }
 }
