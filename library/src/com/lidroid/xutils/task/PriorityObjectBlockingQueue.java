@@ -636,7 +636,7 @@ class Node<T> {
             this.value = (PriorityObject<?>) value;
             this.valueAsT = true;
         } else {
-            this.value = new PriorityObject<T>(Priority.UI_LOW, value);
+            this.value = new PriorityObject<T>(Priority.DEFAULT, value);
         }
     }
 }

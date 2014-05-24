@@ -273,7 +273,7 @@ public class BitmapUtils implements TaskHandler {
 
             Priority priority = displayConfig.getPriority();
             if (priority == null) {
-                priority = Priority.UI_LOW;
+                priority = Priority.DEFAULT;
             }
             loadTask.executeOnExecutor(executor, priority);
         }

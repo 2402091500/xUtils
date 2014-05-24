@@ -6,7 +6,7 @@ package com.lidroid.xutils.task;
  * Time: 上午11:25
  */
 public enum Priority {
-    UI_TOP(0), UI_NORMAL(1), UI_LOW(2), BG_TOP(3), BG_NORMAL(4), BG_LOW(5);
+    UI_TOP(0), UI_NORMAL(1), UI_LOW(2), DEFAULT(3), BG_TOP(4), BG_NORMAL(5), BG_LOW(6);
     private int value = 0;
 
     Priority(int value) {
@@ -26,13 +26,15 @@ public enum Priority {
             case 2:
                 return UI_LOW;
             case 3:
-                return BG_TOP;
+                return DEFAULT;
             case 4:
-                return BG_NORMAL;
+                return BG_TOP;
             case 5:
+                return BG_NORMAL;
+            case 6:
                 return BG_LOW;
             default:
-                return UI_LOW;
+                return DEFAULT;
         }
     }
 }

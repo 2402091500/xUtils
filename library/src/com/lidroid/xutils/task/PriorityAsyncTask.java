@@ -40,29 +40,10 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
     private final WorkerRunnable<Params, Result> mWorker;
     private final FutureTask<Result> mFuture;
 
-    private volatile Status mStatus = Status.PENDING;
+    private volatile boolean mExecuteInvoked = false;
 
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
-
-    /**
-     * Indicates the current status of the task. Each status will be set only once
-     * during the lifetime of a task.
-     */
-    public enum Status {
-        /**
-         * Indicates that the task has not been executed yet.
-         */
-        PENDING,
-        /**
-         * Indicates that the task is running.
-         */
-        RUNNING,
-        /**
-         * Indicates that {@link PriorityAsyncTask#onPostExecute} has finished.
-         */
-        FINISHED,
-    }
 
     /**
      * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
@@ -108,15 +89,6 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
                 new AsyncTaskResult<Result>(this, result));
         message.sendToTarget();
         return result;
-    }
-
-    /**
-     * Returns the current status of this task.
-     *
-     * @return The current status.
-     */
-    public final Status getStatus() {
-        return mStatus;
     }
 
     /**
@@ -300,8 +272,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
     /**
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
-     * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     * @throws IllegalStateException If execute has invoked.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
@@ -313,8 +284,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @param priority
      * @param params   The parameters of the task.
      * @return This instance of AsyncTask.
-     * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     * @throws IllegalStateException If execute has invoked.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
@@ -326,13 +296,12 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @param exec   The executor to use.
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
-     * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     * @throws IllegalStateException If execute has invoked.
      * @see #execute(Object[])
      */
     public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
                                                                                Params... params) {
-        return executeOnExecutor(exec, Priority.UI_LOW, params);
+        return executeOnExecutor(exec, Priority.DEFAULT, params);
     }
 
     /**
@@ -340,28 +309,18 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @param priority
      * @param params   The parameters of the task.
      * @return This instance of AsyncTask.
-     * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     * @throws IllegalStateException If execute has invoked.
      * @see #execute(Object[])
      */
     public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
                                                                                Priority priority,
                                                                                Params... params) {
-        if (mStatus != Status.PENDING) {
-            switch (mStatus) {
-                case RUNNING:
-                    throw new IllegalStateException("Cannot execute task:"
-                            + " the task is already running.");
-                case FINISHED:
-                    throw new IllegalStateException("Cannot execute task:"
-                            + " the task has already been executed "
-                            + "(a task can be executed only once)");
-                default:
-                    break;
-            }
+        if (mExecuteInvoked) {
+            throw new IllegalStateException("Cannot execute task:"
+                    + " the task is already executed.");
         }
 
-        mStatus = Status.RUNNING;
+        mExecuteInvoked = true;
 
         onPreExecute();
 
@@ -380,7 +339,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      */
     public static void execute(Runnable runnable) {
-        execute(runnable, Priority.UI_LOW);
+        execute(runnable, Priority.DEFAULT);
     }
 
     /**
@@ -421,7 +380,6 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
         } else {
             onPostExecute(result);
         }
-        mStatus = Status.FINISHED;
     }
 
     private static class InternalHandler extends Handler {

@@ -319,7 +319,7 @@ public class HttpUtils {
             priority = params.getPriority();
         }
         if (priority == null) {
-            priority = Priority.UI_LOW;
+            priority = Priority.DEFAULT;
         }
         handler.executeOnExecutor(EXECUTOR, priority, request);
         return handler;
