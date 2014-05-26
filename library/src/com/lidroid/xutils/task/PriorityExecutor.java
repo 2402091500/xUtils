@@ -23,39 +23,39 @@ public class PriorityExecutor implements Executor {
         }
     };
 
-    private static final BlockingQueue<Runnable> sPoolWorkQueue = new PriorityObjectBlockingQueue<Runnable>();
-    private static ThreadPoolExecutor threadPoolExecutor;
+    private final BlockingQueue<Runnable> mPoolWorkQueue = new PriorityObjectBlockingQueue<Runnable>();
+    private final ThreadPoolExecutor mThreadPoolExecutor;
 
     public PriorityExecutor() {
         this(CORE_POOL_SIZE);
     }
 
     public PriorityExecutor(int poolSize) {
-        threadPoolExecutor = new ThreadPoolExecutor(
+        mThreadPoolExecutor = new ThreadPoolExecutor(
                 poolSize,
                 MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE,
                 TimeUnit.SECONDS,
-                sPoolWorkQueue,
+                mPoolWorkQueue,
                 sThreadFactory);
     }
 
     public int getPoolSize() {
-        return threadPoolExecutor.getCorePoolSize();
+        return mThreadPoolExecutor.getCorePoolSize();
     }
 
     public void setPoolSize(int poolSize) {
         if (poolSize > 0) {
-            threadPoolExecutor.setCorePoolSize(poolSize);
+            mThreadPoolExecutor.setCorePoolSize(poolSize);
         }
     }
 
     public boolean isBusy() {
-        return threadPoolExecutor.getActiveCount() >= threadPoolExecutor.getCorePoolSize();
+        return mThreadPoolExecutor.getActiveCount() >= mThreadPoolExecutor.getCorePoolSize();
     }
 
     @Override
     public void execute(final Runnable r) {
-        threadPoolExecutor.execute(r);
+        mThreadPoolExecutor.execute(r);
     }
 }
