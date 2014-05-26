@@ -20,7 +20,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import com.lidroid.xutils.db.sqlite.*;
-import com.lidroid.xutils.db.table.*;
+import com.lidroid.xutils.db.table.DbModel;
+import com.lidroid.xutils.db.table.Id;
+import com.lidroid.xutils.db.table.Table;
+import com.lidroid.xutils.db.table.TableUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
@@ -446,27 +449,6 @@ public class DbUtils {
         return findFirst(Selector.from(entityType));
     }
 
-    public <T> T findFirst(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
-        return findFirst(Selector.from(entityType).where(whereBuilder));
-    }
-
-    public <T> T findFirst(Object entity) throws DbException {
-        if (!tableIsExist(entity.getClass())) return null;
-
-        Selector selector = Selector.from(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null) {
-            WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue kv : entityKvList) {
-                if (kv.value != null) {
-                    wb.and(kv.key, "=", kv.value);
-                }
-            }
-            selector.where(wb);
-        }
-        return findFirst(selector);
-    }
-
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Selector selector) throws DbException {
         if (!tableIsExist(selector.getEntityType())) return null;
@@ -500,27 +482,6 @@ public class DbUtils {
 
     public <T> List<T> findAll(Class<T> entityType) throws DbException {
         return findAll(Selector.from(entityType));
-    }
-
-    public <T> List<T> findAll(Class<T> entityType, WhereBuilder whereBuilder) throws DbException {
-        return findAll(Selector.from(entityType).where(whereBuilder));
-    }
-
-    public <T> List<T> findAll(Object entity) throws DbException {
-        if (!tableIsExist(entity.getClass())) return null;
-
-        Selector selector = Selector.from(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null) {
-            WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue kv : entityKvList) {
-                if (kv.value != null) {
-                    wb.and(kv.key, "=", kv.value);
-                }
-            }
-            selector.where(wb);
-        }
-        return findAll(selector);
     }
 
     public DbModel findDbModelFirst(SqlInfo sqlInfo) throws DbException {
@@ -606,27 +567,6 @@ public class DbUtils {
 
     public long count(Class<?> entityType) throws DbException {
         return count(Selector.from(entityType));
-    }
-
-    public long count(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
-        return count(Selector.from(entityType).where(whereBuilder));
-    }
-
-    public long count(Object entity) throws DbException {
-        if (!tableIsExist(entity.getClass())) return 0;
-
-        Selector selector = Selector.from(entity.getClass());
-        List<KeyValue> entityKvList = SqlInfoBuilder.entity2KeyValueList(this, entity);
-        if (entityKvList != null) {
-            WhereBuilder wb = WhereBuilder.b();
-            for (KeyValue kv : entityKvList) {
-                if (kv.value != null) {
-                    wb.and(kv.key, "=", kv.value);
-                }
-            }
-            selector.where(wb);
-        }
-        return count(selector);
     }
 
     //******************************************** config ******************************************************
