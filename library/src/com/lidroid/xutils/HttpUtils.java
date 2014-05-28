@@ -26,6 +26,7 @@ import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
 import com.lidroid.xutils.task.Priority;
 import com.lidroid.xutils.task.PriorityExecutor;
+import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -77,9 +78,10 @@ public class HttpUtils {
         HttpConnectionParams.setSoTimeout(params, connTimeout);
         HttpConnectionParams.setConnectionTimeout(params, connTimeout);
 
-        if (!TextUtils.isEmpty(userAgent)) {
-            HttpProtocolParams.setUserAgent(params, userAgent);
+        if (TextUtils.isEmpty(userAgent)) {
+            userAgent = OtherUtils.getUserAgent(null);
         }
+        HttpProtocolParams.setUserAgent(params, userAgent);
 
         ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(10));
         ConnManagerParams.setMaxTotalConnections(params, 10);
