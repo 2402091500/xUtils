@@ -63,7 +63,7 @@ public class FileDownloadHandler {
             byte[] tmp = new byte[4096];
             int len;
             while ((len = bis.read(tmp)) != -1) {
-                fileOutputStream.write(tmp, 0, len);
+                bos.write(tmp, 0, len);
                 current += len;
                 if (callBackHandler != null) {
                     if (!callBackHandler.updateProgress(total, current, false)) {
@@ -71,7 +71,7 @@ public class FileDownloadHandler {
                     }
                 }
             }
-            fileOutputStream.flush();
+            bos.flush();
             if (callBackHandler != null) {
                 callBackHandler.updateProgress(total, current, true);
             }
