@@ -192,4 +192,9 @@ public class ResponseStream extends InputStream {
         if (baseStream == null) return 0;
         return baseStream.skip(byteCount);
     }
+
+    public long getContentLength() {
+        if (baseStream == null) return 0;
+        return baseResponse.getEntity().getContentLength();
+    }
 }
