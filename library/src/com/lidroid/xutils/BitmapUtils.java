@@ -260,7 +260,7 @@ public class BitmapUtils implements TaskHandler {
 
             final BitmapLoadTask<T> loadTask = new BitmapLoadTask<T>(container, uri, displayConfig, callBack);
 
-            // load bitmap from uri or diskCache
+            // get executor
             PriorityExecutor executor = globalConfig.getBitmapLoadExecutor();
             File diskCacheFile = this.getBitmapFileFromDiskCache(uri);
             boolean diskCacheExist = diskCacheFile != null && diskCacheFile.exists();

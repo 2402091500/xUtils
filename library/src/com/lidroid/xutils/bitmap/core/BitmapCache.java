@@ -21,12 +21,12 @@ import android.media.ExifInterface;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.BitmapGlobalConfig;
-import com.lidroid.xutils.util.IOUtils;
-import com.lidroid.xutils.util.LogUtils;
-import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.cache.FileNameGenerator;
 import com.lidroid.xutils.cache.LruDiskCache;
 import com.lidroid.xutils.cache.LruMemoryCache;
+import com.lidroid.xutils.util.IOUtils;
+import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.util.OtherUtils;
 
 import java.io.*;
 
@@ -137,7 +137,6 @@ public class BitmapCache {
         LruDiskCache.Snapshot snapshot = null;
 
         try {
-
             Bitmap bitmap = null;
             // try download to disk
             if (globalConfig.isDiskCacheEnabled()) {
@@ -149,36 +148,36 @@ public class BitmapCache {
                         } catch (Throwable e) {
                         }
                     }
+                }
 
-                    if (mDiskLruCache != null) {
-                        try {
-                            snapshot = mDiskLruCache.get(uri);
-                            if (snapshot == null) {
-                                LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
-                                if (editor != null) {
-                                    outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
-                                    bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream, task);
-                                    if (bitmapMeta.expiryTimestamp < 0) {
-                                        editor.abort();
-                                        return null;
-                                    } else {
-                                        editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
-                                        editor.commit();
-                                    }
-                                    snapshot = mDiskLruCache.get(uri);
+                if (mDiskLruCache != null) {
+                    try {
+                        snapshot = mDiskLruCache.get(uri);
+                        if (snapshot == null) {
+                            LruDiskCache.Editor editor = mDiskLruCache.edit(uri);
+                            if (editor != null) {
+                                outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
+                                bitmapMeta.expiryTimestamp = globalConfig.getDownloader().downloadToStream(uri, outputStream, task);
+                                if (bitmapMeta.expiryTimestamp < 0) {
+                                    editor.abort();
+                                    return null;
+                                } else {
+                                    editor.setEntryExpiryTimestamp(bitmapMeta.expiryTimestamp);
+                                    editor.commit();
                                 }
+                                snapshot = mDiskLruCache.get(uri);
                             }
-                            if (snapshot != null) {
-                                bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
-                                bitmap = decodeBitmapMeta(bitmapMeta, config);
-                                if (bitmap == null) {
-                                    bitmapMeta.inputStream = null;
-                                    mDiskLruCache.remove(uri);
-                                }
-                            }
-                        } catch (Throwable e) {
-                            LogUtils.e(e.getMessage(), e);
                         }
+                        if (snapshot != null) {
+                            bitmapMeta.inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                            bitmap = decodeBitmapMeta(bitmapMeta, config);
+                            if (bitmap == null) {
+                                bitmapMeta.inputStream = null;
+                                mDiskLruCache.remove(uri);
+                            }
+                        }
+                    } catch (Throwable e) {
+                        LogUtils.e(e.getMessage(), e);
                     }
                 }
             }

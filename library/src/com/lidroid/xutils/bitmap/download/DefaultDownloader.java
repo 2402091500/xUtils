@@ -20,10 +20,7 @@ import com.lidroid.xutils.util.IOUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -76,13 +73,14 @@ public class DefaultDownloader extends Downloader {
 
             byte[] buffer = new byte[4096];
             int len = 0;
+            BufferedOutputStream out = new BufferedOutputStream(outputStream);
             while ((len = bis.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, len);
+                out.write(buffer, 0, len);
                 currCount += len;
                 if (task.isCancelled() || task.getTargetContainer() == null) return -1;
                 task.updateProgress(fileLen, currCount);
             }
-            outputStream.flush();
+            out.flush();
         } catch (Throwable e) {
             result = -1;
             LogUtils.e(e.getMessage(), e);
