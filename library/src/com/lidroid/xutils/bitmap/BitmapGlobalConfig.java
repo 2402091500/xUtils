@@ -48,7 +48,7 @@ public class BitmapGlobalConfig {
 
     private final static int DEFAULT_POOL_SIZE = 5;
     private final static PriorityExecutor BITMAP_LOAD_EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
-    private final static PriorityExecutor DISK_CACHE_EXECUTOR = new PriorityExecutor(1);
+    private final static PriorityExecutor DISK_CACHE_EXECUTOR = new PriorityExecutor(2);
 
     private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
     private int defaultConnectTimeout = 1000 * 15; // 15 sec
