@@ -18,7 +18,6 @@ package com.lidroid.xutils.task;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.util.concurrent.*;
@@ -45,6 +44,16 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
 
+    private Priority priority;
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     /**
      * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
      */
@@ -53,7 +62,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
             public Result call() throws Exception {
                 mTaskInvoked.set(true);
 
-                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 //noinspection unchecked
                 return postResult(doInBackground(mParams));
             }
@@ -65,7 +74,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
                 try {
                     postResultIfNotInvoked(get());
                 } catch (InterruptedException e) {
-                    LogUtils.w(e);
+                    LogUtils.d(e.getMessage());
                 } catch (ExecutionException e) {
                     throw new RuntimeException("An error occured while executing doInBackground()",
                             e.getCause());
@@ -185,6 +194,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @return <tt>true</tt> if task was cancelled before it completed
      * @see #cancel(boolean)
      */
+    @Override
     public final boolean isCancelled() {
         return mCancelled.get();
     }
@@ -281,18 +291,6 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
     }
 
     /**
-     * @param priority
-     * @param params   The parameters of the task.
-     * @return This instance of AsyncTask.
-     * @throws IllegalStateException If execute has invoked.
-     * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
-     * @see #execute(Runnable)
-     */
-    public final PriorityAsyncTask<Params, Progress, Result> execute(Priority priority, Params... params) {
-        return executeOnExecutor(sDefaultExecutor, priority, params);
-    }
-
-    /**
      * @param exec   The executor to use.
      * @param params The parameters of the task.
      * @return This instance of AsyncTask.
@@ -300,20 +298,6 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> implements Tas
      * @see #execute(Object[])
      */
     public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                               Params... params) {
-        return executeOnExecutor(exec, Priority.DEFAULT, params);
-    }
-
-    /**
-     * @param exec     The executor to use.
-     * @param priority
-     * @param params   The parameters of the task.
-     * @return This instance of AsyncTask.
-     * @throws IllegalStateException If execute has invoked.
-     * @see #execute(Object[])
-     */
-    public final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                               Priority priority,
                                                                                Params... params) {
         if (mExecuteInvoked) {
             throw new IllegalStateException("Cannot execute task:"
