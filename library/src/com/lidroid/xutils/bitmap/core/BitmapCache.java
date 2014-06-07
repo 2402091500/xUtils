@@ -263,34 +263,34 @@ public class BitmapCache {
                 } catch (Throwable e) {
                 }
             }
-            if (mDiskLruCache != null) {
-                LruDiskCache.Snapshot snapshot = null;
-                try {
-                    snapshot = mDiskLruCache.get(uri);
-                    if (snapshot != null) {
-                        Bitmap bitmap = null;
-                        if (config == null || config.isShowOriginal()) {
-                            bitmap = BitmapDecoder.decodeFileDescriptor(
-                                    snapshot.getInputStream(DISK_CACHE_INDEX).getFD());
-                        } else {
-                            bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
-                                    snapshot.getInputStream(DISK_CACHE_INDEX).getFD(),
-                                    config.getBitmapMaxSize(),
-                                    config.getBitmapConfig());
-                        }
-
-                        bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
-                        addBitmapToMemoryCache(uri, config, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
-                        return bitmap;
-                    }
-                } catch (Throwable e) {
-                    LogUtils.e(e.getMessage(), e);
-                } finally {
-                    IOUtils.closeQuietly(snapshot);
-                }
-            }
-            return null;
         }
+        if (mDiskLruCache != null) {
+            LruDiskCache.Snapshot snapshot = null;
+            try {
+                snapshot = mDiskLruCache.get(uri);
+                if (snapshot != null) {
+                    Bitmap bitmap = null;
+                    if (config == null || config.isShowOriginal()) {
+                        bitmap = BitmapDecoder.decodeFileDescriptor(
+                                snapshot.getInputStream(DISK_CACHE_INDEX).getFD());
+                    } else {
+                        bitmap = BitmapDecoder.decodeSampledBitmapFromDescriptor(
+                                snapshot.getInputStream(DISK_CACHE_INDEX).getFD(),
+                                config.getBitmapMaxSize(),
+                                config.getBitmapConfig());
+                    }
+
+                    bitmap = rotateBitmapIfNeeded(uri, config, bitmap);
+                    addBitmapToMemoryCache(uri, config, bitmap, mDiskLruCache.getExpiryTimestamp(uri));
+                    return bitmap;
+                }
+            } catch (Throwable e) {
+                LogUtils.e(e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(snapshot);
+            }
+        }
+        return null;
     }
 
     /**
