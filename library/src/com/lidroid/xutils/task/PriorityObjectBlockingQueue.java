@@ -107,7 +107,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
 
         while (curr.next != null) {
             temp = curr.next;
-            if (temp.getPriority().value() > node.getPriority().value()) {
+            if (temp.getPriority().ordinal() > node.getPriority().ordinal()) {
                 curr.next = node;
                 node.next = temp;
                 added = true;

@@ -24,7 +24,6 @@ import com.lidroid.xutils.http.client.DefaultSSLSocketFactory;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.RetryHandler;
 import com.lidroid.xutils.http.client.entity.GZipDecompressingEntity;
-import com.lidroid.xutils.task.Priority;
 import com.lidroid.xutils.task.PriorityExecutor;
 import com.lidroid.xutils.util.OtherUtils;
 import org.apache.http.*;
@@ -301,8 +300,11 @@ public class HttpUtils {
 
         handler.setExpiry(currentRequestExpiry);
         handler.setHttpRedirectHandler(httpRedirectHandler);
-        request.setRequestParams(params, handler);
 
+        if (params != null) {
+            request.setRequestParams(params, handler);
+            handler.setPriority(params.getPriority());
+        }
         handler.executeOnExecutor(EXECUTOR, request, target, autoResume, autoRename);
         return handler;
     }
@@ -316,10 +318,8 @@ public class HttpUtils {
         handler.setHttpRedirectHandler(httpRedirectHandler);
         request.setRequestParams(params, handler);
 
-        Priority priority = null;
         if (params != null) {
-            priority = params.getPriority();
-            handler.setPriority(priority);
+            handler.setPriority(params.getPriority());
         }
         handler.executeOnExecutor(EXECUTOR, request);
         return handler;

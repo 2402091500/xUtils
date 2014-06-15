@@ -33,7 +33,6 @@ import com.lidroid.xutils.bitmap.core.AsyncDrawable;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
 import com.lidroid.xutils.bitmap.download.Downloader;
 import com.lidroid.xutils.cache.FileNameGenerator;
-import com.lidroid.xutils.task.Priority;
 import com.lidroid.xutils.task.PriorityAsyncTask;
 import com.lidroid.xutils.task.PriorityExecutor;
 import com.lidroid.xutils.task.TaskHandler;
@@ -271,11 +270,8 @@ public class BitmapUtils implements TaskHandler {
             Drawable loadingDrawable = displayConfig.getLoadingDrawable();
             callBack.setDrawable(container, new AsyncDrawable<T>(loadingDrawable, loadTask));
 
-            Priority priority = displayConfig.getPriority();
-            if (priority == null) {
-                priority = Priority.DEFAULT;
-            }
-            loadTask.executeOnExecutor(executor, priority);
+            loadTask.setPriority(displayConfig.getPriority());
+            loadTask.executeOnExecutor(executor);
         }
     }
 
