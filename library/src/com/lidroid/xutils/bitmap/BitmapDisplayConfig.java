@@ -19,7 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.animation.Animation;
 import com.lidroid.xutils.bitmap.core.BitmapSize;
-import com.lidroid.xutils.bitmap.factory.ImageFactory;
+import com.lidroid.xutils.bitmap.factory.BitmapFactory;
 import com.lidroid.xutils.task.Priority;
 
 public class BitmapDisplayConfig {
@@ -31,7 +31,7 @@ public class BitmapDisplayConfig {
     private boolean autoRotation = false;
     private boolean showOriginal = false;
     private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
-    private ImageFactory imageFactory;
+    private BitmapFactory bitmapFactory;
 
     private Priority priority;
 
@@ -94,12 +94,12 @@ public class BitmapDisplayConfig {
         this.bitmapConfig = bitmapConfig;
     }
 
-    public ImageFactory getImageFactory() {
-        return imageFactory;
+    public BitmapFactory getBitmapFactory() {
+        return bitmapFactory;
     }
 
-    public void setImageFactory(ImageFactory imageFactory) {
-        this.imageFactory = imageFactory;
+    public void setBitmapFactory(BitmapFactory bitmapFactory) {
+        this.bitmapFactory = bitmapFactory;
     }
 
     public Priority getPriority() {
@@ -113,7 +113,7 @@ public class BitmapDisplayConfig {
     @Override
     public String toString() {
         return (isShowOriginal() ? "" : bitmapMaxSize.toString()) +
-                (imageFactory == null ? "" : imageFactory.getClass().getName());
+                (bitmapFactory == null ? "" : bitmapFactory.getClass().getName());
     }
 
     public BitmapDisplayConfig cloneNew() {
@@ -125,7 +125,7 @@ public class BitmapDisplayConfig {
         config.autoRotation = this.autoRotation;
         config.showOriginal = this.showOriginal;
         config.bitmapConfig = this.bitmapConfig;
-        config.imageFactory = this.imageFactory;
+        config.bitmapFactory = this.bitmapFactory;
         config.priority = this.priority;
         return config;
     }

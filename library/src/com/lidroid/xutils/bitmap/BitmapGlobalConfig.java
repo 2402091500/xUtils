@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
+import com.lidroid.xutils.task.Priority;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
 import com.lidroid.xutils.task.PriorityAsyncTask;
@@ -237,6 +238,10 @@ public class BitmapGlobalConfig {
         public static final int MESSAGE_CLEAR_BY_KEY = 7;
         public static final int MESSAGE_CLEAR_MEMORY_BY_KEY = 8;
         public static final int MESSAGE_CLEAR_DISK_BY_KEY = 9;
+
+        private BitmapCacheManagementTask() {
+            this.setPriority(Priority.UI_TOP);
+        }
 
         @Override
         protected Object[] doInBackground(Object... params) {
