@@ -27,10 +27,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.protocol.HTTP;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -228,32 +225,39 @@ public class OtherUtils {
         return Thread.currentThread().getStackTrace()[4];
     }
 
-    private static TrustManager[] trustAllCerts;
+    private static SSLSocketFactory sslSocketFactory;
 
-    public static void trustAllSSLForHttpsURLConnection() {
+    public static void trustAllHttpsURLConnection() {
         // Create a trust manager that does not validate certificate chains
-        if (trustAllCerts == null) {
-            trustAllCerts = new TrustManager[]{new X509TrustManager() {
+        if (sslSocketFactory == null) {
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
 
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs,
+                                               String authType) {
                 }
 
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs,
+                                               String authType) {
                 }
             }};
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, trustAllCerts, null);
+                sslSocketFactory = sslContext.getSocketFactory();
+            } catch (Throwable e) {
+                LogUtils.e(e.getMessage(), e);
+            }
         }
-        // Install the all-trusting trust manager
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustAllCerts, null);
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-        } catch (Throwable e) {
-            LogUtils.e(e.getMessage(), e);
+
+        if (sslSocketFactory != null) {
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslSocketFactory);
+            HttpsURLConnection.setDefaultHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
         }
-        HttpsURLConnection.setDefaultHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     }
 }

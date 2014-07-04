@@ -42,7 +42,7 @@ public class DefaultDownloader extends Downloader {
         URLConnection urlConnection = null;
         BufferedInputStream bis = null;
 
-        OtherUtils.trustAllSSLForHttpsURLConnection();
+        OtherUtils.trustAllHttpsURLConnection();
 
         long result = -1;
         long fileLen = 0;
