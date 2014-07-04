@@ -134,7 +134,7 @@ public class HttpUtils {
 
     private final static int DEFAULT_CONN_TIMEOUT = 1000 * 15; // 15s
 
-    private final static int DEFAULT_RETRY_TIMES = 5;
+    private final static int DEFAULT_RETRY_TIMES = 3;
 
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
