@@ -42,9 +42,6 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
     private final AbstractHttpClient client;
     private final HttpContext context;
 
-    private final StringDownloadHandler mStringDownloadHandler = new StringDownloadHandler();
-    private final FileDownloadHandler mFileDownloadHandler = new FileDownloadHandler();
-
     private HttpRedirectHandler httpRedirectHandler;
 
     public void setHttpRedirectHandler(HttpRedirectHandler httpRedirectHandler) {
@@ -242,9 +239,11 @@ public class HttpHandler<T> extends PriorityAsyncTask<Object, Object, Void> impl
                 if (isDownloadingFile) {
                     autoResume = autoResume && OtherUtils.isSupportRange(response);
                     String responseFileName = autoRename ? OtherUtils.getFileNameFromHttpResponse(response) : null;
-                    result = mFileDownloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
+                    FileDownloadHandler downloadHandler = new FileDownloadHandler();
+                    result = downloadHandler.handleEntity(entity, this, fileSavePath, autoResume, responseFileName);
                 } else {
-                    result = mStringDownloadHandler.handleEntity(entity, this, charset);
+                    StringDownloadHandler downloadHandler = new StringDownloadHandler();
+                    result = downloadHandler.handleEntity(entity, this, charset);
                     if (HttpUtils.sHttpCache.isEnabled(requestMethod)) {
                         HttpUtils.sHttpCache.put(requestUrl, (String) result, expiry);
                     }
