@@ -88,11 +88,9 @@ public class BitmapCache {
      * background thread.
      */
     public void initDiskCache() {
-        if (!globalConfig.isDiskCacheEnabled()) return;
-
         // Set up disk cache
         synchronized (mDiskCacheLock) {
-            if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
+            if (globalConfig.isDiskCacheEnabled()) {
                 File diskCacheDir = new File(globalConfig.getDiskCachePath());
                 if (diskCacheDir.exists() || diskCacheDir.mkdirs()) {
                     long availableSpace = OtherUtils.getAvailableSpace(diskCacheDir);
@@ -147,6 +145,7 @@ public class BitmapCache {
                         try {
                             mDiskCacheLock.wait();
                         } catch (Throwable e) {
+                            break;
                         }
                     }
                 }
@@ -266,6 +265,7 @@ public class BitmapCache {
                 try {
                     mDiskCacheLock.wait();
                 } catch (Throwable e) {
+                    break;
                 }
             }
         }
@@ -315,6 +315,7 @@ public class BitmapCache {
 
     public void clearDiskCache() {
         synchronized (mDiskCacheLock) {
+            isDiskCacheReady = false;
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
@@ -322,7 +323,6 @@ public class BitmapCache {
                     LogUtils.e(e.getMessage(), e);
                 }
                 mDiskLruCache = null;
-                isDiskCacheReady = false;
             }
         }
         initDiskCache();
@@ -377,6 +377,7 @@ public class BitmapCache {
      */
     public void close() {
         synchronized (mDiskCacheLock) {
+            isDiskCacheReady = false;
             if (mDiskLruCache != null) {
                 try {
                     if (!mDiskLruCache.isClosed()) {
