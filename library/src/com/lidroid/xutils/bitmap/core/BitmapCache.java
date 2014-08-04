@@ -422,7 +422,7 @@ public class BitmapCache {
         return bitmap;
     }
 
-    private Bitmap rotateBitmapIfNeeded(String uri, BitmapDisplayConfig config, Bitmap bitmap) {
+    private synchronized Bitmap rotateBitmapIfNeeded(String uri, BitmapDisplayConfig config, Bitmap bitmap) {
         Bitmap result = bitmap;
         if (config != null && config.isAutoRotation()) {
             File bitmapFile = this.getBitmapFileFromDiskCache(uri);
