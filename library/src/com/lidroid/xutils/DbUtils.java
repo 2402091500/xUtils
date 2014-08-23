@@ -580,7 +580,7 @@ public class DbUtils {
         private String dbDir;
 
         public DaoConfig(Context context) {
-            this.context = context;
+            this.context = context.getApplicationContext();
         }
 
         public Context getContext() {
