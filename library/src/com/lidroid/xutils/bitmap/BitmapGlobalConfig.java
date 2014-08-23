@@ -21,12 +21,14 @@ import android.text.TextUtils;
 import com.lidroid.xutils.bitmap.core.BitmapCache;
 import com.lidroid.xutils.bitmap.download.DefaultDownloader;
 import com.lidroid.xutils.bitmap.download.Downloader;
+import com.lidroid.xutils.cache.FileNameGenerator;
 import com.lidroid.xutils.task.Priority;
+import com.lidroid.xutils.task.PriorityAsyncTask;
+import com.lidroid.xutils.task.PriorityExecutor;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.util.OtherUtils;
-import com.lidroid.xutils.task.PriorityAsyncTask;
-import com.lidroid.xutils.cache.FileNameGenerator;
-import com.lidroid.xutils.task.PriorityExecutor;
+
+import java.util.HashMap;
 
 /**
  * Author: wyouflf
@@ -60,16 +62,32 @@ public class BitmapGlobalConfig {
     private BitmapCacheListener bitmapCacheListener;
 
     private Context mContext;
+    private final static HashMap<String, BitmapGlobalConfig> configMap = new HashMap<String, BitmapGlobalConfig>(1);
 
     /**
      * @param context
      * @param diskCachePath If null, use default appCacheDir+"/xBitmapCache"
      */
-    public BitmapGlobalConfig(Context context, String diskCachePath) {
+    private BitmapGlobalConfig(Context context, String diskCachePath) {
         if (context == null) throw new IllegalArgumentException("context may not be null");
         this.mContext = context;
         this.diskCachePath = diskCachePath;
         initBitmapCache();
+    }
+
+    public static BitmapGlobalConfig getInstance(Context context, String diskCachePath) {
+
+        if (TextUtils.isEmpty(diskCachePath)) {
+            diskCachePath = OtherUtils.getDiskCacheDir(context, "xBitmapCache");
+        }
+
+        if (configMap.containsKey(diskCachePath)) {
+            return configMap.get(diskCachePath);
+        } else {
+            BitmapGlobalConfig config = new BitmapGlobalConfig(context, diskCachePath);
+            configMap.put(diskCachePath, config);
+            return config;
+        }
     }
 
     private void initBitmapCache() {
@@ -78,9 +96,6 @@ public class BitmapGlobalConfig {
     }
 
     public String getDiskCachePath() {
-        if (TextUtils.isEmpty(diskCachePath)) {
-            diskCachePath = OtherUtils.getDiskCacheDir(mContext, "xBitmapCache");
-        }
         return diskCachePath;
     }
 

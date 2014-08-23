@@ -60,8 +60,8 @@ public class BitmapUtils implements TaskHandler {
             throw new IllegalArgumentException("context may not be null");
         }
 
-        this.context = context;
-        globalConfig = new BitmapGlobalConfig(context, diskCachePath);
+        this.context = context.getApplicationContext();
+        globalConfig = BitmapGlobalConfig.getInstance(this.context, diskCachePath);
         defaultDisplayConfig = new BitmapDisplayConfig();
     }
 
@@ -196,11 +196,6 @@ public class BitmapUtils implements TaskHandler {
 
     public BitmapUtils configBitmapCacheListener(BitmapCacheListener listener) {
         globalConfig.setBitmapCacheListener(listener);
-        return this;
-    }
-
-    public BitmapUtils configGlobalConfig(BitmapGlobalConfig globalConfig) {
-        this.globalConfig = globalConfig;
         return this;
     }
 
