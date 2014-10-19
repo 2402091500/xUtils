@@ -75,7 +75,7 @@ public class BitmapGlobalConfig {
         initBitmapCache();
     }
 
-    public static BitmapGlobalConfig getInstance(Context context, String diskCachePath) {
+    public synchronized static BitmapGlobalConfig getInstance(Context context, String diskCachePath) {
 
         if (TextUtils.isEmpty(diskCachePath)) {
             diskCachePath = OtherUtils.getDiskCacheDir(context, "xBitmapCache");

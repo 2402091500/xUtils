@@ -137,17 +137,11 @@ public class BitmapCache {
 
         try {
             Bitmap bitmap = null;
+
             // try download to disk
             if (globalConfig.isDiskCacheEnabled()) {
-                synchronized (mDiskCacheLock) {
-                    // Wait for disk cache to initialize
-                    while (!isDiskCacheReady) {
-                        try {
-                            mDiskCacheLock.wait();
-                        } catch (Throwable e) {
-                            break;
-                        }
-                    }
+                if (mDiskLruCache == null) {
+                    initDiskCache();
                 }
 
                 if (mDiskLruCache != null) {
@@ -319,6 +313,7 @@ public class BitmapCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
+                    mDiskLruCache.close();
                 } catch (Throwable e) {
                     LogUtils.e(e.getMessage(), e);
                 }
