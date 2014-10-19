@@ -218,6 +218,11 @@ public class BitmapUtils implements TaskHandler {
             return;
         }
 
+        if (TextUtils.isEmpty(uri)) {
+            callBack.onLoadFailed(container, uri, displayConfig.getLoadFailedDrawable());
+            return;
+        }
+
         container.clearAnimation();
 
         if (callBack == null) {
@@ -233,11 +238,6 @@ public class BitmapUtils implements TaskHandler {
         displayConfig.setBitmapMaxSize(BitmapCommonUtils.optimizeMaxSizeByView(container, size.getWidth(), size.getHeight()));
 
         callBack.onPreLoad(container, uri, displayConfig);
-
-        if (TextUtils.isEmpty(uri)) {
-            callBack.onLoadFailed(container, uri, displayConfig.getLoadFailedDrawable());
-            return;
-        }
 
         // find bitmap from mem cache.
         Bitmap bitmap = globalConfig.getBitmapCache().getBitmapFromMemCache(uri, displayConfig);
