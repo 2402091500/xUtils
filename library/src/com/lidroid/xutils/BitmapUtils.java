@@ -218,13 +218,6 @@ public class BitmapUtils implements TaskHandler {
             return;
         }
 
-        if (TextUtils.isEmpty(uri)) {
-            callBack.onLoadFailed(container, uri, displayConfig.getLoadFailedDrawable());
-            return;
-        }
-
-        container.clearAnimation();
-
         if (callBack == null) {
             callBack = new DefaultBitmapLoadCallBack<T>();
         }
@@ -237,6 +230,14 @@ public class BitmapUtils implements TaskHandler {
         BitmapSize size = displayConfig.getBitmapMaxSize();
         displayConfig.setBitmapMaxSize(BitmapCommonUtils.optimizeMaxSizeByView(container, size.getWidth(), size.getHeight()));
 
+        container.clearAnimation();
+
+        if (TextUtils.isEmpty(uri)) {
+            callBack.onLoadFailed(container, uri, displayConfig.getLoadFailedDrawable());
+            return;
+        }
+
+        // start loading
         callBack.onPreLoad(container, uri, displayConfig);
 
         // find bitmap from mem cache.
